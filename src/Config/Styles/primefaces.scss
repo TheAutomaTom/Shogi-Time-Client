@@ -1,0 +1,210 @@
+// This file is to import and then override Prime Faces related style/ behavior.
+// @use "primeicons/primeicons.css";
+// @use "primevue/resources/primevue.min.css";
+// @use "../../../node_modules/primevue/resources/themes/lara-light-blue/theme.css";
+@use "./Theme\ for\ Reference\ Only//primevue.css";
+@use "./Theme\ for\ Reference\ Only//theme.css";
+
+.p-component,
+.p-link,
+.p-autocomplete
+  .p-autocomplete-multiple-container
+  .p-autocomplete-input-token
+  input,
+.p-chips .p-chips-multiple-container .p-chips-input-token input,
+.p-terminal .p-terminal-input {
+  font-family: var(--font-family);
+}
+
+//= HEADER =======================================//
+#select-language.p-dropdown .p-dropdown-trigger {
+  width: 1em;
+}
+#select-language.p-dropdown .p-inputtext {
+  padding-right: 0 !important;
+}
+//= INPUTS =======================================//
+//== Floating Labels...
+.p-float-label label {
+  top: 60%;
+  left: 1rem;
+}
+.p-float-label input,
+.p-text-input,
+.p-calendar {
+  margin-top: 0.8rem;
+}
+input.p-component:focus {
+  background-color: var(--color-secondary-light);
+}
+.p-float-label input:focus ~ label,
+.p-float-label input.p-filled ~ label,
+.p-float-label textarea:focus ~ label,
+.p-float-label textarea.p-filled ~ label,
+.p-float-label .p-inputwrapper-focus ~ label,
+.p-float-label .p-inputwrapper-filled ~ label {
+  @apply px-1;
+  top: 1rem;
+  left: 0.5rem;
+  background-color: white;
+}
+//= BUTTON =======================================//
+.p-button {
+  @apply flex justify-center items-center
+  w-full px-5 py-3 rounded-md;
+  background-color: var(--color-primary) !important;
+  border: none !important;
+  &.alt {
+    color: theme("colors.gray.500") !important;
+    background-color: theme("colors.gray.100") !important;
+    border: none;
+  }
+}
+.p-button:hover {
+  background-color: var(--color-primary-dark) !important;
+  border-color: var(--color-primary) !important;
+  &.alt {
+    color: theme("colors.gray.800") !important;
+    background-color: theme("colors.gray.300") !important;
+  }
+}
+.row-wrapper {
+  @apply flex flex-grow flex-wrap m-5;
+  //@apply flex flex-wrap m-5;
+}
+.button-row-wrapper {
+  @apply flex space-x-4 m-5;
+}
+.p-button:focus {
+  box-shadow: 0 0 0 0 #ffffff, 0 0 0 4px #9dc1fb, 0 1px 2px 0 black;
+}
+.p-button.p-button-info:enabled:focus {
+  box-shadow: 0 0 0 0 #ffffff, 0 0 0 4px #9dc1fb, 0 1px 2px 0 black;
+}
+//= CHECKBOXES ===================================//
+.p-checkbox-box.p-highlight {
+  background-color: var(--color-primary-light) !important;
+}
+.p-checkbox-box:hover,
+.p-checkbox-focused,
+.p-checkbox-box.p-highlight,
+.p-checkbox:not(.p-checkbox-disabled) .p-checkbox-box.p-focus {
+  border: 1px solid var(--color-primary) !important;
+}
+.p-checkbox-icon {
+  color: var(--color-primary) !important;
+  position: absolute;
+  font-size: small;
+  font-weight: bold;
+}
+//= RADIOBUTTONS =================================//
+.radio-button-container {
+  @apply flex items-center justify-between rounded-md shadow-sm mb-2;
+  border: 1px solid theme("colors.gray.200");
+  & label {
+    @apply flex-grow py-3 pl-5;
+    &.filler {
+      @apply flex-shrink-0 w-5;
+      // TODO: Replace filler with ::after?
+      // .radio-button-container label::after {
+      //   @apply flex-shrink-0 w-5 px-5;
+      //   background-color: aqua !important;
+      // }
+    }
+  }
+  &.active {
+    border: 1px solid var(--color-primary);
+    &:hover {
+      background-color: white;
+    }
+  }
+}
+.radio-button-container:hover {
+  background-color: theme("colors.gray.100");
+}
+.radio-button-container:hover .p-radiobutton-box {
+  background-color: theme("colors.gray.100");
+}
+.p-radiobutton-box:hover {
+  background-color: inherit !important;
+  border: 2px solid theme("colors.gray.300") !important;
+}
+.p-radiobutton-box.p-focus {
+  border: 1px solid var(--color-primary) !important;
+  outline: 3px solid #9dc1fb !important;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 4px #9dc1fb, 0 1px 2px 0 black;
+}
+
+.p-radiobutton-box.p-highlight {
+  //background-color: inherit !important;
+  background-color: var(--color-primary-light) !important;
+  border: 1px solid var(--color-primary) !important;
+}
+.p-radiobutton-icon {
+  background-color: var(--color-primary-light) !important;
+}
+.p-radiobutton-icon:before {
+  //content: "→";
+  @extend .pi;
+  @extend .pi-check;
+  color: var(--color-primary);
+  position: absolute;
+  font-size: small;
+  font-weight: bold;
+}
+
+.p-radiobutton-focussed {
+  box-shadow: none;
+  outline: none;
+  border: none;
+}
+
+.p-radiobutton .p-radiobutton-box:not(.p-disabled).p-focus {
+  box-shadow: none;
+  border-color: none;
+}
+//= SELECT (DROPDOWN) ============================//
+.p-dropdown-label,
+.p-dropdown-item {
+  padding-left: 1.25em;
+  font-family: var(--font-secondary) !important;
+  color: theme("colors.gray.800") !important;
+}
+//= MULTISELECT ==================================//
+div .p-multiselect-header {
+  visibility: hidden;
+  height: 0;
+  padding: 0 !important;
+}
+.p-multiselect-item.p-highlight {
+  background-color: var(--color-primary-light) !important;
+}
+.p-multiselect-item:focus {
+  box-shadow: inset 0 0 0 0.15rem var(--color-primary) !important;
+}
+.p-multiselect-panel .p-multiselect-items .p-multiselect-item.p-highlight {
+  color: var(--color-common-black) !important;
+}
+//= DIALOG =======================================//
+.p-dialog-header {
+  height: 2.25em;
+}
+.p-dialog-title {
+  @apply uppercase text-gray-500;
+  font-size: 0.875em !important;
+  font-family: var(--font-primary) !important;
+}
+//= PANEL ========================================//
+.p-panel {
+  @apply py-1 w-full max-w-full;
+}
+
+//= PROGRESS SPINNER =============================//
+.p-progress-spinner-circle {
+  stroke: var(--color-primary) !important;
+}
+
+//= PROGRESS BAR =================================//
+.p-progressbar-determinate {
+  background-color: var(--color-primary-light) !important;
+}

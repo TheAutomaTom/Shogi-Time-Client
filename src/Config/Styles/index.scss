@@ -1,0 +1,91 @@
+// This file is the ONLY style-sheet imported by the app.
+// It is best to define styles for standard elements here.
+@use "./reset.scss";
+@use "./primefaces.scss";
+@use "./dynamic.scss";
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+:root {
+  @apply w-screen 
+    min-h-screen 
+    relative 
+    flex;
+  color: var(--color-common-black) !important;
+  font-family: "Poppins", sans-serif;
+}
+html,
+body {
+  @apply w-full;
+  overflow-x: hidden; /* Hide horizontal scrollbar */
+}
+#app {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden !important;
+}
+.body-wrapper {
+  @apply w-screen 
+    min-h-screen 
+    flex 
+    flex-col 
+    justify-start 
+    items-center;
+}
+
+h1 {
+  @apply text-3xl;
+}
+h2 {
+  @apply text-2xl;
+}
+h3 {
+  @apply text-xl;
+}
+h4 {
+  @apply text-lg;
+}
+h5 {
+  @apply text-base;
+}
+h6 {
+  @apply text-sm;
+}
+
+a {
+  color: var(--color-primary);
+}
+a:hover {
+  color: var(--color-primary-dark);
+  @apply underline;
+}
+.a-alt {
+  color: var(--color-a);
+}
+.a-alt:hover {
+  color: var(--color-a-highlight);
+  @apply underline;
+}
+em {
+  @apply italic;
+}
+.question-title {
+  @extends font-secondary;
+  @apply w-full text-left 
+  text-xl sm:text-2xl
+  font-bold
+  pb-3;
+}
+input {
+  padding-bottom: 0;
+}
+//is-invalid concerns the error messages in the bottom right of input fields.
+.is-invalid {
+  @apply absolute text-sm;
+  background-color: white;
+  bottom: -0.7em;
+  right: 1em;
+
+  color: lightcoral;
+  font-style: italic;
+}
