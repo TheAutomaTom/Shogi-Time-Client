@@ -1,22 +1,62 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
 </script>
 
 <template>
-  <HelloWorld msg="Shogi-Time.Client" />
+  <div id="root" class="app-wrapper"
+      style="background-color:orange"
+    >
+
+    <!-- Header ------------------------------------------------------>
+    <Header 
+      style="background-color:orange"
+    />
+    <div class="grid grid-rows-2" style="grid-template-rows: 3em 1fr">
+      <div class="buffer-header"></div>
+
+      <!-- Content ------------------------------------------------------>
+      <div 
+        class="content-wrapper"
+        style="background-color:yellow"    
+      >
+        <Content 
+          class="content"
+          style="background-color:orange"
+        >
+          <template v-slot:content>
+            <router-view />
+          </template>
+        </Content>
+      </div>
+    </div>
+
+    <!-- Footer ------------------------------------------------------>
+    <Footer 
+      style="background-color:goldenrod"
+      class="footer-wrapper" 
+    />
+  </div>
+  
 </template>
 
-<style scoped>
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+<style scoped lang="scss">
+.app-wrapper {
+  @apply w-full;
 }
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
+.buffer-header {
+  @apply w-full;
 }
-.logo.vue:hover {
-  filter: drop-shadow(0 0 2em #42b883aa);
+$footer-height: 15em;
+.content-wrapper {
+  @apply w-full flex justify-center;
+  padding-bottom: $footer-height;
+}
+.content {
+  @apply w-full max-w-2xl flex;
+}
+.footer-wrapper {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: $footer-height;
 }
 </style>

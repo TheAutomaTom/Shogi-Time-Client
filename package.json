@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc && vite build",
+    "build-styles": "npx tailwindcss -i ./src/Config/Styles/index.scss -o ./src/output.css --watch",
     "preview": "vite preview"
   },
   "dependencies": {
