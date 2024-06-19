@@ -1,9 +1,8 @@
 // This file is to import and then override Prime Faces related style/ behavior.
-// @use "primeicons/primeicons.css";
-// @use "primevue/resources/primevue.min.css";
-// @use "../../../node_modules/primevue/resources/themes/lara-light-blue/theme.css";
-@use "./Theme\ for\ Reference\ Only//primevue.css";
-@use "./Theme\ for\ Reference\ Only//theme.css";
+@use "primeicons/primeicons.css";
+@use "primevue/resources/primevue.min.css";
+@use "../../../node_modules/primevue/resources/themes/lara-light-blue/theme.css";
+
 
 .p-component,
 .p-link,

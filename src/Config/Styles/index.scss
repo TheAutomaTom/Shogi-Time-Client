@@ -1,11 +1,13 @@
-// This file is the ONLY style-sheet imported by the app.
-// It is best to define styles for standard elements here.
+// This file is the parent style-sheet imported by the app.
+// It is best to define styles for standard html elements here.
 @use "./reset.scss";
 @use "./primefaces.scss";
 @use "./dynamic.scss";
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
 :root {
   @apply w-screen 
     min-h-screen 
