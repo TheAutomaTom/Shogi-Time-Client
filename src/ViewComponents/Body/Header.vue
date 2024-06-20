@@ -62,12 +62,19 @@ const app$ = useAppState();
   
   align-items:flex-end; //vert
 
+  border-radius: 50%;
+
+
 }
 .header-flex-button:hover{
-  background-color: goldenrod;  
+  box-shadow:
+    -12px -5px 5px rgb(65, 46, 0),
+    12px 5px 5px goldenrod; 
 }
 .header-flex-button:active{
-  background-color: yellow;
+  box-shadow:
+    -12px -5px 5px rgb(53, 14, 0),
+    12px 5px 5px rgb(86, 23, 0); 
 }
 
 

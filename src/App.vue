@@ -43,13 +43,16 @@ const getDrawerClass = () => {
   <div id="root" class="app-container">
 
     <!--==== Header Ad ==================================================-->
-    <div style="grid-row:1;grid-column:2/5;background-color: purple;">
+    <div style="grid-row:1;grid-column:2/5">
+    <!-- ;background-color: purple;"> -->
     </div>
 
-    <div style="grid-row:1/6;grid-column:1;background-color: magenta;">
+    <div style="grid-row:1/6;grid-column:1;">
+    <!-- ;background-color: magenta;"> -->
     </div>
 
-    <div style="grid-row:2/5;grid-column:2;background-color: blue;">
+    <div style="grid-row:2/5;grid-column:2">
+    <!-- ;background-color: blue;"> -->
     </div>
     
     <!--==== Header =====================================================-->
@@ -60,13 +63,16 @@ const getDrawerClass = () => {
       <div>Content</div>
     </div>
     
-    <div style="grid-row:4;grid-column:3/4;background-color: lightblue;">
+    <div style="grid-row:4;grid-column:3/4">
+    <!-- ;background-color: lightblue;"> -->
     </div>
 
-    <div style="grid-row:2/5;grid-column:4;background-color: blue;">
+    <div style="grid-row:2/5;grid-column:4">
+    <!-- ;background-color: blue;"> -->
     </div>
 
-    <div style="grid-row:1/6;grid-column:5;background-color: magenta;">
+    <div style="grid-row:1/6;grid-column:5">
+    <!-- ;background-color: magenta;"> -->
     </div>
 
     <!--==== Footer Ad ==================================================-->
@@ -114,16 +120,20 @@ const getDrawerClass = () => {
   display: grid;
   grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
   
-  background-color: black;
-  border-right: 4px double grey;  
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
 
 }
 .drawer-open{
   width:100%;
+  background-color: black;
+  border-right: 4px double grey;
 
 }
 .drawer-shut{
   width:0%;
+  border-right: none;
 
 }
 
@@ -161,6 +171,7 @@ const getDrawerClass = () => {
   display: flex;
   height:100%;  
   width:100%;
+  max-width:220px;
   font-size:xx-large;
   background-color: transparent;
   border: none;
@@ -168,13 +179,19 @@ const getDrawerClass = () => {
   align-items:flex-end;
   margin-left:.75em;
 
+  border-radius: 50%;
+
 }
 .flex-button:hover{
-  background-color: goldenrod;
+  box-shadow:
+    -14px -5px 5px rgb(65, 46, 0),
+    14px 5px 5px goldenrod; 
   
 }
 .flex-button:active{
-  background-color: yellow;
+  box-shadow:
+    -14px -5px 5px rgb(53, 14, 0),
+    14px 5px 5px rgb(86, 23, 0),
 }
 
 </style>
