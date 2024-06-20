@@ -4,7 +4,7 @@ import Home from "../../Views/Home.vue";
 export const routes = [
   {
     path: "/",
-    name: "/home",
+    name: "/",
     //  This is the only page that is NOT lazy-loaded, so it looks different from the other imported pages.    
     component: Home,
   },

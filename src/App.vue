@@ -1,62 +1,180 @@
 <script setup lang="ts">
+import Header from "@Components/Body/Header.vue";
+import { useAppState } from "./State/AppState";
+
+const app$ = useAppState();
+
+const getDrawerClass = () => {
+  console.log(app$.Layout.DrawerIsOpen ? 'drawer-open' : 'drawer-shut');
+  return app$.Layout.DrawerIsOpen ? 'drawer-open' : 'drawer-shut';
+}
 </script>
 
 <template>
-  <div id="root" class="app-wrapper"
-      style="background-color:orange"
-    >
+  <!--==== Drawer =======================================================-->
+  <div 
+    class="drawer"
+    :class="getDrawerClass()"
+  >
 
-    <!-- Header ------------------------------------------------------>
-    <Header 
-      style="background-color:orange"
-    />
-    <div class="grid grid-rows-2" style="grid-template-rows: 3em 1fr">
-      <div class="buffer-header"></div>
-
-      <!-- Content ------------------------------------------------------>
-      <div 
-        class="content-wrapper"
-        style="background-color:yellow"    
-      >
-        <Content 
-          class="content"
-          style="background-color:orange"
+    <div class="drawer-header">
+      <button 
+        class="flex-button"
+        @click="app$.Layout.ToggleDrawer()"
         >
-          <template v-slot:content>
-            <router-view />
-          </template>
-        </Content>
-      </div>
+          👈
+          <img 
+            src="../../../public/branding/logo-wide.png"
+            style="height:100%"
+          /> 
+      </button>
     </div>
 
-    <!-- Footer ------------------------------------------------------>
-    <Footer 
-      style="background-color:goldenrod"
-      class="footer-wrapper" 
-    />
+    <div class="drawer-content">
+      <button class="drawer-button"><span>🫵 One</span></button>
+      <button class="drawer-button"><span>🫡 Two</span></button>
+      <button class="drawer-button"><span>🎼 Three</span></button>
+      <button class="drawer-button"><span>🎠 Four</span></button>
+    </div>
+
   </div>
-  
+
+  <!--==== App-Container ================================================-->
+  <div id="root" class="app-container">
+
+    <!--==== Header Ad ==================================================-->
+    <div style="grid-row:1;grid-column:2/5;background-color: purple;">
+    </div>
+
+    <div style="grid-row:1/6;grid-column:1;background-color: magenta;">
+    </div>
+
+    <div style="grid-row:2/5;grid-column:2;background-color: blue;">
+    </div>
+    
+    <!--==== Header =====================================================-->
+    <Header></Header>
+
+    <!--==== Content ====================================================-->
+    <div class="content-wrapper debug-border">
+      <div>Content</div>
+    </div>
+    
+    <div style="grid-row:4;grid-column:3/4;background-color: lightblue;">
+    </div>
+
+    <div style="grid-row:2/5;grid-column:4;background-color: blue;">
+    </div>
+
+    <div style="grid-row:1/6;grid-column:5;background-color: magenta;">
+    </div>
+
+    <!--==== Footer Ad ==================================================-->
+    <div style="grid-row:5;grid-column:2/5;background-color: purple;">
+    </div>
+
+  </div>
+
 </template>
 
 <style scoped lang="scss">
-.app-wrapper {
-  @apply w-full;
+
+// .debug-border{
+//   border:1px dotted grey;
+// }
+
+.app-container {
+  height: 100vh;
+  width:100%;
+  display: grid;
+  overflow: hidden;
+
+  grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
+  grid-template-columns: 0em 2.5em 1fr 2.5em 0em;
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
 }
-.buffer-header {
-  @apply w-full;
+
+.content-wrapper{
+  grid-row:3/4;
+  grid-column:3;
+  
+  width:100%;
+  justify-content: center;  
 }
-$footer-height: 15em;
-.content-wrapper {
-  @apply w-full flex justify-center;
-  padding-bottom: $footer-height;
-}
-.content {
-  @apply w-full max-w-2xl flex;
-}
-.footer-wrapper {
+
+.drawer{
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: $footer-height;
+  z-index: 10;
+  overflow: hidden;
+  top:0;
+  bottom:0;
+  max-width:250px;
+  display: grid;
+  grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
+  
+  background-color: black;
+  border-right: 4px double grey;  
+
 }
+.drawer-open{
+  width:100%;
+
+}
+.drawer-shut{
+  width:0%;
+
+}
+
+
+
+.drawer-header{  
+  grid-row:2;
+  display: flex;
+  margin-left: 1em;
+}
+
+.drawer-content{
+  grid-row:3;
+  max-width:250px;
+  
+}
+
+.drawer-button{
+  font-size:x-large;
+  background-color: transparent;
+  border: none;
+  color: white;
+  width:100%
+  
+}
+.drawer-button:hover{
+  color: goldenrod;
+  
+}
+.drawer-button:active{
+  color: gold;
+}
+
+.flex-button{
+  display: flex;
+  height:100%;  
+  width:100%;
+  font-size:xx-large;
+  background-color: transparent;
+  border: none;
+  
+  align-items:flex-end;
+  margin-left:.75em;
+
+}
+.flex-button:hover{
+  background-color: goldenrod;
+  
+}
+.flex-button:active{
+  background-color: yellow;
+}
+
 </style>

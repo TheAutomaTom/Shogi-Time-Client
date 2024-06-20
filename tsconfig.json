@@ -1,10 +1,25 @@
 {
-  "compilerOptions": {
+  "compilerOptions": {    
     "target": "ES2020",
     "useDefineForClassFields": true,
     "module": "ESNext",
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
+    
+    /* 
+    For relative import 
+    Remember to update vite.config.ts as well.
+    */
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"],
+      "@Config/*": [".src/Config"],
+      "@Styles/*": [".src/Config/Styles"],
+      "@Services/*": [".src/Services"],
+      "@State/*": [".src/State"],
+      "@Views/*": [".src/Views"],
+      "@Components/*": ["./src/ViewComponents/*"]
+    },
 
     /* Bundler mode */
     "moduleResolution": "bundler",

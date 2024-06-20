@@ -35,9 +35,9 @@ import { useAppState } from "../../State/AppState.ts";
 const app$ = useAppState();
 </script>
 <style scoped lang="scss">
-@use '../../styles/dynamic.scss' as *;
+// @use '../../styles/dynamic.scss' as *;
 .contact-div {
-  @extend .font-primary;
+  // @extend .font-primary;
   @apply w-full text-center mt-8 text-sm pb-32;
 }
 

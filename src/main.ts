@@ -18,6 +18,11 @@ _app.use(Router);
 //   _app.use(c.component);
 // });
 
+// import components from "./App/Views/Common/naiveui-components";
+// naiveuiComponents.forEach((c) => {
+//   _app.use(c.component);
+// });
+
 // import GIcon from "./App/Views/Common/GIcon.vue";
 // _app.component("g-icon", GIcon);
 

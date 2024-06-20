@@ -8,86 +8,88 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  @apply w-screen 
-    min-h-screen 
-    relative 
-    flex;
-  color: var(--color-common-black) !important;
-  font-family: "Poppins", sans-serif;
+// Tailwind breakpoints
+$sm:	 640px;	
+$md: 	 768px;	
+$lg:	1024px;
+$xl:	1280px;
+$xxl:	1536px;
+
+// Theme colors
+$bg-ancillary: #181818;
+$bg-content: #1F1F1F;
+$fg-font-5: #3a3a3a;
+$fg-font-4: #636363;
+$fg-font-3: #bdbbbb;
+$fg-font-1: #f4f4f4;
+$fg-border: #2B2B2B;
+$bg-accent-neutral: #0078D4;
+$bg-accent-hover: #0f65a7;
+$bg-accent-active: #1c91eb;
+
+
+
+[style-theme="dark"] {
+  --bg-ancillary: #181818;
+  --bg-content: #1F1F1F;
+  --fg-font-1: #f4f4f4;
+  --fg-border: #2B2B2B;
 }
-html,
+
+// [style-theme="light"] {
+//   --bg-ancillary: #c0bca2;
+//   --bg-content: #fdfedb;
+//   --fg-font: #121416;
+//   --fg-border: orange;//#2B2B2B;
+// }
+
+html {
+  @apply h-full;
+  background-color: var(--bg-ancillary);
+  color: var(--fg-font-1);
+}
+
 body {
-  @apply w-full;
-  overflow-x: hidden; /* Hide horizontal scrollbar */
-}
-#app {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden !important;
-}
-.body-wrapper {
-  @apply w-screen 
-    min-h-screen 
-    flex 
-    flex-col 
-    justify-start 
-    items-center;
+  @apply h-full;
 }
 
-h1 {
-  @apply text-3xl;
-}
-h2 {
-  @apply text-2xl;
-}
-h3 {
-  @apply text-xl;
-}
-h4 {
-  @apply text-lg;
-}
-h5 {
-  @apply text-base;
-}
-h6 {
-  @apply text-sm;
+#app {  
+  @apply h-full;
 }
 
-a {
-  color: var(--color-primary);
+.bordered{
+  border: 1px $fg-border solid;
+  outline: 1px $fg-border solid;
 }
-a:hover {
-  color: var(--color-primary-dark);
-  @apply underline;
-}
-.a-alt {
-  color: var(--color-a);
-}
-.a-alt:hover {
-  color: var(--color-a-highlight);
-  @apply underline;
-}
-em {
-  @apply italic;
-}
-.question-title {
-  @extends font-secondary;
-  @apply w-full text-left 
-  text-xl sm:text-2xl
-  font-bold
-  pb-3;
-}
-input {
-  padding-bottom: 0;
-}
-//is-invalid concerns the error messages in the bottom right of input fields.
-.is-invalid {
-  @apply absolute text-sm;
-  background-color: white;
-  bottom: -0.7em;
-  right: 1em;
 
-  color: lightcoral;
-  font-style: italic;
+// TOOLBOX MENU
+
+.drawer-title{
+  @apply mb-2;
+  font-variant: small-caps;
+}
+.toolbox-drawer-wrapper{
+  @apply p-3 text-xs;  
+  height: 100%;
+  width: 100%;  
+}
+
+input{
+  padding:2px;
+  width: 100%;  
+  background-color: $bg-content;
+}
+
+
+.drawer-link-list{
+  a{
+    @apply text-sm;
+    color:#1c91eb;
+  }
+  a:hover{
+    color:white;
+  }
+  a:active{
+    color:yellow;
+  }
 }
