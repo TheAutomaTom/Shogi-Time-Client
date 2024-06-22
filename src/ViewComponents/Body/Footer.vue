@@ -31,8 +31,8 @@
 </template>
 
 <script setup lang="ts">
-import { useAppState } from "../../State/AppState.ts";
-const app$ = useAppState();
+// import { useAppState } from "../../State/AppState.ts";
+// const app$ = useAppState();
 </script>
 <style scoped lang="scss">
 // @use '../../styles/dynamic.scss' as *;

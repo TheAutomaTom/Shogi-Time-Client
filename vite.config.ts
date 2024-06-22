@@ -10,12 +10,11 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  // base: "/Pwa-Test-Harness/", // For deploying in a subfolder of cpanel
-  publicDir: "public",
-  
+  base: "/ShogiTime/", // For deploying in a subfolder of cpanel
+  publicDir: "public",  
     /* 
-    For relative import 
-    Remember to update tsconfig.ts as well.
+    For relative import paths,
+    remember to update tsconfig.ts, as well.
     */
   resolve: {
     alias: {

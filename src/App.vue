@@ -24,7 +24,7 @@ const getDrawerClass = () => {
         >
           👈
           <img 
-            src="../../../public/branding/logo-wide.png"
+            src="../public/branding/logo-wide.png"
             style="height:100%"
           /> 
       </button>
@@ -59,10 +59,15 @@ const getDrawerClass = () => {
     <Header></Header>
 
     <!--==== Content ====================================================-->
+
     <div class="content-wrapper debug-border">
+
       <div>Content</div>
+
     </div>
     
+    <!--==== ======= ====================================================-->
+
     <div style="grid-row:4;grid-column:3/4">
     <!-- ;background-color: lightblue;"> -->
     </div>
@@ -106,8 +111,9 @@ const getDrawerClass = () => {
   grid-row:3/4;
   grid-column:3;
   
-  width:100%;
-  justify-content: center;  
+  @apply w-full flex justify-center;
+
+
 }
 
 .drawer{
