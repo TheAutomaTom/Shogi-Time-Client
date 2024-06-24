@@ -2,7 +2,7 @@
   <div
     style="background-color:blueviolet"
   >
-    <!-- <slot name="content"></slot> -->
+    <slot name="content"></slot>
      Inside-Content
   </div>
 </template>

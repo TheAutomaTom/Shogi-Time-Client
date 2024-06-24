@@ -1,7 +1,7 @@
 // This file is the parent style-sheet imported by the app.
 // It is best to define styles for standard html elements here.
 @use "./reset.scss";
-@use "./primefaces.scss";
+// @use "./primefaces.scss";
 @use "./dynamic.scss";
 
 @tailwind base;
@@ -92,4 +92,51 @@ input{
   a:active{
     color:yellow;
   }
+}
+
+
+
+
+// Ghost-button used for buttons with no border
+.ghost-button{
+  background-color: transparent;
+  border: none;
+  color:white;
+  height:100%;
+}
+.ghost-button:hover{
+  background-color: grey;
+  opacity: 20%;
+}
+.ghost-button:active{
+  background-color: grey;
+  opacity: 50%;
+}
+  
+// Flex-button used in the header's drawer toggle with logo
+.flex-button{
+  display: flex;
+  height:100%;  
+  width:100%;
+  max-width:220px;
+  font-size:xx-large;
+  background-color: transparent;
+  border: none;
+  
+  align-items:flex-end;
+  // margin-left:.75em;
+
+  border-radius: 50%;
+
+}
+.flex-button:hover{
+  box-shadow:
+    -14px -5px 5px rgb(65, 46, 0),
+    14px 5px 5px goldenrod; 
+  
+}
+.flex-button:active{
+  box-shadow:
+    -14px -5px 5px rgb(53, 14, 0),
+    14px 5px 5px rgb(86, 23, 0),
 }

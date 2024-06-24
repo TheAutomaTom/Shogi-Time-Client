@@ -6,8 +6,9 @@ export const useLayoutState = defineStore("LayoutState", () => {
   const DrawerIsOpen = ref(false);
 
 
-  const ToggleDrawer = () => {    
+  const ToggleDrawer = () => {
     DrawerIsOpen.value = !DrawerIsOpen.value;
+    console.log(`ToggleDrawer: ${DrawerIsOpen.value}`);
   }
 
   return {
