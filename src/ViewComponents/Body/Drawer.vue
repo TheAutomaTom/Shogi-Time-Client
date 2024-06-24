@@ -45,14 +45,14 @@ const getDrawerClass = () => {
   grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
   grid-template-columns: 0em 2.5em 1fr;
   
-  transition: 150ms;
+  transition: 300ms;
   transition-timing-function: ease-out;
   background-color: black;
+  border-right: 4px double grey !important;
 }
 
 .drawer-open{
-  width:100%;
-  border-right: 4px double grey;
+  // width:100%;
 }
 
 .drawer-shut{
@@ -70,11 +70,12 @@ const getDrawerClass = () => {
 .drawer-content{
   grid-row:3;
   grid-column: 3;
-  max-width:250px;  
+  // max-width:250px;  
 }
 
 // ========================
 .drawer-button{
+  display: flex;
   font-size:x-large;
   border: none;
   color: white;

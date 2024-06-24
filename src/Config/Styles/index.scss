@@ -43,6 +43,10 @@ $bg-accent-active: #1c91eb;
 //   --fg-border: orange;//#2B2B2B;
 // }
 
+#app {  
+  @apply h-full;
+}
+
 html {
   @apply h-full;
   background-color: var(--bg-ancillary);
@@ -53,8 +57,10 @@ body {
   @apply h-full;
 }
 
-#app {  
-  @apply h-full;
+input{
+  padding:2px;
+  width: 100%;  
+  background-color: $bg-content;
 }
 
 .bordered{
@@ -74,13 +80,6 @@ body {
   width: 100%;  
 }
 
-input{
-  padding:2px;
-  width: 100%;  
-  background-color: $bg-content;
-}
-
-
 .drawer-link-list{
   a{
     @apply text-sm;
@@ -93,9 +92,6 @@ input{
     color:yellow;
   }
 }
-
-
-
 
 // Ghost-button used for buttons with no border
 .ghost-button{

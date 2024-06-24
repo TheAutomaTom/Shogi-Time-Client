@@ -15,9 +15,19 @@
 <!-- === -->
 <style>
 .logo-button{
+  color: red;
   white-space: nowrap;
-  
+  padding-right: 1em;
 }
+
+.logo-button:hover{
+  color: goldenrod;
+}
+
+.logo-button:active{
+  color: yellow;  
+}
+
 .logo-button span{
   font-size: xx-large;
   vertical-align:baseline;
@@ -27,6 +37,8 @@
 
 .logo-button img{
   height:2em;
+  margin-bottom: -6px;
+  margin-left: 3px;
 }
 
 </style>
