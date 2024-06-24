@@ -9,14 +9,9 @@ const app$ = useAppState();
 
     <div class="header-left">
       <logo-button
-        @click="app$.Layout.ToggleDrawer()"
+      :color="'grey'"
       ></logo-button>
-    </div>
 
-    <div class="header-right">
-      <button class="icon-button ghost-button" disabled>...</button>
-      <button class="icon-button ghost-button" >...</button>
-      <button class="icon-button ghost-button" >...</button>
     </div>
 
   </div>
@@ -27,7 +22,7 @@ const app$ = useAppState();
   grid-row:2;
   grid-column:3;
   display: flex;
-  cursor: pointer;
+  background-color: black;
 }
 
 .header-left{  
@@ -46,5 +41,7 @@ const app$ = useAppState();
 .header-button{
   height:100%;  
 }
+
+
 
 </style>

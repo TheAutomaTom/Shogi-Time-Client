@@ -1,21 +1,33 @@
 <script setup lang="ts">
+import { defineProps } from 'vue';
+
+const props = defineProps({
+  color: {
+    type: String,
+    default: 'red',
+  },
+});
+
+const logoColor = `color: ${props.color}`
 
 </script>
 
 <!-- === -->
 <template>
-  <div class="logo-button">
+  <div 
+    class="logo-button"
+    :style="logoColor"
+  >
     <span>Shogi&nbsp;Time</span>
     <img 
-      src="../../../public/branding/logo-icon.png"
+      src="../../public/branding/logo-icon.png"
     /> 
   </div>
 </template>
 
 <!-- === -->
 <style>
-.logo-button{
-  color: red;
+.logo-button{  
   white-space: nowrap;
   padding-right: 1em;
 }
