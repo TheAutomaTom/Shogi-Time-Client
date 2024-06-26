@@ -17,6 +17,7 @@ const toggleDrawer=()=>{
 </script>
 
 <template>
+  <Transition class="drawer-transition">
   <div 
     class="drawer"
     :class="getDrawerClass()"
@@ -57,9 +58,16 @@ const toggleDrawer=()=>{
     </div>
 
   </div>
+</Transition>
 </template>
 
 <style lang="scss">
+
+.drawer-transition{
+
+transition: 300ms;
+// transition-timing-function: ease-out;
+}
 
 .drawer{
   position: absolute;
@@ -72,21 +80,20 @@ const toggleDrawer=()=>{
   display: grid;
   grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
   grid-template-columns: 0em 2.5em 1fr;
-  
-  transition: 300ms;
-  transition-timing-function: ease-out;
   background-color: #1F1F1F;
   border-right: 4px double grey !important;
+  
 
 }
 
+
 .drawer-open{
-  // width:100%;
 }
 
 .drawer-shut{
   width:0%;
   border-right: none;
+  margin-left:-250px;
 }
 
 .drawer-header{  

@@ -20,9 +20,7 @@ const getModalClass = () => {
     class="modal-container"
     :class="getModalClass()"
   />
-  
-  <drawer v-show="app$.Layout.DrawerIsOpen"></drawer>
-  
+    <drawer></drawer>
   <div id="root" class="app-container">
 
     <div 
