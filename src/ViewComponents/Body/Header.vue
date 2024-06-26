@@ -5,7 +5,7 @@ const app$ = useAppState();
 </script>
 <template>
   
-  <div class="header">
+  <div class="modal-header">
 
     <div class="header-left">
       <logo-button
@@ -23,7 +23,7 @@ const app$ = useAppState();
 </template>
 <style scoped lang="scss">
 
-.header{  
+.modal-header{  
   grid-row:2;
   grid-column:3;
   display: flex;

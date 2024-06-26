@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppState } from '@/State/AppState';
-import GhostHeader from "../Modals/GhostHeader.vue"
+import InactiveHeader from "../Modals/InactiveHeader.vue"
 import AccountModal from "../Modals/AccountModal.vue"
 import { ref } from 'vue';
 import { ModalContentType } from '@/State/Layout/ModalContentType';
@@ -18,18 +18,21 @@ const current = ref(app$.Layout$.ModalContent);
   >
   </div>
 
-  <ghost-header 
-    class="ghost-header"
-  ></ghost-header>
+  <inactive-header 
+    class="inactive-header"
+  ></inactive-header>
 
   <div 
     class="black-out"
     style="grid-row:2/5;grid-column:4;"
-  >   </div>
+  ></div>
   
   <!--==== Content... ====================================================-->
   <div class="modal-window">
-    <account-modal v-if="current == ModalContentType.AccountModal"></account-modal>
+    <account-modal 
+      v-if="current == ModalContentType.Account"
+
+    ></account-modal>
   </div>  
   <!--==== ...content ====================================================-->
 
@@ -54,7 +57,7 @@ const current = ref(app$.Layout$.ModalContent);
   background-color: black;
 }
 
-.ghost-header{
+.inactive-header{
   grid-column:1/5;
 }
 

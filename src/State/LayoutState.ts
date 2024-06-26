@@ -22,11 +22,11 @@ export const useLayoutState = defineStore("LayoutState", () => {
 
     if(ModalIsOpen.value == true){
       DrawerIsOpen.value = false;
-      console.log(`${modal} ${ModalIsOpen.value} called ToggleDrawer.`);
+      console.log(`${modal} ${ModalIsOpen.value} called ToggleDrawer`);
     }
 
   }
-  const ModalContent = ref(ModalContentType.LogIn)
+  const ModalContent = ref(ModalContentType.Account)
 
   return {
     DrawerIsOpen,
