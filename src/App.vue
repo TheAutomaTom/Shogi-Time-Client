@@ -7,14 +7,18 @@ import { useAppState } from "./State/AppState";
 const app$ = useAppState();
 
 const getModalClass = () => {
-  console.log(app$.Layout.ModalIsOpen ? 'modal-open' : 'modal-shut');
-  return app$.Layout.ModalIsOpen ? 'modal-open' : 'modal-shut';
+  console.log(app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut');
+  return app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut';
+}
+
+const getModalContent = () =>{
+  return 
 }
 
 </script>
   <template>  
     <modal 
-      v-show="app$.Layout.ModalIsOpen"
+      v-show="app$.Layout$.ModalIsOpen"
       class="modal-container"
       :class="getModalClass()"
     />
@@ -23,7 +27,7 @@ const getModalClass = () => {
 
       <div 
         style="grid-row:2;grid-column:2;cursor:pointer;"
-        @click="app$.Layout.ToggleDrawer()"
+        @click="app$.Layout$.ToggleDrawer()"
       >
       </div> 
 
@@ -31,7 +35,7 @@ const getModalClass = () => {
       </div> 
       
       <Header
-        v-show="!app$.Layout.DrawerIsOpen"
+        v-show="!app$.Layout$.DrawerIsOpen"
       ></Header>
 
       <div class="content-wrapper">

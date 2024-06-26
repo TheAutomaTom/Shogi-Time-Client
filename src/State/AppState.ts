@@ -1,12 +1,12 @@
-import { ApiClient } from '../Services/ApiClient';
 import { EnvironmentService } from "../Services/EnvironmentService";
 import { defineStore } from "pinia";
 import { useLayoutState } from './LayoutState';
+import { useAccountState } from './AccountState';
 
 export const useAppState = defineStore("AppState", () => {
-  const Layout = useLayoutState();
+  const Layout$ = useLayoutState();
+  const Account$ = useAccountState();
   
-  const Client = new ApiClient();
   const EnvService = new EnvironmentService();
 
 
@@ -14,8 +14,8 @@ export const useAppState = defineStore("AppState", () => {
   // const IsLoading = ref(true);
 
   return {
-    Layout,
-    Client,
+    Account$,
+    Layout$,
     EnvService,
 
   };

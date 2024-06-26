@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useAppState } from '@/State/AppState';
 import GhostHeader from "../Modals/GhostHeader.vue"
+import LogInModal from "../Modals/LogInModal.vue"
+import { ref } from 'vue';
+import { ModalContentType } from '@/State/Layout/ModalContentType';
 
 const app$ = useAppState();
 
-const closeModal =()=> app$.Layout.ModalIsOpen = false;
+const current = ref(app$.Layout$.ModalContent);
 
 </script>
 <template>
@@ -24,16 +27,12 @@ const closeModal =()=> app$.Layout.ModalIsOpen = false;
     style="grid-row:2/5;grid-column:4;"
   >   </div>
   
-
-  
-  
+  <!--==== Content... ====================================================-->
   <div class="modal-window">
-    <p>
-      <p>This is the content of the modal.</p>
-      <button @click="closeModal">Close</button>
-    </p>
-  </div>
-  
+    <log-in-modal v-if="current == ModalContentType.LogIn"></log-in-modal>
+  </div>  
+  <!--==== ...content ====================================================-->
+
   <div 
     class="black-out"
     style="grid-row:2/5;grid-column:2;"

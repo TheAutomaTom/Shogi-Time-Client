@@ -9,7 +9,7 @@ const app$ = useAppState();
 
     <div class="header-left">
       <logo-button
-        @click="app$.Layout.ToggleDrawer()"
+        @click="app$.Layout$.ToggleDrawer()"
       ></logo-button>
     </div>
 

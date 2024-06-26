@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import LogoButton from "@Components/LogoButton.vue";
 import { useAppState } from "../../State/AppState";
+import { ModalContentType } from "@/State/Layout/ModalContentType";
 
 const app$ = useAppState();
 
 const getDrawerClass = () => {
-  console.log(app$.Layout.DrawerIsOpen ? 'drawer-open' : 'drawer-shut');
-  return app$.Layout.DrawerIsOpen ? 'drawer-open' : 'drawer-shut';
+  console.log(app$.Layout$.DrawerIsOpen ? 'drawer-open' : 'drawer-shut');
+  return app$.Layout$.DrawerIsOpen ? 'drawer-open' : 'drawer-shut';
 }
 
 const toggleDrawer=()=>{
   console.log(`Drawer.logo-button clicked: toggleDrawer()`);
-  app$.Layout.ToggleDrawer();
+  app$.Layout$.ToggleDrawer();
 }
 
 </script>
@@ -38,7 +39,7 @@ const toggleDrawer=()=>{
       <div class="drawer-content-top">
         <div></div>
         <button 
-          @click="app$.Layout.ToggleModal()"
+          @click="app$.Layout$.ToggleModal(ModalContentType.LogIn)"
           class="drawer-button"><span>🫵 Player</span>
         </button>
         
