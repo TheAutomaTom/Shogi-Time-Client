@@ -64,9 +64,7 @@ const toggleDrawer=()=>{
 <style lang="scss">
 
 .drawer-transition{
-
-transition: 300ms;
-// transition-timing-function: ease-out;
+  transition: 300ms;
 }
 
 .drawer{
@@ -82,10 +80,7 @@ transition: 300ms;
   grid-template-columns: 0em 2.5em 1fr;
   background-color: #1F1F1F;
   border-right: 4px double grey !important;
-  
-
 }
-
 
 .drawer-open{
 }

@@ -12,50 +12,46 @@ const getModalClass = () => {
 }
 
 </script>
+  <template>  
+    <modal 
+      v-show="app$.Layout.ModalIsOpen"
+      class="modal-container"
+      :class="getModalClass()"
+    />
+      <drawer></drawer>
+    <div id="root" class="app-container">
 
-<template>
-  
-  <modal 
-    v-show="app$.Layout.ModalIsOpen"
-    class="modal-container"
-    :class="getModalClass()"
-  />
-    <drawer></drawer>
-  <div id="root" class="app-container">
+      <div 
+        style="grid-row:2;grid-column:2;cursor:pointer;"
+        @click="app$.Layout.ToggleDrawer()"
+      >
+      </div> 
 
-    <div 
-      style="grid-row:2;grid-column:2;cursor:pointer;"
-      @click="app$.Layout.ToggleDrawer()"
-    >
-    </div> 
+      <div style="grid-row:3/5;grid-column:2;">
+      </div> 
+      
+      <Header
+        v-show="!app$.Layout.DrawerIsOpen"
+      ></Header>
 
-    <div style="grid-row:3/5;grid-column:2;">
-    </div> 
-    
-    <Header
-      v-show="!app$.Layout.DrawerIsOpen"
-    ></Header>
+      <div class="content-wrapper">
+        <div>Content</div>
+      </div>
+      
+      <div style="grid-row:4;grid-column:3/4">
+      </div>
 
-    <div class="content-wrapper">
-      <div>Content</div>
+      <div style="grid-row:2/5;grid-column:4">
+      </div>
+
+      <div style="grid-row:1/6;grid-column:5">
+      </div>
+
+      <div style="grid-row:5;grid-column:2/5;background-color: purple;">
+      </div> 
+
     </div>
-    
-     <div style="grid-row:4;grid-column:3/4">
-    </div>
-
-    <div style="grid-row:2/5;grid-column:4">
-    </div>
-
-    <div style="grid-row:1/6;grid-column:5">
-    </div>
-
-    <div style="grid-row:5;grid-column:2/5;background-color: purple;">
-    </div> 
-
-  </div>
-
-</template>
-
+  </template>
 <style scoped lang="scss">
 
 .modal-container{
