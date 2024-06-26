@@ -14,12 +14,12 @@ const lastName = ref(app$.Account$.User.lastName);
 const showRegistrationForm = ref(false);
 
 const LogIn = () =>{
-		console.log(`AccountToolbox.LogIn Start: {${username.value}}, {${password.value}}.`);
+		console.log(`AccountModal.LogIn Start: {${username.value}}, {${password.value}}.`);
 		app$.Account$.LogIn(username.value, password.value);
 	};
 
 	const Register = () =>{
-		console.log("AccountToolbox.Register Start.");
+		console.log("AccountModal.Register Start.");
 		app$.Account$.Register(
 			username.value,
 			email.value,
@@ -28,6 +28,11 @@ const LogIn = () =>{
 			lastName.value
 		);
 	};
+	const LogOut = () =>{
+		console.log("AccountModal.LogOut Start.");
+		app$.Account$.LogOut();
+	};
+
 
 </script>
 <template>

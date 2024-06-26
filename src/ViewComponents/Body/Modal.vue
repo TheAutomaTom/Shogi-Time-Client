@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAppState } from '@/State/AppState';
 import GhostHeader from "../Modals/GhostHeader.vue"
-import LogInModal from "../Modals/LogInModal.vue"
+import AccountModal from "../Modals/AccountModal.vue"
 import { ref } from 'vue';
 import { ModalContentType } from '@/State/Layout/ModalContentType';
 
@@ -29,7 +29,7 @@ const current = ref(app$.Layout$.ModalContent);
   
   <!--==== Content... ====================================================-->
   <div class="modal-window">
-    <log-in-modal v-if="current == ModalContentType.LogIn"></log-in-modal>
+    <account-modal v-if="current == ModalContentType.AccountModal"></account-modal>
   </div>  
   <!--==== ...content ====================================================-->
 

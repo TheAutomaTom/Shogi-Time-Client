@@ -39,7 +39,7 @@ const toggleDrawer=()=>{
       <div class="drawer-content-top">
         <div></div>
         <button 
-          @click="app$.Layout$.ToggleModal(ModalContentType.LogIn)"
+          @click="app$.Layout$.ToggleModal(ModalContentType.Account)"
           class="drawer-button"><span>🫵 Player</span>
         </button>
         

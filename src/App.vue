@@ -11,16 +11,11 @@ const getModalClass = () => {
   return app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut';
 }
 
-const getModalContent = () =>{
-  return 
-}
-
 </script>
   <template>  
     <modal 
       v-show="app$.Layout$.ModalIsOpen"
       class="modal-container"
-      :class="getModalClass()"
     />
       <drawer></drawer>
     <div id="root" class="app-container">

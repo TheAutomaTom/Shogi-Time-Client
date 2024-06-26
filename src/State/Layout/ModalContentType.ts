@@ -1,4 +1,4 @@
 export enum ModalContentType {
   None = "none",
-  LogIn = "log-in-modal"
+  Account= "account-modal"
 }
