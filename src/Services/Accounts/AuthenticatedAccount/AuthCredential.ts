@@ -4,5 +4,5 @@ export type AuthCredential = {
   accessToken: AuthToken;
   refreshToken: AuthToken;
   authUserId: string;
-  roles: string[];
+  // roles: string[];
 }

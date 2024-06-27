@@ -1,5 +1,5 @@
 import { AuthToken } from "./Accounts/AuthenticatedAccount/AuthToken";
-import { AuthenticatedAccount } from "./Accounts/AuthenticatedAccount/AuthenticatedAccount";
+import { LogInResponse } from "./Accounts/Dtos/LogInResponse";
 import { RefreshTokenRequest } from "./Accounts/Dtos/RefreshTokenRequest";
 
 export class AccountClient{
@@ -34,7 +34,7 @@ export class AccountClient{
     throw new Error("Method not implemented.");
   }
 
-  async LogIn(username: string, password: string): Promise<AuthenticatedAccount> {
+  async LogIn(username: string, password: string): Promise<LogInResponse> {
     console.log(`AccountClient.LogIn: username: ${username}, password: ${password}.`);
     
     const res = await fetch(`${this.apiUrl}/accounts/log-in`, {
@@ -55,8 +55,7 @@ export class AccountClient{
     if (res.ok) {
       
       const asPascalCase = convertToPascalObjectKey(await res.json());
-      const result = (asPascalCase) as AuthenticatedAccount;
-      return result;
+      return (asPascalCase) as LogInResponse;
 
     } else {
       throw Error(res.statusText);
@@ -64,7 +63,7 @@ export class AccountClient{
     
 
   }
-  async Register(username: string, email: string, password: string, firstName: string, lastName: string ): Promise<AuthenticatedAccount> {
+  async Register(username: string, email: string, password: string, firstName: string, lastName: string ): Promise<LogInResponse> {
 
     const body= JSON.stringify({
       username,
@@ -92,7 +91,7 @@ export class AccountClient{
       console.dir(res);
 
       const asPascalCase = convertToPascalObjectKey(await res.json());
-      return (asPascalCase) as AuthenticatedAccount;
+      return (asPascalCase) as LogInResponse;
       
     } else {
       throw Error(res.statusText);

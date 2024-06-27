@@ -1,4 +1,4 @@
 export enum TokenType{
-  Access = 1,
-  Refresh = 5
+  Access = 5,
+  Refresh = 15
 }
