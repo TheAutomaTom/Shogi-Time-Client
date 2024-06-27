@@ -62,7 +62,7 @@ const toggleDrawer=()=>{
 </Transition>
 </template>
 
-<style lang="scss">
+<style scoped lang="scss">
 
 .drawer-transition{
   transition: 300ms;

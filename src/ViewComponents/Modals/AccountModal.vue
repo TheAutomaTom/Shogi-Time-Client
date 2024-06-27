@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { useAppState } from '@/State/AppState';
-import { ref } from 'vue';
+import { reactive, ref } from 'vue';
 
 const app$ = useAppState();
+
+const validationErrors = ref([] as string[]);
 
 const username = ref(app$.Account$.User.username);
 const email = ref(app$.Account$.User.email);
@@ -19,6 +21,12 @@ const LogIn = () =>{
 	};
 
 	const Register = () =>{
+		validationErrors.value = [];
+		if(password.value != passwordConfirmation.value){
+			validationErrors.value.push("Password does not match password confirmation.");
+			return;
+		}		
+
 		console.log("AccountModal.Register Start.");
 		app$.Account$.Register(
 			username.value,
@@ -28,6 +36,7 @@ const LogIn = () =>{
 			lastName.value
 		);
 	};
+	
 	const LogOut = () =>{
 		console.log("AccountModal.LogOut Start.");
 		app$.Account$.LogOut();
@@ -43,9 +52,9 @@ const LogIn = () =>{
 	<div class="toolbox-drawer-wrapper">
 
 <!--  -->
-		<div class="header">
+		<div class="modal-header">
 				Account
-			<div class="header-right">
+			<div class="modal-header-right">
 				<button 
 					class="icon-button ghost-button header-button" 
 					@click="closeModal()"
@@ -65,108 +74,143 @@ const LogIn = () =>{
 					v-model="username" 
 					type="text" 
 					placeholder="User Name" 
+					class="modal-input"					
+				/>
+			</div>
+			<!--  -->
+			<div class="modal-input-div">
+				<span class="modal-input-label">Password:</span>
+				<input 
+					v-model="password" 
+					type="text" 
+					placeholder="Password" 
 					class="modal-input"
 				/>
 			</div>
-
-			<input
-				v-model="password" 
-				type="password"
-				show-password-on="click"
-				clearable 
-				placeholder="Password"
-				:maxlength="30"
-				class="mb-4"
-				
-			/>
-
-			<input
-				v-if="showRegistrationForm == true"
-				v-model="passwordConfirmation" 
-				type="password"
-				show-password-on="click"
-				clearable 
-				placeholder="Password"
-				:maxlength="30"
-				class="mb-4"          
-			/>
-			<input 
-				v-if="showRegistrationForm == true"
-				v-model="email" 
-				type="text" 
-				placeholder="Email" 
-				class="mb-4"
-			/>
-			<input 
-				v-if="showRegistrationForm == true"
-				v-model="firstName" 
-				type="text" 
-				placeholder="First Name" 
-				class="mb-4"
-			/>
-			<input 
-				v-if="showRegistrationForm == true"
-				v-model="lastName" 
-				type="text" 
-				placeholder="Last Name" 
-				class="mb-4"
-			/>
-			<button
-				v-if="showRegistrationForm == false"
-				class="drawer-button"
-				@click="LogIn()"
+			<!--  -->
+			<div class="modal-input-div"
+				v-if="showRegistrationForm"
 			>
-				Log in
-			</button>
-			
-			<button
-				v-if="showRegistrationForm == true"
-				class="drawer-button"
-				@click="Register()"
+				<span class="modal-input-label">Confirm:</span>
+				<input 
+					v-model="passwordConfirmation" 
+					type="text" 
+					placeholder="Confirm Password" 
+					class="modal-input"
+				/>
+			</div>
+			<!--  -->
+			<div class="modal-input-div"
+				v-if="showRegistrationForm"
 			>
-				Register
-			</button>
-			
+				<span class="modal-input-label">Email:</span>
+				<input 
+					v-model="email" 
+					type="text" 
+					placeholder="Email Address" 
+					class="modal-input"
+				/>
+			</div>
+			<!--  -->
+			<div class="modal-input-div"
+				v-if="showRegistrationForm"
+			>
+				<span class="modal-input-label">First Name:</span>
+				<input 
+					v-model="firstName" 
+					type="text" 
+					placeholder="First Name" 
+					class="modal-input"
+				/>
+			</div>
+			<!--  -->
+			<div class="modal-input-div"
+				v-if="showRegistrationForm"
+			>
+				<span class="modal-input-label">Last Name:</span>
+				<input 
+					v-model="lastName" 
+					type="text" 
+					placeholder="Last Name" 
+					class="modal-input"
+				/>
+			</div>
+			<!-- Validation -->
+			<div class="modal-input-div"
+				v-if="validationErrors.length > 0"
+			>
+				<p v-for="e in validationErrors" style="color:orangered">{{e}}</p>
+			</div>
+
+<!-- Submit -->
+ <div class="submit-buttons">
+			<!-- Submit.LogIn -->
+			<div
+			 	v-if="showRegistrationForm == false"
+			>
+				<button
+					class="drawer-button"
+					@click="LogIn()"
+				>
+					Log in
+				</button>
+			</div>
+
+			<!-- Submit.Register -->
+			<div
+			 	v-if="showRegistrationForm == true"
+			>
+				<button
+					class="drawer-button"
+					@click="Register()"
+				>
+					Register
+				</button>
+			</div>
+
+			<!-- Toggle form -->
 			<button
 				class="drawer-button-alt"
-				@click="showRegistrationForm = !showRegistrationForm"
-			>
-				{{ showRegistrationForm == true ? "Log in with current account" : "Register new account"}}
-			</button>
+				@click="showRegistrationForm = !showRegistrationForm;console.log(`showRegistrationForm: ${showRegistrationForm}`)"
+			>			
+				{{ showRegistrationForm == true ? "...or log in with current account" : "...or register new account"}}
+			</button> 
+		</div>
+<!--  -->
 
-			<div id="account-info-empty">
-				<p>Not currently logged in.</p>
-			</div>
 
 		</div>
 	
 
-		<div id="account-info">
-
-			<div
-				v-if="app$.Account$.IsLoggedIn == true"  
-				id="account-info-user-data"
+<!-- Account Info -->
+		<div				
+			v-if="app$.Account$.IsLoggedIn == true"  
+			id="account-info-user-data"
+		>
+			<table>
+				<tr>
+					<td style="padding-right:2em;">Username:</td>
+					<td>{{ app$.Account$.User.username }}</td>
+				</tr>
+				<tr>
+					<td>Email:</td>
+					<td>{{ app$.Account$.User.email }}</td>
+				</tr>
+				<tr>
+					<td>Name:</td>
+					<td>{{ app$.Account$.User.firstName }} {{ app$.Account$.User.lastName }}</td>
+				</tr>
+				<tr>
+					<td>Role:</td>
+					<td>{{ app$.Account$.User.userRole }}</td>
+				</tr>
+			</table>
+			<button
+				class="drawer-button"
+				@click="LogOut()"
 			>
-				<table>
-					<tr>
-						<td class="pr-2">Username:</td>
-						<td>{{ app$.Account$.User.username }}</td>
-					</tr>
-					<tr>
-						<td>Email:</td>
-						<td>{{ app$.Account$.User.email }}</td>
-					</tr>
-					<tr>
-						<td>Name:</td>
-						<td>{{ app$.Account$.User.firstName }} {{ app$.Account$.User.lastName }}</td>
-					</tr>
-					<tr>
-						<td>Role:</td>
-						<td>{{ app$.Account$.User.userRole }}</td>
-					</tr>
-				</table>
-
-			</div>
+				Log Out
+			</button>
 		</div>
 
 	</div><!-- modal-content -->
@@ -174,17 +218,29 @@ const LogIn = () =>{
 	</div>
 </template>
 
-
 <style scoped lang="scss">
-
-.modal-header{  
+// Header
+.modal-header{
   grid-row:2;
   grid-column:3;
   display: flex;
+	margin: 0.75em;
 }
 
+.modal-header-right{
+  width:100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items:center;	
+}
+
+.header-button{
+	cursor: pointer;
+}
+
+// Content
 .modal-content{
-	padding:1em;
+	margin:1em 2em;
 }
 
 .modal-input-div{
@@ -193,30 +249,58 @@ const LogIn = () =>{
 
 .modal-input-label{
 	margin-right: 0.5em;
+	width:6em;
 }
 .modal-input{
-	margin-bottom: 0.5em;
+	margin-bottom: 0.75em;
+	width:100%;
 }
 
 .modal-input input{
 	color: blue;
 }
 
-.header{
+// drawer-button
+.submit-buttons{
+}
+
+.drawer-button{
+  font-size:x-large;
+	width: 100%;
+  border: none;
+  color: white;
+  background-color: inherit;
+  padding-left:1.5em;
+  cursor: pointer;
+}
+
+.drawer-button-alt{
+  font-size:mediums;
+	width: 100%;
+	  border: none;
+  color: white;
+  background-color: inherit;
+  padding-left:1.5em;
+  cursor: pointer;
+
+}
+.drawer-button:hover{
+  color: goldenrod;
+  background-color: black;
+}
+.drawer-button:active{
+  color: gold;
+  background-color: black;
+}
+.drawer-button-disabled{
   display: flex;
-
+  font-size:x-large;
+  border: none;
+  color: grey;
+  width:100% ;
+  background-color: inherit;
+  padding-left:1.5em;
 }
 
-.header-right{
-  width:100%;
-  display: flex;
-  flex-direction: row-reverse;
-  align-items:center;
-	
-}
-
-.header-button{
-	cursor: pointer;
-}
 
 </style>

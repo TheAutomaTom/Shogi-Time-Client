@@ -8,6 +8,10 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  font-family: "Poppins", sans-serif
+}
+
 // Tailwind breakpoints
 $sm:	 640px;	
 $md: 	 768px;	
@@ -17,7 +21,7 @@ $xxl:	1536px;
 
 // Theme colors
 $bg-ancillary: #181818;
-$bg-content: #1F1F1F;
+$bg-content: #bdbbbb; // input bg
 $fg-font-5: #3a3a3a;
 $fg-font-4: #636363;
 $fg-font-3: #bdbbbb;
@@ -26,6 +30,9 @@ $fg-border: #2B2B2B;
 $bg-accent-neutral: #0078D4;
 $bg-accent-hover: #0f65a7;
 $bg-accent-active: #1c91eb;
+
+$title-font: "Times", serif;
+
 
 
 
@@ -57,11 +64,16 @@ body {
   @apply h-full;
 }
 
+h1{
+  font-family: $title-font;
+}
+
 input{
   padding:2px;
   width: 100%;  
   background-color: $bg-content;
 }
+
 
 .bordered{
   border: 1px $fg-border solid;

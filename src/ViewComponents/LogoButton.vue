@@ -14,15 +14,15 @@ const logoColor = `color: ${props.color}`
 
 <!-- === -->
 <template>
-  <div 
+  <h1 
     class="logo-button"
     :style="logoColor"
   >
     <span>Shogi&nbsp;Time</span>
     <img 
-      src="../../public/branding/logo-icon.png"
+      src="/branding/logo-icon.png"
     /> 
-  </div>
+  </h1>
 </template>
 
 <!-- === -->

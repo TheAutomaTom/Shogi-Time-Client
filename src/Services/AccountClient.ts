@@ -4,19 +4,19 @@ import { RefreshTokenRequest } from "./Accounts/Dtos/RefreshTokenRequest";
 
 export class AccountClient{
   
-  apiUrl = import.meta.env.VITE_GAME_API_URL;
+  apiUrl = "";
   apiKey  = import.meta.env.VITE_GAME_API_KEY;
-  authUrl = import.meta.env.VITE_AUTH_URL;
+  authUrl = "";
   authClient = import.meta.env.VITE_AUTH_CLIENT_ID;
   authSecret = import.meta.env.VITE_AUTH_CLIENT_SECRET;
   
   constructor() {
-    this.apiUrl
+    this.apiUrl = import.meta.env.VITE_GAME_API_URL
       .replace("{ADDRESS}", import.meta.env.VITE_GAME_API_ADDRESS)
       .replace("{PORT}", import.meta.env.VITE_GAME_API_PORT)
       .replace("{VERSION}", import.meta.env.VITE_GAME_API_VERSION);
 
-    this.authUrl
+    this.authUrl = import.meta.env.VITE_AUTH_URL
       .replace("{ADDRESS}", import.meta.env.VITE_AUTH_API_ADDRESS)
       .replace("{PORT}", import.meta.env.VITE_AUTH_API_PORT)
       .replace("{REALM}", import.meta.env.VITE_AUTH_REALM);
@@ -64,8 +64,17 @@ export class AccountClient{
     
 
   }
+  async Register(username: string, email: string, password: string, firstName: string, lastName: string ): Promise<AuthenticatedAccount> {
 
-  async Register(username: string, firstName: string, lastName: string, email: string, password: string): Promise<AuthenticatedAccount> {
+    const body= JSON.stringify({
+      username,
+      firstName,
+      lastName,
+      email,
+      password
+    });
+    console.log("AccountClient.Register request body:");
+    console.dir(body);
 
     const res = await fetch(`${this.apiUrl}/accounts/register`, {
       method: "POST",
@@ -75,14 +84,7 @@ export class AccountClient{
         // TODO: implement on backend
         "x-api-key": this.apiKey 
       },
-      body: JSON.stringify({
-        username,
-        password,
-        email,
-        firstName,
-        lastName,
-        role: "Registered"
-      })
+      body: body
     });
 
     if (res.ok) {

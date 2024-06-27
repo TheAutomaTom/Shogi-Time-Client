@@ -11,7 +11,13 @@ export const useAccountState = defineStore("AccountState", () => {
   const _client = new AccountClient();
 
   //== View-Model Variables ==========================================//
-  const User = ref({} as User);
+  const User = ref({
+    username:fake(5),
+    email:`${fake(5)}@xmail.com`,
+    firstName:fake(5),
+    lastName:fake(5)
+  } as User);
+
   const Auth = ref({} as AuthCredential);
   const IsLoggedIn = ref(User.value.guid != null);
   
@@ -26,7 +32,14 @@ export const useAccountState = defineStore("AccountState", () => {
   };
   
   const Register = async ( username: string, email: string, password: string, firstName: string, lastName: string ) => {
-    console.log("AccountState.Register");
+    console.warn("AccountState.Register...");
+    console.log(`username :${username}`);
+    console.log(`email :${email}`);
+    console.log(`password :${password}`);
+    console.log(`firstName :${firstName}`);
+    console.log(`lastName :${lastName}`);
+
+
     const attempt = await _client.Register( username, email, password, firstName, lastName );
 
     if(attempt != null){
@@ -34,12 +47,21 @@ export const useAccountState = defineStore("AccountState", () => {
       console.dir(attempt);
       
       User.value = attempt.User;
-      
+
       Auth.value = attempt.AuthCredential;
-      IsLoggedIn.value = true;
+
+
+
+
+      console.log("attempt.AuthCredential:");
+      console.dir(attempt.AuthCredential);
+
+      IsLoggedIn.value = true;      
       console.log(`AccountState.IsLoggedIn: ${IsLoggedIn.value}...`);
     }
   };
+
+  
 
   const LogOut = async ()=>{
     User.value = {} as User;
@@ -67,6 +89,19 @@ export const useAccountState = defineStore("AccountState", () => {
       const response = await _client.RefreshToken(request)
       Auth.value.accessToken = response;
     }
+  }
+
+  
+	function fake(length:number) {
+    let result = '';
+    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const charactersLength = characters.length;
+    let counter = 0;
+    while (counter < length) {
+      result += characters.charAt(Math.floor(Math.random() * charactersLength));
+      counter += 1;
+    }
+    return result;
   }
 
   return {
