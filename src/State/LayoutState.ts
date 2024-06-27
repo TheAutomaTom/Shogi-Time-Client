@@ -4,6 +4,7 @@ import { ModalContentType } from "./Layout/ModalContentType";
 
 export const useLayoutState = defineStore("LayoutState", () => {  
 
+  const IsLoading = ref(false);
   const DrawerIsOpen = ref(false);
   const ToggleDrawer = () => {
     DrawerIsOpen.value = !DrawerIsOpen.value;
@@ -29,6 +30,7 @@ export const useLayoutState = defineStore("LayoutState", () => {
   const ModalContent = ref(ModalContentType.Account)
 
   return {
+    IsLoading,
     DrawerIsOpen,
     ToggleDrawer,
     ModalIsOpen,

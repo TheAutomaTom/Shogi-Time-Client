@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useAppState } from '@/State/AppState';
-import { reactive, ref } from 'vue';
+import { ref } from 'vue';
 
 const app$ = useAppState();
 
@@ -15,12 +15,16 @@ const lastName = ref(app$.Account$.User.lastName);
 
 const showRegistrationForm = ref(false);
 
-const LogIn = () =>{
+const LogIn = async () =>{
 		console.log(`AccountModal.LogIn Start: {${username.value}}, {${password.value}}.`);
-		app$.Account$.LogIn(username.value, password.value);
+		
+		app$.Layout$.IsLoading = true;
+		await app$.Account$.LogIn(username.value, password.value);
+		app$.Layout$.IsLoading = false;
+
 	};
 
-	const Register = () =>{
+	const Register = async () =>{
 		validationErrors.value = [];
 		if(password.value != passwordConfirmation.value){
 			validationErrors.value.push("Password does not match password confirmation.");
@@ -28,13 +32,15 @@ const LogIn = () =>{
 		}		
 
 		console.log("AccountModal.Register Start.");
-		app$.Account$.Register(
+		app$.Layout$.IsLoading = true;
+		await app$.Account$.Register(
 			username.value,
 			email.value,
 			password.value,
 			firstName.value,
 			lastName.value
 		);
+		app$.Layout$.IsLoading = false;
 	};
 	
 	const LogOut = () =>{
@@ -115,7 +121,7 @@ const LogIn = () =>{
 			<div class="modal-input-div"
 				v-if="showRegistrationForm"
 			>
-				<span class="modal-input-label">First Name:</span>
+				<span class="modal-input-label">First&nbsp;Name:</span>
 				<input 
 					v-model="firstName" 
 					type="text" 
@@ -127,7 +133,7 @@ const LogIn = () =>{
 			<div class="modal-input-div"
 				v-if="showRegistrationForm"
 			>
-				<span class="modal-input-label">Last Name:</span>
+				<span class="modal-input-label">Last&nbsp;Name:</span>
 				<input 
 					v-model="lastName" 
 					type="text" 
@@ -225,6 +231,7 @@ const LogIn = () =>{
   grid-column:3;
   display: flex;
 	margin: 0.75em;
+  font-variant: small-caps;
 }
 
 .modal-header-right{
@@ -249,7 +256,7 @@ const LogIn = () =>{
 
 .modal-input-label{
 	margin-right: 0.5em;
-	width:6em;
+	width:8em;
 }
 .modal-input{
 	margin-bottom: 0.75em;
@@ -261,8 +268,8 @@ const LogIn = () =>{
 }
 
 // drawer-button
-.submit-buttons{
-}
+// .submit-buttons{
+// }
 
 .drawer-button{
   font-size:x-large;

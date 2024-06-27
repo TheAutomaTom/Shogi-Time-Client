@@ -3,6 +3,7 @@ import Header from "@Components/Body/Header.vue";
 import Drawer from "@Components/Body/Drawer.vue";
 import Modal from '@Components/Body/Modal.vue'
 import { useAppState } from "./State/AppState";
+import { computed } from "vue";
 
 const app$ = useAppState();
 
@@ -11,14 +12,29 @@ const getModalClass = () => {
   return app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut';
 }
 
+const isUnfocussed = computed(() => {
+  return app$.Layout$.IsLoading ? "unfocussed" : "";
+})
+
 </script>
   <template>  
+  <div 
+    class="loading-screen"
+    v-show="app$.Layout$.IsLoading == true"  
+  >
+    "Loading..."
+  </div>
     <modal 
       v-show="app$.Layout$.ModalIsOpen"
       class="modal-container"
+      :class="isUnfocussed"
     />
       <drawer></drawer>
-    <div id="root" class="app-container">
+    <div 
+      id="root" 
+      class="app-container"
+      :class="isUnfocussed"
+    >
 
       <div 
         style="grid-row:2;grid-column:2;cursor:pointer;"
@@ -53,6 +69,29 @@ const getModalClass = () => {
   </template>
 <style scoped lang="scss">
 
+.loading-screen{
+  position: absolute;
+  z-index: 50;
+  height: 100vh;
+  width:100%;
+  
+  overflow: hidden;
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
+
+  background-color: black;
+  opacity: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: xx-large;
+  vertical-align:baseline;
+
+}
+
+
 .modal-container{
   position: absolute;
   z-index: 30;
@@ -69,6 +108,7 @@ const getModalClass = () => {
 }
 
 .app-container {
+  
   z-index: 0;
   height: 100vh;
   width:100%;

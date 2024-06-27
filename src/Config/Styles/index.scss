@@ -74,6 +74,9 @@ input{
   background-color: $bg-content;
 }
 
+.unfocussed {  
+  filter: blur(0.25rem);
+}
 
 .bordered{
   border: 1px $fg-border solid;

@@ -24,7 +24,7 @@ export const useAccountState = defineStore("AccountState", () => {
   const IsLoggedIn = ref(User.value.guid != null);
   
   //== View-Model Methods ============================================//
-  const LogIn = async (userName: string, password: string) => {
+  const LogIn = async (userName: string, password: string): Promise<boolean> => {
     console.log("AccountState.LogIn");
 
     const response = await _client.LogIn(userName, password)
@@ -32,15 +32,17 @@ export const useAccountState = defineStore("AccountState", () => {
     if(response != null){
       assignAccountValues(response);
     }
+    return true;
   };
   
-  const Register = async ( username: string, email: string, password: string, firstName: string, lastName: string ) => {
+  const Register = async ( username: string, email: string, password: string, firstName: string, lastName: string ): Promise<boolean> => {
 
     const response = await _client.Register( username, email, password, firstName, lastName );
 
     if(response != null){
       assignAccountValues(response);
     }
+    return true;
   };
 
   const assignAccountValues=( response: LogInResponse )=>{
