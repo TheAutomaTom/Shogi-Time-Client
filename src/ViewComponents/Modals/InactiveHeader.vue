@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useAppState } from "../../State/AppState.ts";
+// import { useAppState } from "../../State/AppState.ts";
 import LogoButton from "@Components/LogoButton.vue";
-const app$ = useAppState();
+// const app$ = useAppState();
 </script>
 <template>
   

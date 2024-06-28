@@ -278,6 +278,7 @@ const LogIn = async () =>{
   color: white;
   background-color: inherit;
   padding-left:1.5em;
+	margin: 0.5em 0em;
   cursor: pointer;
 }
 
@@ -289,7 +290,6 @@ const LogIn = async () =>{
   background-color: inherit;
   padding-left:1.5em;
   cursor: pointer;
-
 }
 .drawer-button:hover{
   color: goldenrod;
@@ -307,6 +307,10 @@ const LogIn = async () =>{
   width:100% ;
   background-color: inherit;
   padding-left:1.5em;
+}
+
+.drawer-button-alt:hover{
+	color:gold;
 }
 
 

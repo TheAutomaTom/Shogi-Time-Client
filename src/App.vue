@@ -7,11 +7,6 @@ import { computed } from "vue";
 
 const app$ = useAppState();
 
-const getModalClass = () => {
-  console.log(app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut');
-  return app$.Layout$.ModalIsOpen ? 'modal-open' : 'modal-shut';
-}
-
 const isUnfocussed = computed(() => {
   return app$.Layout$.IsLoading ? "unfocussed" : "";
 })
@@ -50,7 +45,7 @@ const isUnfocussed = computed(() => {
       ></Header>
 
       <div class="content-wrapper">
-        <div>Content</div>
+        <router-view />
       </div>
       
       <div style="grid-row:4;grid-column:3/4">

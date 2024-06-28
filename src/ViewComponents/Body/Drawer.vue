@@ -14,7 +14,6 @@ const toggleDrawer=()=>{
   console.log(`Drawer.logo-button clicked: toggleDrawer()`);
   app$.Layout$.ToggleDrawer();
 }
-
 </script>
 
 <template>
@@ -37,17 +36,33 @@ const toggleDrawer=()=>{
 
     <div class="drawer-content">
       <div class="drawer-content-top">
-        <div></div>
-        <button 
+
+        <!-- Player -->
+        <div
+          class="drawer-button"
           @click="app$.Layout$.ToggleModal(ModalContentType.Account)"
-          class="drawer-button"><span>🫵 Player</span>
-        </button>
+        >🫵&nbsp;Player</div>
+
+        <!-- Dashboard -->
+        <router-link :to="'/'"
+          class="drawer-button"
+          @click="toggleDrawer()"
+        >
+        📈&nbsp;Dashboard
+        </router-link>
         
-        <button class="drawer-button-disabled"><span>🫡 Two</span></button>
+        <!-- Test Board -->
+        <router-link :to="'/game'"
+          class="drawer-button"
+          @click="toggleDrawer()"
+        >
+        🧪Test&nbsp;Board
+        </router-link>
         
-        <button class="drawer-button-disabled"><span>🎼 Three</span></button>
+        <!-- w.i.p. -->
+        <button class="drawer-button-disabled"><span>♟️ Games</span></button>
+        <button class="drawer-button-disabled"><span>🎖️ Rank</span></button>
         
-        <button class="drawer-button-disabled"><span>🎠 Four</span></button>
       </div>
       
       <div class="drawer-content-bottom">
@@ -137,7 +152,9 @@ const toggleDrawer=()=>{
   width:100% ;
   background-color: inherit;
   padding-left:1.5em;
+  margin-bottom:0.75em;
   cursor: pointer;
+  text-decoration: none;
 }
 .drawer-button:hover{
   color: goldenrod;
@@ -147,6 +164,10 @@ const toggleDrawer=()=>{
   color: gold;
   background-color: black;
 }
+.drawer-button-disabled:hover{
+text-decoration: line-through;
+
+}
 .drawer-button-disabled{
   display: flex;
   font-size:x-large;
@@ -155,7 +176,7 @@ const toggleDrawer=()=>{
   width:100% ;
   background-color: inherit;
   padding-left:1.5em;
+  padding-bottom:0.5em;
 }
-
 
 </style>
