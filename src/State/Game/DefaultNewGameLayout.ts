@@ -93,15 +93,15 @@ Squares = [
     new GameSquareModel( 9, 2 ),
 
   // Player 2: Back Row /==================
-    new GameSquareModel( 1, 1, false, new GamePieceModel( 1, GamePieceType.Lance, "Right", "1KY")),
-    new GameSquareModel( 2, 1, false, new GamePieceModel( 1, GamePieceType.Knight, "Right", "1KE")),
-    new GameSquareModel( 3, 1, false, new GamePieceModel( 1, GamePieceType.Silver, "Right", "1GI")),
-    new GameSquareModel( 4, 1, false, new GamePieceModel( 1, GamePieceType.Gold, "Right", "1KI")),
-    new GameSquareModel( 5, 1, false, new GamePieceModel( 1, GamePieceType.KingVictor, "Center", "1OU")),
-    new GameSquareModel( 6, 1, false, new GamePieceModel( 1, GamePieceType.Gold, "Left", "1KI")),
-    new GameSquareModel( 7, 1, false, new GamePieceModel( 1, GamePieceType.Silver, "Left", "1GI")),
-    new GameSquareModel( 8, 1, false, new GamePieceModel( 1, GamePieceType.Knight, "Left", "1KE")),
-    new GameSquareModel( 9, 1, false, new GamePieceModel( 1, GamePieceType.Lance, "Left", "1KY")),
+    new GameSquareModel( 1, 1, false, new GamePieceModel( 2, GamePieceType.Lance, "Right", "1KY")),
+    new GameSquareModel( 2, 1, false, new GamePieceModel( 2, GamePieceType.Knight, "Right", "1KE")),
+    new GameSquareModel( 3, 1, false, new GamePieceModel( 2, GamePieceType.Silver, "Right", "1GI")),
+    new GameSquareModel( 4, 1, false, new GamePieceModel( 2, GamePieceType.Gold, "Right", "1KI")),
+    new GameSquareModel( 5, 1, false, new GamePieceModel( 2, GamePieceType.KingChallenger, "Center", "1GY")),
+    new GameSquareModel( 6, 1, false, new GamePieceModel( 2, GamePieceType.Gold, "Left", "1KI")),
+    new GameSquareModel( 7, 1, false, new GamePieceModel( 2, GamePieceType.Silver, "Left", "1GI")),
+    new GameSquareModel( 8, 1, false, new GamePieceModel( 2, GamePieceType.Knight, "Left", "1KE")),
+    new GameSquareModel( 9, 1, false, new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")),
   
   ] // ...Squares
 };

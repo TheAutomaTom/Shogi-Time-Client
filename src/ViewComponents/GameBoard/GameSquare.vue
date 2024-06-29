@@ -20,6 +20,13 @@
       :class="getSquareLabelClass('x')"
     >{{ getSquareLabelText('x') }}</div>
 
+    
+    <div class="info-box">
+      <span 
+      v-if="piece != undefined"
+      class="info-text">{{ piece?.Type.toString() }}</span>
+    </div>
+
     <div class="game-square-piece" >      
       <game-piece 
         v-if="piece != undefined"
@@ -46,7 +53,6 @@ const props = defineProps({
   }
 });
 
-// (props.square as GameSquareModel).id = `Square-${props.square.x}${props.square.y}`;
 const piece = ref(props.square?.Piece as GamePieceModel);
 
 const drop = (ev: any) => {
@@ -63,9 +69,9 @@ const getPosition = () => {
   return `grid-row:${props.square.Y}; grid-column:${props.square.X};`
 };
 
-const focusPiece = (id: string) => {
-  console.log(`2.GameSquare.focusPiece: ${id}`);
-  game$.FocusSquare(id, props.square.Id);
+const focusPiece = (piece: GamePieceModel) => {
+  console.log(`2.GameSquare.focusPiece: ${piece.Id}`);
+  game$.FocusSquare(piece, props.square);
 
 };
 
@@ -91,7 +97,7 @@ const getSquareLabelClass = (xy: string): string =>{
 };
 
 const getGameSquareClass = () => {
-  if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
+  if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.Y == props.square.Y)
   return "focussed-square-start";
   // if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
   // return "focussed-square-kill";
@@ -142,5 +148,31 @@ const getGameSquareClass = () => {
   .focussed-square-kill{
     background-color: red;
   }
+
+.info-box {
+  position: relative;
+  // display: inline-block;    
+}
+
+.info-box .info-text {
+  visibility: hidden;
+  background-color: black;
+  color: goldenrod;
+  text-align: center;
+  padding: 2px 2px;
+  border-radius: 3px;
+
+  position: absolute;
+  top:20%;
+  margin:1%;
+  
+  z-index: 101;
+  opacity: 50%;
+  font-size: xx-small;
+}
+
+.game-square:hover .info-box .info-text {
+  visibility: visible;
+}
 
 </style>

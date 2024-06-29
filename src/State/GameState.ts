@@ -16,37 +16,39 @@ export const useGameState = defineStore("GameState", () => {
 
   const focussedPiece = ref({} as GamePieceModel);
   const FocussedSquare = ref({} as GameSquareModel);
-  const movementRules = ref([""] as string[]);
+  // const movementRules = ref([""] as string[]);
   
-  const FocusSquare = (pieceId: string, squareId: string) => {
-    console.log(`FocusSquare( pieceId:${pieceId}, squareId:${squareId})`);
+  const FocusSquare = (piece: GamePieceModel, square: GameSquareModel) => {
+    console.log(`FocusSquare( pieceId:${piece.Id}, squareId:${square.Id})`);
     
     GameBoardModel.value.Squares.map((s)=> {
+      // Clean old values
       s.IsFocus == false;
       s.Piece?.IsFocus == false;
 
-      // if(s.x == x && s.y == y){
-      //   s.IsFocus == true;
-      //   s.Piece?.IsFocus == true;
+      // Set new values
+      if(s.X == square.X && s.Y == square.Y){
+        s.IsFocus == true;
+        s.Piece?.IsFocus == true;
         
-      //   if(s.Piece){
-      //     focussedPiece.value = s.Piece;
-      //     console.log(`FocusSquare/Piece: ${focussedPiece.value.id}`)
+        if(s.Piece){
+          focussedPiece.value = s.Piece;
+          console.log(`FocusSquare/Piece: ${focussedPiece.value.Id}`)
 
-      //   }
-      //   FocussedSquare.value = s;
-      //   console.log(`FocussedSquare.value = ${FocussedSquare.value.x}, ${FocussedSquare.value.y}`);
+        }
+        FocussedSquare.value = s;
+        console.log(`FocussedSquare.value = ${FocussedSquare.value.X}, ${FocussedSquare.value.Y}`);
 
-      // }
+      }
 
     })
 
   };
 
-  const getMovementRules = () => {
-    // if()
+  // const getMovementRules = () => {
+  //   // if()
 
-  };
+  // };
 
 
   const MovePiece = (piece: GamePieceModel) => {

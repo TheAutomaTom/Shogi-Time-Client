@@ -30,7 +30,7 @@ export class GamePieceModel {
   Id: string;
   
   constructor(player: number, type: GamePieceType, startingPos: string, icon: string, isFocus: boolean = false) {
-    this.Id = `Piece-${player}-${type}-${startingPos}`;
+    this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.Player = player;
     this.Icon = icon;    
@@ -39,21 +39,21 @@ export class GamePieceModel {
 };
 
 export enum GamePieceType{
-  KingVictor,
-  KingChallenger,
-  Rook,
-  RookPro,
-  Bishop,
-  BishopPro,
-  Gold,
-  Silver,
-  SilverPro,
-  Knight,
-  KnightPro,
-  Lance,
-  LancePro,
-  Pawn,
-  PawnPro
+  KingVictor = "KingVictor",
+  KingChallenger = "KingChallenger",
+  Rook = "Rook",
+  RookPro = "RookPro",
+  Bishop = "Bishop",
+  BishopPro = "BishopPro",
+  Gold = "Gold",
+  Silver = "Silver",
+  SilverPro = "SilverPro",
+  Knight = "Knight",
+  KnightPro = "KnightPro",
+  Lance = "Lance",
+  LancePro = "LancePro",
+  Pawn = "Pawn",
+  PawnPro = "PawnPro"
 
 }
 

@@ -1,13 +1,17 @@
 <template>
-  <img 
-    :id="piece.Id"
-    :src="`public/pieces/Shogi_FCZ/${piece.Icon}.svg`"
-    
-    draggable="true" 
-    @dragstart="dragStart($event)"
-    @click="focusPiece()"
-    class="game-piece"
-  /> 
+
+  
+    <img 
+      :id="piece.Id"
+      :src="`public/pieces/Shogi_FCZ/${piece.Icon}.svg`"
+      
+      draggable="true" 
+      @dragstart="dragStart($event)"
+      @click="focusPiece()"
+      class="game-piece"
+      
+    >
+    </img>
 </template>
 
 <!--  -->
@@ -25,7 +29,6 @@
 
   import { defineEmits } from 'vue';
 
-  // (props.piece as GamePieceModel).Id  = `Player${props.piece.Player}-${props.piece.Name}`;
   const emits = defineEmits(['focus-piece']);
 
 
@@ -38,7 +41,7 @@
 
   const focusPiece = () => {
     console.log(`1.GamePiece.focusPiece: ${props.piece.Id}`);
-    emits("focus-piece", props.piece.Id);
+    emits("focus-piece", props.piece);
   };
 
 </script>
