@@ -1,7 +1,7 @@
 <template>
 
   <div 
-    :id="`s${props.x}${props.y}`"
+    :id="square.id"
     :style="getPosition()"
     class="game-square"
     :class="getGameSquareClass()"
@@ -24,6 +24,7 @@
       <game-piece 
         v-if="piece != undefined"
         :piece="piece"
+        @focus-piece="focusPiece"
       ></game-piece>
     </div>
 
@@ -34,24 +35,19 @@
 <!--  -->
 <script setup lang="ts">
 import { defineProps, ref } from 'vue';
-import type { GamePieceModel } from '@/Models/Game';
+import type { GamePieceModel, GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
+import { useGameState } from '@/State/GameState';
+const game$ = useGameState();
 const props = defineProps({
-  x: {
-    type: Number,
+  square: {
+    type: Object as () => GameSquareModel,
     required: true
-  },
-  y: {
-    type: Number,
-    required: true
-  },
-  piece: {
-    type: Object as () => GamePieceModel,
-    required: false
   }
 });
 
-const piece = ref(props.piece as GamePieceModel);
+(props.square as GameSquareModel).id = `Square-${props.square.x}${props.square.y}`;
+const piece = ref(props.square?.Piece as GamePieceModel);
 
 const drop = (ev: any) => {
   ev.preventDefault();
@@ -64,33 +60,45 @@ const dragOver = (ev: any) => {
 }; 
 
 const getPosition = () => {
-  return `grid-row:${props.y}; grid-column:${props.x};`
+  return `grid-row:${props.square.y}; grid-column:${props.square.x};`
+};
+
+const focusPiece = (id: string) => {
+  console.log(`2.GameSquare.focusPiece: ${id}`);
+  game$.FocusSquare(id, props.square.id);
+
 };
 
 const getSquareLabelText = (xy: string):string => {
     
-  if(xy == "x" && props.x == 9){    
-    return (props.y + 9).toString(36);
+  if(xy == "x" && props.square.x == 9){    
+    return (props.square.y + 9).toString(36);
   }
-  if(xy == "y" && props.y == 1){
-    return ( Math.abs(props.x - 10)).toString();
+  if(xy == "y" && props.square.y == 1){
+    return ( Math.abs(props.square.x - 10)).toString();
   }
   return "";
 };
 
 const getSquareLabelClass = (xy: string): string =>{
-  if(xy == "x" && props.x == 9){    
+  if(xy == "x" && props.square.x == 9){    
     return "game-square-label-right";  
   }
-  if(xy == "y" && props.y == 1){
+  if(xy == "y" && props.square.y == 1){
     return "game-square-label-top";
   }
   return "";
 };
 
 const getGameSquareClass = () => {
+  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
+  return "focussed-square-start";
+  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
+  return "focussed-square-kill";
+  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
+  return "focussed-square-move";
 
-}
+};
 
 </script>
 
@@ -124,6 +132,15 @@ const getGameSquareClass = () => {
     top:50%;
     right:0;
     
+  }
+  .focussed-square-start{
+    background-color: yellow;
+  }
+  .focussed-square-move{
+    background-color: green;
+  }
+  .focussed-square-kill{
+    background-color: red;
   }
 
 </style>

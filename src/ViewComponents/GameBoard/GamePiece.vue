@@ -1,6 +1,6 @@
 <template>
   <img 
-    :id="`${piece.player}-${piece.name}`"
+    :id="piece.id"
     :src="`public/pieces/Shogi_FCZ/${piece.img}.svg`"
     
     draggable="true" 
@@ -14,7 +14,7 @@
 <script setup lang="ts">
 
   import { GamePieceModel } from '@/Models/Game';
-import { defineProps } from 'vue';
+  import { defineProps } from 'vue';
 
   const props = defineProps({
     piece: {
@@ -25,6 +25,7 @@ import { defineProps } from 'vue';
 
   import { defineEmits } from 'vue';
 
+  (props.piece as GamePieceModel).id  = `Player${props.piece.player}-${props.piece.name}`;
   const emits = defineEmits(['focus-piece']);
 
 
@@ -36,8 +37,8 @@ import { defineProps } from 'vue';
   };
 
   const focusPiece = () => {
-
-    emits("focus-piece", props.piece.name);
+    console.log(`1.GamePiece.focusPiece: ${props.piece.id}`);
+    emits("focus-piece", props.piece.id);
   };
 
 </script>

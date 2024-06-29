@@ -1,10 +1,9 @@
 <template>
   <div class="game-board">
     
-    <game-square v-for="square in Model.Squares"
-      :x="square.x"
-      :y="square.y"
-      :piece="square.Piece"
+    <game-square 
+      v-for="square in Model.Squares"
+      :square="square"
     />
 
   </div>
@@ -16,9 +15,7 @@ import GameSquare from "./GameSquare.vue";
 import { ref } from "vue";
 
 const app$ = useAppState();
-
 const Model = ref(app$.Game$.GameBoardModel);
-
 
 </script>
 <!-- =============================================== -->
