@@ -27,15 +27,15 @@ Squares = [
 
 
   // Player 1: Pawn Row /==================
-  new GameSquareModel( 1, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
-  new GameSquareModel( 2, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
-  new GameSquareModel( 3, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
-  new GameSquareModel( 4, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
-  new GameSquareModel( 5, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
-  new GameSquareModel( 6, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
-  new GameSquareModel( 7, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
-  new GameSquareModel( 8, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
-  new GameSquareModel( 9, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
+  new GameSquareModel( 1, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "9", "0FU")),
+  new GameSquareModel( 2, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "8", "0FU")),
+  new GameSquareModel( 3, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "7", "0FU")),
+  new GameSquareModel( 4, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "6", "0FU")),
+  new GameSquareModel( 5, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "5", "0FU")),
+  new GameSquareModel( 6, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "4", "0FU")),
+  new GameSquareModel( 7, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "3", "0FU")),
+  new GameSquareModel( 8, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "2", "0FU")),
+  new GameSquareModel( 9, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "1", "0FU")),
 
   // Row F /==================
     new GameSquareModel( 1, 6 ),

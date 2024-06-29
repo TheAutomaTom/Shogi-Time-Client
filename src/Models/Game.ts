@@ -26,16 +26,14 @@ export class GamePieceModel {
   Type: GamePieceType;
   Player: number;
   Icon: string;
-  IsFocus: boolean;
   Id: string;
   
-  constructor(player: number, type: GamePieceType, startingPos: string, icon: string, isFocus: boolean = false) {
+  constructor(player: number, type: GamePieceType, startingPos: string, icon: string) {
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.Player = player;
-    this.Icon = icon;    
-    this.IsFocus = isFocus;
-  }
+    this.Icon = icon;
+  };
 };
 
 export enum GamePieceType{

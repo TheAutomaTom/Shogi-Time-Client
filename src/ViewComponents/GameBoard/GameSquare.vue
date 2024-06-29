@@ -1,23 +1,23 @@
 <template>
 
   <div 
-    :id="square.Id"
-    :style="getPosition()"
     class="game-square"
-    :class="getGameSquareClass()"
+    :class="getCurrentClass()"
+    :id="square.Id"
+    :style="setPosition()"
     @drop="drop($event)" 
     @dragover="dragOver($event)"
   >
 
     <div 
-      class="game-square-label"
-      :class="getSquareLabelClass('y')"
-    >{{ getSquareLabelText('y') }}</div>
+      class="board-notation"
+      :class="getNotationStyle('y')"
+    >{{ getNotationText('y') }}</div>
 
     <div 
-      class="game-square-label"
-      :class="getSquareLabelClass('x')"
-    >{{ getSquareLabelText('x') }}</div>
+      class="board-notation"
+      :class="getNotationStyle('x')"
+    >{{ getNotationText('x') }}</div>
 
     <!-- 
     <div class="info-box">
@@ -45,6 +45,8 @@ import { defineProps, ref } from 'vue';
 import type { GamePieceModel, GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
+
+//=== Setup ======================================================
 const game$ = useGameState();
 const props = defineProps({
   square: {
@@ -52,58 +54,61 @@ const props = defineProps({
     required: true
   }
 });
-
-const piece = ref(props.square?.Piece as GamePieceModel);
-
-const drop = (ev: any) => {
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("text");
-  ev.target.appendChild(document.getElementById(data));    
-};
-
-const dragOver = (ev: any) => {
-  ev.preventDefault();
-}; 
-
-const getPosition = () => {
+const setPosition = () => {
   return `grid-row:${props.square.Y}; grid-column:${props.square.X};`
 };
 
-const handleClick = (piece: GamePieceModel) => {
-  console.log(`2.GameSquare.focusPiece: ${piece.Id}`);
-  game$.FocusSquare(piece, props.square);
+const piece = ref(props.square?.Piece as GamePieceModel);
 
-};
-
-const getSquareLabelText = (xy: string):string => {    
+const getNotationText = (xy: string):string => {
   if(xy == "x" && props.square.X == 9){    
     return (props.square.Y + 9).toString(36);
   }
   if(xy == "y" && props.square.Y == 1){
-    console.log(props.square.X);
     return (Math.abs(props.square.X - 10).toString());
   }  
   return "";
 };
 
-const getSquareLabelClass = (xy: string): string =>{
+const getNotationStyle = (xy: string): string =>{
   if(xy == "x" && props.square.X == 9){    
-    return "game-square-label-right";  
+    return "board-notation-right";  
   }
   if(xy == "y" && props.square.Y == 1){
-    return "game-square-label-top";
+    return "board-notation-top";
   }
   return "";
 };
 
-const getGameSquareClass = () => {
-  if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.Y == props.square.Y)
-  return "focussed-square-start";
-  // if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
-  // return "focussed-square-kill";
-  // if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
-  // return "focussed-square-move";
+//=== Events =====================================================
+const drop = (ev: any) => {
+  console.log( `drop: ${(((ev as DragEvent).target) as HTMLElement).id}` );
 
+  ev.preventDefault();
+  var data = ev.dataTransfer.getData("text");
+  ev.target.appendChild(document.getElementById(data));
+
+  game$.MoveEnd((((ev as DragEvent).target) as HTMLElement).id)
+  
+};
+
+const dragOver = (ev: any) => {
+  console.log( `dragOver: ${(((ev as DragEvent).target) as HTMLElement).id}` );
+  ev.preventDefault();
+}; 
+
+const handleClick = ( piece: GamePieceModel ) => {
+  console.log(`2.GameSquare.handleClick: ${props.square.Id}`);
+  game$.MoveStart(piece, props.square)
+};
+
+const getCurrentClass = () => {
+  if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.Y == props.square.Y)
+  return "focussed-square-start";
+  // if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.y == props.square.Y)
+  // return "focussed-square-kill";
+  // if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.y == props.square.Y)
+  // return "focussed-square-move";
 };
 
 </script>
@@ -124,17 +129,17 @@ const getGameSquareClass = () => {
     
   }
 
-  .game-square-label{
+  .board-notation{
     position: absolute;
     font-size: x-small;
     color: #2a0e04;
 
   }
-  .game-square-label-top{
+  .board-notation-top{
     top:0;
     right:50%;
   }
-  .game-square-label-right{    
+  .board-notation-right{    
     top:50%;
     right:0;
     

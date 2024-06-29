@@ -7,7 +7,8 @@
       
       draggable="true" 
       @dragstart="dragStart($event)"
-      @click="focusPiece()"
+      @click="handleClick()"
+      @mousedown="handleClick()"
       class="game-piece"
       
     >
@@ -29,7 +30,7 @@
 
   import { defineEmits } from 'vue';
 
-  const emits = defineEmits(['focus-piece']);
+  const emits = defineEmits(['handle-click']);
 
 
   const dragStart = (ev: any) => {
@@ -39,9 +40,9 @@
     // trackedStart.value = (((((ev as DragEvent).target) as HTMLElement).parentElement) as HTMLElement).id;
   };
 
-  const focusPiece = () => {
-    console.log(`1.GamePiece.focusPiece: ${props.piece.Id}`);
-    emits("focus-piece", props.piece);
+  const handleClick = () => {
+    console.log(`1.GamePiece.handleClick: ${props.piece.Id}`);
+    emits("handle-click", props.piece);
   };
 
 </script>

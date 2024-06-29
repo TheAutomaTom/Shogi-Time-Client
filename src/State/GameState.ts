@@ -1,7 +1,8 @@
 import {  
   GameBoardModel,
   GameSquareModel,
-  GamePieceModel
+  GamePieceModel,
+  GamePieceType
 } from "../Models/Game";
 import { ref } from "vue";
 import { defineStore } from "pinia";
@@ -15,35 +16,54 @@ export const useGameState = defineStore("GameState", () => {
   } as GameBoardModel);
 
   const focussedPiece = ref({} as GamePieceModel);
-  const FocussedSquare = ref({} as GameSquareModel);
+  const SquareToMoveFrom = ref({} as GameSquareModel);
+
   // const movementRules = ref([""] as string[]);
   
-  const FocusSquare = (piece: GamePieceModel, square: GameSquareModel) => {
+  const MoveStart = (piece: GamePieceModel, square: GameSquareModel) => {
     console.log(`FocusSquare( pieceId:${piece.Id}, squareId:${square.Id})`);
+    SquareToMoveFrom.value = square;
     
-    GameBoardModel.value.Squares.map((s)=> {
+    GameBoardModel.value.Squares.map( s => {
       // Clean old values
       s.IsFocus == false;
-      s.Piece?.IsFocus == false;
 
       // Set new values
       if(s.X == square.X && s.Y == square.Y){
+        console.log(`3.MoveStart.focussedPiece: ${focussedPiece.value.Id}`);
+        console.dir(focussedPiece.value);
+        focussedPiece.value = s.Piece!;
         s.IsFocus == true;
-        s.Piece?.IsFocus == true;
-        
-        if(s.Piece){
-          focussedPiece.value = s.Piece;
-          console.log(`FocusSquare/Piece: ${focussedPiece.value.Id}`)
-
-        }
-        FocussedSquare.value = s;
-        console.log(`FocussedSquare.value = ${FocussedSquare.value.X}, ${FocussedSquare.value.Y}`);
-
+        s.Piece == undefined;        
+        SquareToMoveFrom.value = s;
+        console.log(`FocusSquare/Piece: ${focussedPiece.value.Id}`)        
+        console.log(`FocussedSquare.value = ${SquareToMoveFrom.value.X}, ${SquareToMoveFrom.value.Y}`);
       }
 
-    })
-
+    });
   };
+
+  const MoveEnd = (squareId: string) => {
+
+    GameBoardModel.value.Squares.map( s => {
+      
+      if(s.Id == squareId){
+        console.log(`4.MoveEnd matched ${s.Id}`);
+
+        console.log(`focussedPiece.value.Id: ${focussedPiece.value.Id}`);
+        const startingPosBegins = focussedPiece.value.Id.indexOf("-")
+        console.log(`startingPosBegins: ${startingPosBegins}`);
+        const startingPos = focussedPiece.value.Id.substring(startingPosBegins +1);
+        console.log(`startingPos: ${startingPos}`);
+
+        s.Piece = new GamePieceModel( focussedPiece.value.Player, focussedPiece.value.Type, startingPos, focussedPiece.value.Icon)
+
+        console.log(`${s.Id} contains: ${s.Piece.Id}`);
+
+      }
+    });
+    
+  }
 
   // const getMovementRules = () => {
   //   // if()
@@ -51,16 +71,13 @@ export const useGameState = defineStore("GameState", () => {
   // };
 
 
-  const MovePiece = (piece: GamePieceModel) => {
-
-  };
 
   
   return {
     GameBoardModel,
-    FocussedSquare,
-    FocusSquare,
-    MovePiece
+    SquareToMoveFrom,
+    MoveStart,
+    MoveEnd
 
   };
 });
