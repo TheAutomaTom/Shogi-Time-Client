@@ -6,12 +6,10 @@ import { ModalContentType } from "@/State/Layout/ModalContentType";
 const app$ = useAppState();
 
 const getDrawerClass = () => {
-  console.log(app$.Layout$.DrawerIsOpen ? 'drawer-open' : 'drawer-shut');
   return app$.Layout$.DrawerIsOpen ? 'drawer-open' : 'drawer-shut';
 }
 
 const toggleDrawer=()=>{
-  console.log(`Drawer.logo-button clicked: toggleDrawer()`);
   app$.Layout$.ToggleDrawer();
 }
 </script>

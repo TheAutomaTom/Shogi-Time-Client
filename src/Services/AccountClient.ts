@@ -22,12 +22,6 @@ export class AccountClient{
       .replace("{REALM}", import.meta.env.VITE_AUTH_REALM);
   }
 
-  // GetNewToken(request: GetNewTokenRequest): Promise<AuthToken> {
-  //   console.log("AccountClient.GetNewToken...");
-  //   console.dir(request);
-  //   throw new Error("Method not implemented.");
-  // }
-
   RefreshToken(request: RefreshTokenRequest): Promise<AuthToken> {
     console.log("AccountClient.RefreshToken...");
     console.dir(request);

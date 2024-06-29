@@ -4,6 +4,7 @@
     :id="`s${props.x}${props.y}`"
     :style="getPosition()"
     class="game-square"
+    :class="getGameSquareClass()"
     @drop="drop($event)" 
     @dragover="dragOver($event)"
   >
@@ -19,13 +20,10 @@
       :class="getSquareLabelClass('x')"
     >{{ getSquareLabelText('x') }}</div>
 
-    <div
-      class="game-square-piece" 
-    >
-      <game-piece v-if="piece"
-      :player="piece.player"
-      :name="piece.name"
-      :img="piece.img"
+    <div class="game-square-piece" >      
+      <game-piece 
+        v-if="piece != undefined"
+        :piece="piece"
       ></game-piece>
     </div>
 
@@ -47,13 +45,13 @@ const props = defineProps({
     type: Number,
     required: true
   },
-  pieceLoaded: {
+  piece: {
     type: Object as () => GamePieceModel,
     required: false
   }
 });
 
-const piece = ref(props.pieceLoaded as GamePieceModel);
+const piece = ref(props.piece as GamePieceModel);
 
 const drop = (ev: any) => {
   ev.preventDefault();
@@ -78,9 +76,6 @@ const getSquareLabelText = (xy: string):string => {
     return ( Math.abs(props.x - 10)).toString();
   }
   return "";
-
-
-
 };
 
 const getSquareLabelClass = (xy: string): string =>{
@@ -92,6 +87,10 @@ const getSquareLabelClass = (xy: string): string =>{
   }
   return "";
 };
+
+const getGameSquareClass = () => {
+
+}
 
 </script>
 

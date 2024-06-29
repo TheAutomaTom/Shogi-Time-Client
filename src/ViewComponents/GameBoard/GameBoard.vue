@@ -4,7 +4,7 @@
     <game-square v-for="square in Model.Squares"
       :x="square.x"
       :y="square.y"
-      :pieceLoaded="square.Piece"
+      :piece="square.Piece"
     />
 
   </div>

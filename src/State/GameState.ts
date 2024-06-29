@@ -1,5 +1,6 @@
 import {  
-  GameBoardModel
+  GameBoardModel,
+  GamePieceModel
 } from "../Models/Game";
 import { ref } from "vue";
 import { defineStore } from "pinia";
@@ -11,6 +12,16 @@ export const useGameState = defineStore("GameState", () => {
     Id:"111-zzz",
     Squares: new DefaultNewGameLayout().Squares
   } as GameBoardModel);
+
+  const FocussedPiece = ref({} as GamePieceModel);
+  
+  const movePiece = (GamePieceModel) => {
+
+  }
+
+  const focusPiece = () => {
+
+  }
   
   return {
     GameBoardModel

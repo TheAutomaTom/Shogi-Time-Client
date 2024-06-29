@@ -1,11 +1,9 @@
 import "./Config/Styles/index.scss";
 import App from "./App.vue";
 
-console.log("createApp(App)"); 
 import { createApp } from "vue";
 const _app = createApp(App);
 
-console.log("_app.use(createPinia())"); 
 import { createPinia } from "pinia";
 _app.use(createPinia());
 
