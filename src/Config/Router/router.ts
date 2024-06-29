@@ -9,7 +9,7 @@ export const routes = [
   },
   {
     path: "/game",
-    component: () => import("../../Views/Game.vue"),
+    component: () => import("../../Views/GameView.vue"),
   },
   {
     path: "/:pathMatch(.*)*",

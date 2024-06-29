@@ -85,7 +85,7 @@ const toggleDrawer=()=>{
 
 .drawer{
   position: absolute;
-  z-index: 10;
+  z-index: 100;
   overflow: hidden;
   top:0;
   bottom:0;
