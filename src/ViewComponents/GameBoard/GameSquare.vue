@@ -8,30 +8,30 @@
     @drop="drop($event)" 
     @dragover="dragOver($event)"
   >
+
     <div 
-      v-if="getSquareLabelText('y') != ''"
       class="game-square-label"
       :class="getSquareLabelClass('y')"
     >{{ getSquareLabelText('y') }}</div>
 
     <div 
-      v-if="getSquareLabelText('x') != ''"
       class="game-square-label"
       :class="getSquareLabelClass('x')"
     >{{ getSquareLabelText('x') }}</div>
 
-    
+    <!-- 
     <div class="info-box">
       <span 
       v-if="piece != undefined"
       class="info-text">{{ piece?.Type.toString() }}</span>
-    </div>
+    </div> 
+    -->
 
     <div class="game-square-piece" >      
       <game-piece 
         v-if="piece != undefined"
         :piece="piece"
-        @focus-piece="focusPiece"
+        @handle-click="handleClick"
       ></game-piece>
     </div>
 
@@ -69,20 +69,20 @@ const getPosition = () => {
   return `grid-row:${props.square.Y}; grid-column:${props.square.X};`
 };
 
-const focusPiece = (piece: GamePieceModel) => {
+const handleClick = (piece: GamePieceModel) => {
   console.log(`2.GameSquare.focusPiece: ${piece.Id}`);
   game$.FocusSquare(piece, props.square);
 
 };
 
-const getSquareLabelText = (xy: string):string => {
-    
-  if(xy == "x" && props.square.Y == 9){    
+const getSquareLabelText = (xy: string):string => {    
+  if(xy == "x" && props.square.X == 9){    
     return (props.square.Y + 9).toString(36);
   }
   if(xy == "y" && props.square.Y == 1){
-    return ( Math.abs(props.square.X - 10)).toString();
-  }
+    console.log(props.square.X);
+    return (Math.abs(props.square.X - 10).toString());
+  }  
   return "";
 };
 
@@ -149,30 +149,30 @@ const getGameSquareClass = () => {
     background-color: red;
   }
 
-.info-box {
-  position: relative;
-  // display: inline-block;    
-}
+// .info-box {
+//   position: relative;
+//   // display: inline-block;    
+// }
 
-.info-box .info-text {
-  visibility: hidden;
-  background-color: black;
-  color: goldenrod;
-  text-align: center;
-  padding: 2px 2px;
-  border-radius: 3px;
+// .info-box .info-text {
+//   visibility: hidden;
+//   background-color: black;
+//   color: goldenrod;
+//   text-align: center;
+//   padding: 2px 2px;
+//   border-radius: 3px;
 
-  position: absolute;
-  top:20%;
-  margin:1%;
+//   position: absolute;
+//   top:20%;
+//   margin:1%;
   
-  z-index: 101;
-  opacity: 50%;
-  font-size: xx-small;
-}
+//   z-index: 101;
+//   opacity: 50%;
+//   font-size: xx-small;
+// }
 
-.game-square:hover .info-box .info-text {
-  visibility: visible;
-}
+// .game-square:hover .info-box .info-text {
+//   visibility: visible;
+// }
 
 </style>
