@@ -1,18 +1,16 @@
 <template>
-
-  
-    <img 
-      :id="piece.Id"
-      :src="`public/pieces/Shogi_FCZ/${piece.Icon}.svg`"
-      
-      draggable="true" 
-      @dragstart="dragStart($event)"
-      @click="handleClick()"
-      @mousedown="handleClick()"
-      class="game-piece"
-      
-    >
-    </img>
+  <img 
+    :id="piece.Id"
+    :src="`public/pieces/Shogi_FCZ/${piece.Icon}.svg`"
+    
+    draggable="true" 
+    @dragstart="dragStart($event)"
+    @click="handleClick()"
+    @mousedown="handleClick()"
+    class="game-piece"
+    
+  >
+  </img>
 </template>
 
 <!--  -->

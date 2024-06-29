@@ -6,16 +6,14 @@ export type GameBoardModel = {
 
 export class GameSquareModel {
   Id: string;
-  IsFocus: boolean;
   X: number;
   Y: number;
   Piece?: GamePieceModel;
   
-  constructor(x: number, y: number, isFocus: boolean = false, piece?: GamePieceModel ) {
+  constructor(x: number, y: number, piece?: GamePieceModel ) {
     this.Id = `Square-${x}${y}`;
     this.X = x;
     this.Y = y;
-    this.IsFocus = isFocus;
     if(piece != undefined){
       this.Piece = piece;
     }

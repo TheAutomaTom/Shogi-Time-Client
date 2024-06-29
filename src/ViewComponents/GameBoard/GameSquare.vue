@@ -103,6 +103,7 @@ const handleClick = ( piece: GamePieceModel ) => {
 };
 
 const getCurrentClass = () => {
+
   if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.Y == props.square.Y)
   return "focussed-square-start";
   // if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.y == props.square.Y)

@@ -1,12 +1,12 @@
 import {  
   GameBoardModel,
   GameSquareModel,
-  GamePieceModel,
-  GamePieceType
+  GamePieceModel
 } from "../Models/Game";
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
+import { GameMode } from "./Game/GameMode";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -15,27 +15,30 @@ export const useGameState = defineStore("GameState", () => {
     Squares: new DefaultNewGameLayout().Squares
   } as GameBoardModel);
 
+  const Mode = ref(GameMode.StandBy)
   const focussedPiece = ref({} as GamePieceModel);
   const SquareToMoveFrom = ref({} as GameSquareModel);
-
-  // const movementRules = ref([""] as string[]);
-  
+    
   const MoveStart = (piece: GamePieceModel, square: GameSquareModel) => {
-    console.log(`FocusSquare( pieceId:${piece.Id}, squareId:${square.Id})`);
+    Mode.value = GameMode.MoveStart;
+
+    console.log(`MoveStart( pieceId:${piece.Id}, squareId:${square.Id})`);
+
+    focussedPiece.value = piece;
     SquareToMoveFrom.value = square;
     
     GameBoardModel.value.Squares.map( s => {
-      // Clean old values
-      s.IsFocus == false;
-
-      // Set new values
+      
       if(s.X == square.X && s.Y == square.Y){
+
         console.log(`3.MoveStart.focussedPiece: ${focussedPiece.value.Id}`);
         console.dir(focussedPiece.value);
+
         focussedPiece.value = s.Piece!;
-        s.IsFocus == true;
-        s.Piece == undefined;        
+        
+        s.Piece == undefined;
         SquareToMoveFrom.value = s;
+
         console.log(`FocusSquare/Piece: ${focussedPiece.value.Id}`)        
         console.log(`FocussedSquare.value = ${SquareToMoveFrom.value.X}, ${SquareToMoveFrom.value.Y}`);
       }
@@ -50,18 +53,17 @@ export const useGameState = defineStore("GameState", () => {
       if(s.Id == squareId){
         console.log(`4.MoveEnd matched ${s.Id}`);
 
-        console.log(`focussedPiece.value.Id: ${focussedPiece.value.Id}`);
-        const startingPosBegins = focussedPiece.value.Id.indexOf("-")
-        console.log(`startingPosBegins: ${startingPosBegins}`);
+        const startingPosBegins = focussedPiece.value.Id.lastIndexOf("-")
         const startingPos = focussedPiece.value.Id.substring(startingPosBegins +1);
-        console.log(`startingPos: ${startingPos}`);
-
         s.Piece = new GamePieceModel( focussedPiece.value.Player, focussedPiece.value.Type, startingPos, focussedPiece.value.Icon)
 
         console.log(`${s.Id} contains: ${s.Piece.Id}`);
 
       }
     });
+
+
+    Mode.value = GameMode.MoveEnd;
     
   }
 
@@ -75,6 +77,7 @@ export const useGameState = defineStore("GameState", () => {
   
   return {
     GameBoardModel,
+    GameMode: Mode,
     SquareToMoveFrom,
     MoveStart,
     MoveEnd
