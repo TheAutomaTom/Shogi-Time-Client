@@ -13,11 +13,12 @@
     "baseUrl": ".",
     "paths": {
       "@/*": ["./src/*"],
-      "@Config/*": [".src/Config"],
-      "@Styles/*": [".src/Config/Styles"],
-      "@Services/*": [".src/Services"],
-      "@State/*": [".src/State"],
-      "@Views/*": [".src/Views"],
+      // "@Config/*": [".src/Config"],
+      // "@Styles/*": [".src/Config/Styles"],
+      // "@Services/*": [".src/Services"],
+      // "@Models/*": [".src/Models"],
+      // "@State/*": [".src/State"],
+      // "@Views/*": [".src/Views"],
       "@Components/*": ["./src/ViewComponents/*"]
     },
 

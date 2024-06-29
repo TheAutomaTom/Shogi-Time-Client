@@ -20,11 +20,12 @@ export default defineConfig({
     alias: {
       // src:"/src"
       "@": path.resolve(__dirname,"./src" ),
-      "@Config": path.resolve(__dirname,"./src/Config" ),
-      "@Styles": path.resolve(__dirname,"./src/Config/Styles" ),
-      "@Services": path.resolve(__dirname,"./src/Services" ),
-      "@State": path.resolve(__dirname,"./src/State" ),
-      "@Views": path.resolve(__dirname,"./src/Views" ),
+      // "@Config": path.resolve(__dirname,"./src/Config" ),
+      // "@Styles": path.resolve(__dirname,"./src/Config/Styles" ),
+      // "@Services": path.resolve(__dirname,"./src/Services" ),
+      // "@Models": path.resolve(__dirname,"./src/Models" ),
+      // "@State": path.resolve(__dirname,"./src/State" ),
+      // "@Views": path.resolve(__dirname,"./src/Views" ),
       "@Components": path.resolve(__dirname,"./src/ViewComponents" ),
     }
   },
