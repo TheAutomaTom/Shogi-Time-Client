@@ -48,6 +48,7 @@ const dragStart = (ev: any) => {
     height:100%;
     object-fit:scale-down;
     cursor:grab;
+    
   }
 
 
