@@ -1,5 +1,4 @@
 <template>
-  GameView.vue
   <game-board></game-board>
 </template>
 

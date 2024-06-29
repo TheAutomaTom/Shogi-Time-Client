@@ -101,7 +101,7 @@ const getSquareLabelClass = (xy: string): string =>{
   .game-square{
     position: relative;
     box-sizing: content-box;
-    border: 1px dotted grey;
+    border: 1px solid #2a0e04;
     
   }
   .game-square-piece{
@@ -114,7 +114,7 @@ const getSquareLabelClass = (xy: string): string =>{
   .game-square-label{
     position: absolute;
     font-size: x-small;
-    color: grey;
+    color: #2a0e04;
 
   }
   .game-square-label-top{
