@@ -7,7 +7,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Lance-Right",
+        name:"Lance-Left",
         img:"0KY"
       }
     },
@@ -16,7 +16,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Knight-Right",
+        name:"Knight-Left",
         img:"0KE"
       }
     },
@@ -25,7 +25,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Silver-Right",
+        name:"Silver-Left",
         img:"0GI"
       }
     },
@@ -34,7 +34,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Gold-Right",
+        name:"Gold-Left",
         img:"0KI"
       }
     },
@@ -52,7 +52,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Gold-Left",
+        name:"Gold-Right",
         img:"0KI"
       }
     },
@@ -61,7 +61,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Silver-Left",
+        name:"Silver-Right",
         img:"0GI"
       }
     },
@@ -70,7 +70,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Knight-Left",
+        name:"Knight-Right",
         img:"0KE"
       }
     },
@@ -79,7 +79,7 @@ Squares = [
       y:9,
       Piece:{
         player: 1,
-        name:"Lance-Left",
+        name:"Lance-Right",
         img:"0KY"
       }
     },
@@ -94,8 +94,8 @@ Squares = [
       y:8,
       Piece:{
         player: 1,
-        name:"Rook-Right",
-        img:"0HI"
+        name:"Bishop-Left",
+        img:"0KA"
       }
     },
     {
@@ -123,8 +123,8 @@ Squares = [
       y:8,
       Piece:{
         player: 1,
-        name:"Bishop-Left",
-        img:"0KA"
+        name:"Rook-Right",
+        img:"0HI"
       }
     },
     {
@@ -139,7 +139,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-A",
+        name:"Pawn-9",
         img:"0FU"
       }
     },
@@ -148,7 +148,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-B",
+        name:"Pawn-8",
         img:"0FU"
       }
     },
@@ -157,7 +157,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-C",
+        name:"Pawn-7",
         img:"0FU"
       }
     },
@@ -166,7 +166,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-D",
+        name:"Pawn-6",
         img:"0FU"
       }
     },
@@ -175,7 +175,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-E",
+        name:"Pawn-5",
         img:"0FU"
       }
     },
@@ -184,7 +184,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-F",
+        name:"Pawn-4",
         img:"0FU"
       }
     },
@@ -193,7 +193,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-G",
+        name:"Pawn-3",
         img:"0FU"
       }
     },
@@ -202,7 +202,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-H",
+        name:"Pawn-2",
         img:"0FU"
       }
     },
@@ -211,7 +211,7 @@ Squares = [
       y:7,
       Piece:{
         player: 1,
-        name:"Pawn-I",
+        name:"Pawn-1",
         img:"0FU"
       }
     },
@@ -337,7 +337,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-A",
+        name:"Pawn-9",
         img:"1FU"
       }
     },
@@ -346,7 +346,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-B",
+        name:"Pawn-8",
         img:"1FU"
       }
     },
@@ -355,7 +355,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-C",
+        name:"Pawn-7",
         img:"1FU"
       }
     },
@@ -364,7 +364,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-D",
+        name:"Pawn-6",
         img:"1FU"
       }
     },
@@ -373,7 +373,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-E",
+        name:"Pawn-5",
         img:"1FU"
       }
     },
@@ -382,7 +382,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-F",
+        name:"Pawn-4",
         img:"1FU"
       }
     },
@@ -391,7 +391,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-G",
+        name:"Pawn-3",
         img:"1FU"
       }
     },
@@ -400,7 +400,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-H",
+        name:"Pawn-2",
         img:"1FU"
       }
     },
@@ -409,7 +409,7 @@ Squares = [
       y:3,
       Piece:{
         player: 2,
-        name:"Pawn-I",
+        name:"Pawn-1",
         img:"1FU"
       }
     },
