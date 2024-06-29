@@ -1,556 +1,107 @@
+import { GamePieceModel, GamePieceType, GameSquareModel } from "@/Models/Game";
+
 export class DefaultNewGameLayout {
 Squares = [
 
   // Player 1: Back Row /==================
-    {
-      x:1,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Lance-Left",
-        img:"0KY"
-      }
-    },
-    {
-      x:2,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Knight-Left",
-        img:"0KE"
-      }
-    },
-    {
-      x:3,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Silver-Left",
-        img:"0GI"
-      }
-    },
-    {
-      x:4,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Gold-Left",
-        img:"0KI"
-      }
-    },
-    {
-      x:5,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"King-Center",
-        img:"0OU"
-      }
-    },
-    {
-      x:6,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Gold-Right",
-        img:"0KI"
-      }
-    },
-    {
-      x:7,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Silver-Right",
-        img:"0GI"
-      }
-    },
-    {
-      x:8,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Knight-Right",
-        img:"0KE"
-      }
-    },
-    {
-      x:9,
-      y:9,
-      Piece:{
-        player: 1,
-        name:"Lance-Right",
-        img:"0KY"
-      }
-    },
-
-  // Player 1: Mid Row /==================
-    {
-      x:1,
-      y:8,
-    },
-    {
-      x:2,
-      y:8,
-      Piece:{
-        player: 1,
-        name:"Bishop-Left",
-        img:"0KA"
-      }
-    },
-    {
-      x:3,
-      y:8,
-    },
-    {
-      x:4,
-      y:8,
-    },
-    {
-      x:5,
-      y:8,
-    },
-    {
-      x:6,
-      y:8,
-    },
-    {
-      x:7,
-      y:8,
-    },
-    {
-      x:8,
-      y:8,
-      Piece:{
-        player: 1,
-        name:"Rook-Right",
-        img:"0HI"
-      }
-    },
-    {
-      x:9,
-      y:8,
-    },
+    new GameSquareModel( 1, 9, false, new GamePieceModel( 1, GamePieceType.Lance, "Left", "0KY")),
+    new GameSquareModel( 2, 9, false, new GamePieceModel( 1, GamePieceType.Knight, "Left", "0KE")),
+    new GameSquareModel( 3, 9, false, new GamePieceModel( 1, GamePieceType.Silver, "Left", "0GI")),
+    new GameSquareModel( 4, 9, false, new GamePieceModel( 1, GamePieceType.Gold, "Left", "0KI")),
+    new GameSquareModel( 5, 9, false, new GamePieceModel( 1, GamePieceType.KingVictor, "Center", "0OU")),
+    new GameSquareModel( 6, 9, false, new GamePieceModel( 1, GamePieceType.Gold, "Right", "0KI")),
+    new GameSquareModel( 7, 9, false, new GamePieceModel( 1, GamePieceType.Silver, "Right", "0GI")),
+    new GameSquareModel( 8, 9, false, new GamePieceModel( 1, GamePieceType.Knight, "Right", "0KE")),
+    new GameSquareModel( 9, 9, false, new GamePieceModel( 1, GamePieceType.Lance, "Right", "0KY")),
+    
+    // Player 1: Mid Row /==================
+    new GameSquareModel( 1, 8 ),
+    new GameSquareModel( 2, 8, false, new GamePieceModel( 1, GamePieceType.Bishop, "Left", "0KA")),
+    new GameSquareModel( 3, 8 ),
+    new GameSquareModel( 4, 8 ),
+    new GameSquareModel( 5, 8 ),
+    new GameSquareModel( 6, 8 ),
+    new GameSquareModel( 7, 8 ),
+    new GameSquareModel( 8, 8, false, new GamePieceModel( 1, GamePieceType.Rook, "Right", "0HI")),
+    new GameSquareModel( 9, 8 ),
 
 
   // Player 1: Pawn Row /==================
-  {
-      x:1,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-9",
-        img:"0FU"
-      }
-    },
-    {
-      x:2,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-8",
-        img:"0FU"
-      }
-    },
-    {
-      x:3,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-7",
-        img:"0FU"
-      }
-    },
-    {
-      x:4,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-6",
-        img:"0FU"
-      }
-    },
-    {
-      x:5,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-5",
-        img:"0FU"
-      }
-    },
-    {
-      x:6,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-4",
-        img:"0FU"
-      }
-    },
-    {
-      x:7,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-3",
-        img:"0FU"
-      }
-    },
-    {
-      x:8,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-2",
-        img:"0FU"
-      }
-    },
-    {
-      x:9,
-      y:7,
-      Piece:{
-        player: 1,
-        name:"Pawn-1",
-        img:"0FU"
-      }
-    },
+  new GameSquareModel( 1, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
+  new GameSquareModel( 2, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
+  new GameSquareModel( 3, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
+  new GameSquareModel( 4, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
+  new GameSquareModel( 5, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Left", "0FU")),
+  new GameSquareModel( 6, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
+  new GameSquareModel( 7, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
+  new GameSquareModel( 8, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
+  new GameSquareModel( 9, 7, false, new GamePieceModel( 1, GamePieceType.Pawn, "Right", "0FU")),
 
   // Row F /==================
-    {
-      x:1,
-      y:6,
-    },
-    {
-      x:2,
-      y:6,
-    },
-    {
-      x:3,
-      y:6,
-    },
-    {
-      x:4,
-      y:6,
-    },
-    {
-      x:5,
-      y:6,
-    },
-    {
-      x:6,
-      y:6,
-    },
-    {
-      x:7,
-      y:6,
-    },
-    {
-      x:8,
-      y:6,
-    },
-    {
-      x:9,
-      y:6,
-    },
-    
+    new GameSquareModel( 1, 6 ),
+    new GameSquareModel( 2, 6 ),
+    new GameSquareModel( 3, 6 ),
+    new GameSquareModel( 4, 6 ),
+    new GameSquareModel( 5, 6 ),
+    new GameSquareModel( 6, 6 ),
+    new GameSquareModel( 7, 6 ),
+    new GameSquareModel( 8, 6 ),
+    new GameSquareModel( 9, 6 ),
+
   // Row E /==================
-    {
-      x:1,
-      y:5,
-    },
-    {
-      x:2,
-      y:5,
-    },
-    {
-      x:3,
-      y:5,
-    },
-    {
-      x:4,
-      y:5,
-    },
-    {
-      x:5,
-      y:5,
-    },
-    {
-      x:6,
-      y:5,
-    },
-    {
-      x:7,
-      y:5,
-    },
-    {
-      x:8,
-      y:5,
-    },
-    {
-      x:9,
-      y:5,
-    },
+    new GameSquareModel( 1, 5 ),
+    new GameSquareModel( 2, 5 ),
+    new GameSquareModel( 3, 5 ),
+    new GameSquareModel( 4, 5 ),
+    new GameSquareModel( 5, 5 ),
+    new GameSquareModel( 6, 5 ),
+    new GameSquareModel( 7, 5 ),
+    new GameSquareModel( 8, 5 ),
+    new GameSquareModel( 9, 5 ),
 
   // Row D /==================
-    {
-      x:1,
-      y:4,
-    },
-    {
-      x:2,
-      y:4,
-    },
-    {
-      x:3,
-      y:4,
-    },
-    {
-      x:4,
-      y:4,
-    },
-    {
-      x:5,
-      y:4,
-    },
-    {
-      x:6,
-      y:4,
-    },
-    {
-      x:7,
-      y:4,
-    },
-    {
-      x:8,
-      y:4,
-    },
-    {
-      x:9,
-      y:4,
-    },
-
+    new GameSquareModel( 1, 4 ),
+    new GameSquareModel( 2, 4 ),
+    new GameSquareModel( 3, 4 ),
+    new GameSquareModel( 4, 4 ),
+    new GameSquareModel( 5, 4 ),
+    new GameSquareModel( 6, 4 ),
+    new GameSquareModel( 7, 4 ),
+    new GameSquareModel( 8, 4 ),
+    new GameSquareModel( 9, 4 ),
 
   // Player 2: Pawn Row /==================
-  {
-      x:1,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-9",
-        img:"1FU"
-      }
-    },
-    {
-      x:2,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-8",
-        img:"1FU"
-      }
-    },
-    {
-      x:3,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-7",
-        img:"1FU"
-      }
-    },
-    {
-      x:4,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-6",
-        img:"1FU"
-      }
-    },
-    {
-      x:5,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-5",
-        img:"1FU"
-      }
-    },
-    {
-      x:6,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-4",
-        img:"1FU"
-      }
-    },
-    {
-      x:7,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-3",
-        img:"1FU"
-      }
-    },
-    {
-      x:8,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-2",
-        img:"1FU"
-      }
-    },
-    {
-      x:9,
-      y:3,
-      Piece:{
-        player: 2,
-        name:"Pawn-1",
-        img:"1FU"
-      }
-    },
-
-
-
-
-
+  new GameSquareModel( 1, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "9", "1FU")),
+  new GameSquareModel( 2, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "8", "1FU")),
+  new GameSquareModel( 3, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "7", "1FU")),
+  new GameSquareModel( 4, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "6", "1FU")),
+  new GameSquareModel( 5, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "5", "1FU")),
+  new GameSquareModel( 6, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "4", "1FU")),
+  new GameSquareModel( 7, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "3", "1FU")),
+  new GameSquareModel( 8, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "2", "1FU")),
+  new GameSquareModel( 9, 3, false, new GamePieceModel( 2, GamePieceType.Pawn, "1", "1FU")),
+  
   // Player 2: Mid Row /==================
-  {
-      x:1,
-      y:2,
-    },
-    {
-      x:2,
-      y:2,
-      Piece:{
-        player: 2,
-        name:"Rook-Right",
-        img:"1HI"
-      }
-    },
-    {
-      x:3,
-      y:2,
-    },
-    {
-      x:4,
-      y:2,
-    },
-    {
-      x:5,
-      y:2,
-    },
-    {
-      x:6,
-      y:2,
-    },
-    {
-      x:7,
-      y:2,
-    },
-    {
-      x:8,
-      y:2,
-      Piece:{
-        player: 2,
-        name:"Bishop-Left",
-        img:"1KA"
-      }
-    },
-    {
-      x:9,
-      y:2,
-    },
-
-
-
+    new GameSquareModel( 1, 2 ),
+    new GameSquareModel( 2, 2, false, new GamePieceModel( 2, GamePieceType.Rook, "Right", "1HI")),
+    new GameSquareModel( 3, 2 ),
+    new GameSquareModel( 4, 2 ),
+    new GameSquareModel( 5, 2 ),
+    new GameSquareModel( 6, 2 ),
+    new GameSquareModel( 7, 2 ),
+    new GameSquareModel( 8, 2, false, new GamePieceModel( 2, GamePieceType.Bishop, "Left", "1KA")),
+    new GameSquareModel( 9, 2 ),
 
   // Player 2: Back Row /==================
-    {
-      x:1,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Lance-Right",
-        img:"1KY"
-      }
-    },
-    {
-      x:2,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Knight-Right",
-        img:"1KE"
-      }
-    },
-    {
-      x:3,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Silver-Right",
-        img:"1GI"
-      }
-    },
-    {
-      x:4,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Gold-Right",
-        img:"1KI"
-      }
-    },
-    {
-      x:5,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"King-Center",
-        img:"1OU"
-      }
-    },
-    {
-      x:6,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Gold-Left",
-        img:"1KI"
-      }
-    },
-    {
-      x:7,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Silver-Left",
-        img:"1GI"
-      }
-    },
-    {
-      x:8,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Knight-Left",
-        img:"1KE"
-      }
-    },
-    {
-      x:9,
-      y:1,
-      Piece:{
-        player: 2,
-        name:"Lance-Left",
-        img:"1KY"
-      }
-    }
-    
+    new GameSquareModel( 1, 1, false, new GamePieceModel( 1, GamePieceType.Lance, "Right", "1KY")),
+    new GameSquareModel( 2, 1, false, new GamePieceModel( 1, GamePieceType.Knight, "Right", "1KE")),
+    new GameSquareModel( 3, 1, false, new GamePieceModel( 1, GamePieceType.Silver, "Right", "1GI")),
+    new GameSquareModel( 4, 1, false, new GamePieceModel( 1, GamePieceType.Gold, "Right", "1KI")),
+    new GameSquareModel( 5, 1, false, new GamePieceModel( 1, GamePieceType.KingVictor, "Center", "1OU")),
+    new GameSquareModel( 6, 1, false, new GamePieceModel( 1, GamePieceType.Gold, "Left", "1KI")),
+    new GameSquareModel( 7, 1, false, new GamePieceModel( 1, GamePieceType.Silver, "Left", "1GI")),
+    new GameSquareModel( 8, 1, false, new GamePieceModel( 1, GamePieceType.Knight, "Left", "1KE")),
+    new GameSquareModel( 9, 1, false, new GamePieceModel( 1, GamePieceType.Lance, "Left", "1KY")),
+  
   ] // ...Squares
 };

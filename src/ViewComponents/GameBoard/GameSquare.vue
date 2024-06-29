@@ -1,7 +1,7 @@
 <template>
 
   <div 
-    :id="square.id"
+    :id="square.Id"
     :style="getPosition()"
     class="game-square"
     :class="getGameSquareClass()"
@@ -46,7 +46,7 @@ const props = defineProps({
   }
 });
 
-(props.square as GameSquareModel).id = `Square-${props.square.x}${props.square.y}`;
+// (props.square as GameSquareModel).id = `Square-${props.square.x}${props.square.y}`;
 const piece = ref(props.square?.Piece as GamePieceModel);
 
 const drop = (ev: any) => {
@@ -60,43 +60,43 @@ const dragOver = (ev: any) => {
 }; 
 
 const getPosition = () => {
-  return `grid-row:${props.square.y}; grid-column:${props.square.x};`
+  return `grid-row:${props.square.Y}; grid-column:${props.square.X};`
 };
 
 const focusPiece = (id: string) => {
   console.log(`2.GameSquare.focusPiece: ${id}`);
-  game$.FocusSquare(id, props.square.id);
+  game$.FocusSquare(id, props.square.Id);
 
 };
 
 const getSquareLabelText = (xy: string):string => {
     
-  if(xy == "x" && props.square.x == 9){    
-    return (props.square.y + 9).toString(36);
+  if(xy == "x" && props.square.Y == 9){    
+    return (props.square.Y + 9).toString(36);
   }
-  if(xy == "y" && props.square.y == 1){
-    return ( Math.abs(props.square.x - 10)).toString();
+  if(xy == "y" && props.square.Y == 1){
+    return ( Math.abs(props.square.X - 10)).toString();
   }
   return "";
 };
 
 const getSquareLabelClass = (xy: string): string =>{
-  if(xy == "x" && props.square.x == 9){    
+  if(xy == "x" && props.square.X == 9){    
     return "game-square-label-right";  
   }
-  if(xy == "y" && props.square.y == 1){
+  if(xy == "y" && props.square.Y == 1){
     return "game-square-label-top";
   }
   return "";
 };
 
 const getGameSquareClass = () => {
-  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
+  if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
   return "focussed-square-start";
-  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
-  return "focussed-square-kill";
-  if(game$.FocussedSquare.x == props.square.x && game$.FocussedSquare.y == props.square.y)
-  return "focussed-square-move";
+  // if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
+  // return "focussed-square-kill";
+  // if(game$.FocussedSquare.X == props.square.X && game$.FocussedSquare.y == props.square.Y)
+  // return "focussed-square-move";
 
 };
 
