@@ -19,7 +19,7 @@ export const useGameState = defineStore("GameState", () => {
   const PlayerTurn = ref(1);
   const PieceToBeMoved = ref({} as (GamePieceModel | null));
   const SquareStartingFrom = ref({} as GameSquareModel);
-  const SquareMovesPotential = ref([] as GameSquareModel[]);
+  const SquareMovesPotential = ref([] as string[]);
 
   //== Movement: Start =====================================================
   const MoveStart = async  (piece: GamePieceModel) => {
@@ -47,7 +47,7 @@ export const useGameState = defineStore("GameState", () => {
     if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
       GameBoardModel.value.Squares.forEach( s => {
         if(s.X == target.X && s.Y == target.Y)
-          SquareMovesPotential.value.push(s);
+          SquareMovesPotential.value.push(s.Id);
       });
 
     }    
@@ -75,8 +75,11 @@ export const useGameState = defineStore("GameState", () => {
 
   //== Ancillary ===========================================================
   const getStartPositionFromId=(id: string): string =>{
-    const begins = id.indexOf("-")
-    return id.substring(begins +1);
+    const start = id.lastIndexOf("-")
+    const result = id.substring(start +1);
+    console.log(`StartPos: ${result}`)
+    return result;
+
   };
 
   

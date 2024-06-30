@@ -55,7 +55,7 @@ const props = defineProps({
     required: true
   }
 });
-const currentClass = ref(game$.SquareMovesPotential.includes( props.input) ? "game-square-potential-move" : "");
+const currentClass = ref(game$.SquareMovesPotential.includes( props.input.Id) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
   return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
@@ -79,7 +79,7 @@ watch( // Update highlight
   () => game$.SquareMovesPotential.values,
   () => {
 
-    if(game$.SquareMovesPotential.includes(props.input)){
+    if(game$.SquareMovesPotential.includes(props.input.Id)){
       console.log(`9. SquareMovesPotential.includes ${props.input.Id}`)
       currentClass.value = "game-square-potential-move";
     }
