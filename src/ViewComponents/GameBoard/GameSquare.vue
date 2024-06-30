@@ -5,9 +5,10 @@
     :class="getCurrentClass()"
     :id="square.Id"
     :style="setPosition()"
-    @drop="drop($event)" 
-    @dragover="dragOver($event)"
-  >
+    @click="handleClickSquare"
+    >
+    <!-- @drop="drop($event)"  -->
+    <!-- @dragover="dragOver($event)" -->
 
     <div 
       class="board-notation"
@@ -31,7 +32,7 @@
       <game-piece 
         v-if="piece != undefined"
         :piece="piece"
-        @handle-click="handleClick"
+        @handle-click="handleClickPiece"
       ></game-piece>
     </div>
 
@@ -45,6 +46,7 @@ import { defineProps, ref } from 'vue';
 import type { GamePieceModel, GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
+import { GameMode } from '@/State/Game/GameMode';
 
 //=== Setup ======================================================
 const game$ = useGameState();
@@ -81,25 +83,39 @@ const getNotationStyle = (xy: string): string =>{
 };
 
 //=== Events =====================================================
-const drop = (ev: any) => {
-  console.log( `drop: ${(((ev as DragEvent).target) as HTMLElement).id}` );
+// const drop = (ev: any) => {
+//   console.log( `drop: ${(((ev as DragEvent).target) as HTMLElement).id}` );
 
-  ev.preventDefault();
-  var data = ev.dataTransfer.getData("text");
-  ev.target.appendChild(document.getElementById(data));
+//   ev.preventDefault();
+//   var data = ev.dataTransfer.getData("text");
+//   ev.target.appendChild(document.getElementById(data));
 
-  game$.MoveEnd((((ev as DragEvent).target) as HTMLElement).id)
+//   game$.MoveEnd((((ev as DragEvent).target) as HTMLElement).id)
   
+// };
+
+// const dragOver = (ev: any) => {
+//   console.log( `dragOver: ${(((ev as DragEvent).target) as HTMLElement).id}` );
+//   ev.preventDefault();
+// }; 
+
+const handleClickPiece = ( piece: GamePieceModel ) => {
+  console.log(`2.GameSquare.handleClickPiece: ${props.square.Id}| `);
+  if(game$.GameMode == GameMode.StandBy){
+    game$.MoveStart(piece, props.square);
+
+  }
+
 };
 
-const dragOver = (ev: any) => {
-  console.log( `dragOver: ${(((ev as DragEvent).target) as HTMLElement).id}` );
-  ev.preventDefault();
-}; 
+const handleClickSquare = () => {
+  console.log(`2.GameSquare.handleClickSquare: ${props.square.Id}`);
+  if(game$.GameMode == GameMode.MoveStart){
+    game$.MoveEnd(props.square);
 
-const handleClick = ( piece: GamePieceModel ) => {
-  console.log(`2.GameSquare.handleClick: ${props.square.Id}`);
-  game$.MoveStart(piece, props.square)
+  }
+
+
 };
 
 const getCurrentClass = () => {

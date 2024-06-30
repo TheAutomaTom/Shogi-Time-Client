@@ -46,11 +46,11 @@ export const useGameState = defineStore("GameState", () => {
     });
   };
 
-  const MoveEnd = (squareId: string) => {
+  const MoveEnd = (square: GameSquareModel) => {
 
     GameBoardModel.value.Squares.map( s => {
       
-      if(s.Id == squareId){
+      if(s.Id == square.Id){
         console.log(`4.MoveEnd matched ${s.Id}`);
 
         const startingPosBegins = focussedPiece.value.Id.lastIndexOf("-")
