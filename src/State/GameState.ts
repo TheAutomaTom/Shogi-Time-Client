@@ -1,4 +1,3 @@
-import { GamePieceType } from '@/Models/Game';
 import {  
   GameBoardModel,
   GameSquareModel,
@@ -8,6 +7,7 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
+import { Coordinate, MovementRule } from './Game/LegalMoves';
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -17,31 +17,44 @@ export const useGameState = defineStore("GameState", () => {
 
   const Mode = ref(GameMode.TurnStart);
   const PlayerTurn = ref(1);
-  const PieceMoveStart = ref({} as (GamePieceModel | null));
-  const SquareMoveStart = ref({} as GameSquareModel);
+  const PieceToBeMoved = ref({} as (GamePieceModel | null));
+  const SquareStartingFrom = ref({} as GameSquareModel);
   const SquareMovesPotential = ref([] as GameSquareModel[]);
 
-  //== Movement ============================================================
+  //== Movement: Start =====================================================
   const MoveStart = async  (piece: GamePieceModel) => {
-    console.log(`2.MoveStart( piece.Id:${piece.Id})`);
+    
     Mode.value = GameMode.MoveStart;
     
-    PieceMoveStart.value = piece;
-    console.log(`2B.PieceMoveStart=( ${PieceMoveStart.value.Id})`);
+    // Bookmark the piece in focus.
+    PieceToBeMoved.value = piece;   
 
+    // Find the starting square based on the id of the piece it contains.
     GameBoardModel.value.Squares.forEach( square => {
       if(square.Piece.Id == piece.Id){
-        SquareMoveStart.value = square;
+        SquareStartingFrom.value = square;
       }
     });
-    
+
+    // Highlight potential move squares
+    SquareMovesPotential.value = []; // reset prior
+    const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
+    let target = { 
+      X: SquareStartingFrom.value.X ,
+      Y: SquareStartingFrom.value.Y + rangeOfMovement.N
+    } as Coordinate;
+
+    if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
+      GameBoardModel.value.Squares.forEach( s => {
+        if(s.X == target.X && s.Y == target.Y)
+          SquareMovesPotential.value.push(s);
+      });
+
+    }    
   };
 
-  const getLegalMoves = (type: GamePieceType, player:number, x: number, y: number) =>{
-    
 
-  }
-
+  //== Movement: Move ======================================================
   const TryMove = async (square: GameSquareModel)=>{    
 
     GameBoardModel.value.Squares.map( s =>{
@@ -49,11 +62,11 @@ export const useGameState = defineStore("GameState", () => {
       if(s.Id == square.Id){
 
         // Create the new piece in that spot
-        s.Piece = new GamePieceModel(PlayerTurn.value, PieceMoveStart.value!.Type, getStartPositionFromId(PieceMoveStart.value!.Id), PieceMoveStart.value!.Icon);
+        s.Piece = new GamePieceModel(PlayerTurn.value, PieceToBeMoved.value!.Type, getStartPositionFromId(PieceToBeMoved.value!.Id), PieceToBeMoved.value!.Icon);
 
         // Replace old spots with empty pieces
-        PieceMoveStart.value = new GamePieceModel( );
-        SquareMoveStart.value.Piece = new GamePieceModel( );
+        PieceToBeMoved.value = new GamePieceModel( );
+        SquareStartingFrom.value.Piece = new GamePieceModel( );
 
       }
     });
@@ -64,16 +77,17 @@ export const useGameState = defineStore("GameState", () => {
   const getStartPositionFromId=(id: string): string =>{
     const begins = id.indexOf("-")
     return id.substring(begins +1);
-
   };
+
+  
 
   
   return {
     GameBoardModel,
     PlayerTurn,
     Mode,    
-    PieceMoveStart,
-    SquareMoveStart,
+    PieceToBeMoved,
+    SquareStartingFrom,
     MoveStart,
     TryMove,
     SquareMovesPotential

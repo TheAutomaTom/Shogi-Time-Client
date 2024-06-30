@@ -10,7 +10,7 @@ export class GameSquareModel {
   Y: number;
   Piece: GamePieceModel;
   
-  constructor(x: number, y: number, piece: GamePieceModel ) {
+  constructor(x: number, y: number, piece: GamePieceModel) {
     this.Id = `Square-${x}${y}`;
     this.X = x;
     this.Y = y;

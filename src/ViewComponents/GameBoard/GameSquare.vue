@@ -1,9 +1,10 @@
 <template>
 
   <div 
-    class="game-square"
+    class="game-square "
     :id="input.Id"
     :style="setGridPosition()"
+    :class="currentClass"
     @click="handleClickSquare"
   >
 
@@ -40,7 +41,7 @@
 
 <!--  -->
 <script setup lang="ts">
-import { defineProps,  reactive, ref, watch } from 'vue';
+import { defineProps,  ref, watch } from 'vue';
 import type { GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
@@ -74,11 +75,12 @@ const getNotationStyle = (xy: string): string =>{
 
 
 //=== Events =====================================================
-watch(
+watch( // Update highlight
   () => game$.SquareMovesPotential.values,
   () => {
 
     if(game$.SquareMovesPotential.includes(props.input)){
+      console.log(`9. SquareMovesPotential.includes ${props.input.Id}`)
       currentClass.value = "game-square-potential-move";
     }
     else {
@@ -87,18 +89,20 @@ watch(
   }
 );
 
-watch(
+watch( // Update Piece movement
   () => game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id),
 () => {
     props.input.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id))[0].Piece
   }
 );
 
-const handleClickSquare = () => {
-  console.log(`\r\n3A.GameSquare.handleClickSquare...`);
 
-  if( game$.Mode == GameMode.MoveStart && game$.SquareMoveStart.Id != props.input.Id){
-        console.log(`3B.GameSquare.handleClickSquare: ${props.input.Id}`);
+
+const handleClickSquare = () => {
+  
+  if( game$.Mode == GameMode.MoveStart && game$.SquareStartingFrom.Id != props.input.Id){
+    
+        console.log(`3.GameSquare.handleClickSquare: ${props.input.Id}`);
         game$.TryMove(props.input);
     }
 };

@@ -16,7 +16,7 @@
   import { GamePieceModel } from '@/Models/Game';
   import { GameMode } from '@/State/Game/GameMode';
   import { useGameState } from '@/State/GameState';
-  import { defineProps, reactive, ref, watch } from 'vue';
+  import { defineProps, ref, watch } from 'vue';
 
   //=== Setup ======================================================
   const game$ = useGameState();
@@ -26,13 +26,13 @@
       required: true
     }
   });
-  const currentClass = ref(game$.PieceMoveStart!.Id == props.input.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(game$.PieceToBeMoved!.Id == props.input.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
-    () => game$.PieceMoveStart!.Id,
+    () => game$.PieceToBeMoved!.Id,
     () => {
-      if (game$.PieceMoveStart!.Id == props.input.Id) {
+      if (game$.PieceToBeMoved!.Id == props.input.Id) {
         currentClass.value = "game-piece-move-start";
       }
       else {
