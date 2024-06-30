@@ -41,170 +41,136 @@ export const useGameState = defineStore("GameState", () => {
     const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
     const facing = setPieceIsFacing(piece.IsFacingDefault);
 
-    // Process North
+    // Process North ===============================================
     let hitObstacle = 0;
     for (let i = 1; i <= rangeOfMovement.N; i++) {
       if(hitObstacle > 0) break;
 
-        let target = { 
-          X: SquareStartingFrom.value.X ,
-          Y: SquareStartingFrom.value.Y + i * facing
-        } as Coordinate;
+      let target = { 
+        X: SquareStartingFrom.value.X ,
+        Y: SquareStartingFrom.value.Y + i * facing
 
-        hitObstacle = evaluateSquare(target);
-
-        /*
-        
-        
-        if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
-          console.warn(`Hit off the map @ ${target.X}:${target.Y}... return true`);
-          hitObstacle++;
-        }
-        if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
-              
-          GameBoardModel.value.Squares.forEach( s => {
-            if(s.X == target.X && s.Y == target.Y){
-                        
-              // Found ally
-              if( s.Piece.Player == CurrentPlayer.value ){
-                if(hitObstacle == 0){
-                  console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return true`);
-                  hitObstacle++;
-                }
-              }
-              
-              // Found enemy (only add first found)
-              else if( s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
-                if(hitObstacle == 0){
-                  SquareMovesPotential.value.push(s.Id);
-                  console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return true`);
-                  hitObstacle ++;
-                }
-              }
-
-              // Found empty space
-              else if(s.Piece.Player == 0){
-                  SquareMovesPotential.value.push(s.Id);
-              }
-            }      
-          });
-        
-        }
-
-      }
-      if(hitObstacle > 0){
-        console.error(`End loop hitObstacle.value: ${hitObstacle}`);
-        */
-
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
     }
-    hitObstacle = 0;
     
-    // // Process South
-    // for (let i = 1; i <= rangeOfMovement.S; i++) {
-    //   if(!hitObstacle.value){
+    // Process South ===============================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.S; i++) {
+      if(hitObstacle > 0) break;
 
-    //     let target = { 
-    //       X: SquareStartingFrom.value.X ,
-    //       Y: SquareStartingFrom.value.Y - i * facing
-    //     } as Coordinate;
-        
-    //     hitObstacle = evaluateSquare(target);       
-    //   }
-    // }
-    // hitObstacle = false;
+      let target = { 
+        X: SquareStartingFrom.value.X ,
+        Y: SquareStartingFrom.value.Y - i * facing
 
-    // // Process East
-    // for (let i = 1; i <= rangeOfMovement.E; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X - i * facing,
-    //     Y: SquareStartingFrom.value.Y 
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
 
-    // // Process West
-    // for (let i = 1; i <= rangeOfMovement.E; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X + i * facing,
-    //     Y: SquareStartingFrom.value.Y 
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+    // Process East ================================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.E; i++) {
+      if(hitObstacle > 0) break;
 
-    // // Process North-West
-    // for (let i = 1; i <= rangeOfMovement.NW; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X + i * facing,
-    //     Y: SquareStartingFrom.value.Y + i * facing
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+      let target = { 
+        X: SquareStartingFrom.value.X - i * facing ,
+        Y: SquareStartingFrom.value.Y
 
-    // // Process North-East
-    // for (let i = 1; i <= rangeOfMovement.NE; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X - i * facing,
-    //     Y: SquareStartingFrom.value.Y + i * facing
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
+    
+    // Process West ================================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.W; i++) {
+      if(hitObstacle > 0) break;
 
-    // // Process South-East
-    // for (let i = 1; i <= rangeOfMovement.SE; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X - i * facing,
-    //     Y: SquareStartingFrom.value.Y - i * facing
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+      let target = { 
+        X: SquareStartingFrom.value.X + i * facing ,
+        Y: SquareStartingFrom.value.Y
 
-    // // Process South-West
-    // for (let i = 1; i <= rangeOfMovement.SW; i++) {
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X + i * facing,
-    //     Y: SquareStartingFrom.value.Y - i * facing
-    //   } as Coordinate;
-        
-    //   hitObstacle = evaluateSquare(target);
-    // }
-    // hitObstacle = false;
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
 
-    // // Process Knight
-    // if(rangeOfMovement.K){
-    //   let target = { 
-    //     X: SquareStartingFrom.value.X + 1 * facing,
-    //     Y: SquareStartingFrom.value.Y + 2 * facing
-    //   } as Coordinate;
+    // Process North-West ==========================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.NW; i++) {
+      if(hitObstacle > 0) break;
 
-    //   if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
-    //     GameBoardModel.value.Squares.forEach( s => {
-    //       if(s.X == target.X && s.Y == target.Y)
-    //         SquareMovesPotential.value.push(s.Id);
-    //     });
-    //   }
+      let target = { 
+        X: SquareStartingFrom.value.X + i * facing ,
+        Y: SquareStartingFrom.value.Y + i * facing 
 
-    //   target = { 
-    //     X: SquareStartingFrom.value.X + -1 * facing,
-    //     Y: SquareStartingFrom.value.Y + 2 * facing
-    //   } as Coordinate;
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
 
-    //   if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
-    //     GameBoardModel.value.Squares.forEach( s => {
-    //       if(s.X == target.X && s.Y == target.Y)
-    //         SquareMovesPotential.value.push(s.Id);
-    //     });
-    //   }      
-    // }
+    // Process North-East ==========================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.NE; i++) {
+      if(hitObstacle > 0) break;
+
+      let target = { 
+        X: SquareStartingFrom.value.X - i * facing ,
+        Y: SquareStartingFrom.value.Y + i * facing 
+
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
+
+    // Process South-East =========================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.SE; i++) {
+      if(hitObstacle > 0) break;
+
+      let target = { 
+        X: SquareStartingFrom.value.X - i * facing ,
+        Y: SquareStartingFrom.value.Y - i * facing 
+
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
+
+    // Process South-West ==========================================
+    hitObstacle = 0;
+    for (let i = 1; i <= rangeOfMovement.SW; i++) {
+      if(hitObstacle > 0) break;
+
+      let target = { 
+        X: SquareStartingFrom.value.X + i * facing ,
+        Y: SquareStartingFrom.value.Y - i * facing 
+
+      } as Coordinate;
+      hitObstacle = validateMovement(target);
+    }
+
+    // Process Knight ==============================================
+    if(rangeOfMovement.K){
+      let target = { 
+        X: SquareStartingFrom.value.X + 1 * facing,
+        Y: SquareStartingFrom.value.Y + 2 * facing
+      } as Coordinate;
+
+      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
+        GameBoardModel.value.Squares.forEach( s => {
+          if(s.X == target.X && s.Y == target.Y)
+            SquareMovesPotential.value.push(s.Id);
+        });
+      }
+
+      target = { 
+        X: SquareStartingFrom.value.X + -1 * facing,
+        Y: SquareStartingFrom.value.Y + 2 * facing
+      } as Coordinate;
+
+      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
+        GameBoardModel.value.Squares.forEach( s => {
+          if(s.X == target.X && s.Y == target.Y)
+            SquareMovesPotential.value.push(s.Id);
+        });
+      }      
+    }
 
   };
 
@@ -248,27 +214,21 @@ export const useGameState = defineStore("GameState", () => {
 
   };
 
-  const evaluateSquare = (target: Coordinate):number =>{
-
+  const validateMovement = (target: Coordinate):number =>{
     let hit = 0;
-
     // All coordinate locations are to be between 1 and 9
     if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
       console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
       return 8;
     }
-
     // Find the target square
-    GameBoardModel.value.Squares.forEach( s => {
-      
-      if(s.X == target.X && s.Y == target.Y){
-                  
+    GameBoardModel.value.Squares.forEach( s => {      
+      if(s.X == target.X && s.Y == target.Y){                  
         // Found ally
         if( s.Piece.Player == CurrentPlayer.value ){
           console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
           hit++;
-        }
-        
+        }        
         // Found enemy (only add first found)
         else if( hit == 0 
           && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
@@ -276,7 +236,6 @@ export const useGameState = defineStore("GameState", () => {
             console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
             hit++;
         }
-
         // Found empty space
         else if(s.Piece.Player == 0){
           SquareMovesPotential.value.push(s.Id);
