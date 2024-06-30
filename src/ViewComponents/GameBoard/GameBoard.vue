@@ -1,6 +1,6 @@
 <template>
-  <div>{{ game$.CurrentPlayer }}</div>
-  <div class="game-board" >    
+  
+  <div class="game-board" >
     <game-square 
       v-for="square in Model.Squares"
       :input="square"
@@ -20,13 +20,12 @@ const Model = ref(game$.GameBoardModel);
 </script>
 <!-- =============================================== -->
 <style scoped lang="scss">
-
 .game-board{
-  position: absolute;
+  // position: relative;
   overflow:hidden;
 
-  max-width:90%;
-  top:2.5em;
+  max-width:100%;
+  top:3.5em;
   
   display: grid;
   grid-template-rows: repeat(9, 1fr);

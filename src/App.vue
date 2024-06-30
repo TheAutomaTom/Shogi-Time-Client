@@ -121,7 +121,7 @@ const isUnfocussed = computed(() => {
   grid-column:3;
 
   display: flex;
-  align-items: center;
+  // align-items: center;
   justify-content: center;
   
 }
