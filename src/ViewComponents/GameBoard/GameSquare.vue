@@ -76,7 +76,7 @@ const getNotationStyle = (xy: string): string =>{
 
 //=== Events =====================================================
 watch( // Update highlight
-  () => game$.SquareMovesPotential.values,
+  () => game$.SquareMovesPotential,
   () => {
 
     if(game$.SquareMovesPotential.includes(props.input.Id)){

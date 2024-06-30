@@ -19,7 +19,7 @@ export const useGameState = defineStore("GameState", () => {
   const PlayerTurn = ref(1);
   const PieceToBeMoved = ref({} as (GamePieceModel | null));
   const SquareStartingFrom = ref({} as GameSquareModel);
-  const SquareMovesPotential = ref([] as string[]);
+  const SquareMovesPotential = ref([""] as string[]);
 
   //== Movement: Start =====================================================
   const MoveStart = async  (piece: GamePieceModel) => {
@@ -37,11 +37,14 @@ export const useGameState = defineStore("GameState", () => {
     });
 
     // Highlight potential move squares
-    SquareMovesPotential.value = []; // reset prior
+    SquareMovesPotential.value = [""]; // reset prior
     const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
+
+    const facing = setPieceIsFacing(piece.IsFacingDefault);
+
     let target = { 
       X: SquareStartingFrom.value.X ,
-      Y: SquareStartingFrom.value.Y + rangeOfMovement.N
+      Y: SquareStartingFrom.value.Y + rangeOfMovement.N * facing
     } as Coordinate;
 
     if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
@@ -52,6 +55,14 @@ export const useGameState = defineStore("GameState", () => {
 
     }    
   };
+
+  const setPieceIsFacing = (pieceIsFacingDefault: boolean) =>{
+
+    if(pieceIsFacingDefault){
+      return PlayerTurn.value == 1 ? -1 : 1;
+    }
+    return PlayerTurn.value == 1 ? 1 : -1;
+  }
 
 
   //== Movement: Move ======================================================
@@ -70,6 +81,7 @@ export const useGameState = defineStore("GameState", () => {
 
       }
     });
+    SquareMovesPotential.value = [""];
     Mode.value = GameMode.TurnStart;
   }
 

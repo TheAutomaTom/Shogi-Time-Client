@@ -20,23 +20,6 @@ export type Coordinate = {
 export class MovementRule {
   PieceType: GamePieceType;
   Mobility: Mobility;
-
-  // None: Mobility;
-  // KingVictor: Mobility;
-  // KingChallenger: Mobility;
-  // Rook: Mobility;
-  // RookPro: Mobility;
-  // Bishop: Mobility;
-  // BishopPro: Mobility;
-  // Gold: Mobility;
-  // Silver: Mobility;
-  // SilverPro: Mobility;
-  // Knight: Mobility;
-  // KnightPro: Mobility;
-  // Lance: Mobility;
-  // LancePro: Mobility;
-  // Pawn: Mobility;
-  // PawnPro: Mobility;
   
   constructor(pieceType: GamePieceType) {  
     this.PieceType = pieceType;
