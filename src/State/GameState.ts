@@ -54,7 +54,6 @@ export const useGameState = defineStore("GameState", () => {
       }
     });
     Mode.value = GameMode.TurnStart;
-
   }
 
   

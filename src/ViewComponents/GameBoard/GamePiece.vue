@@ -1,6 +1,6 @@
 <template>
   <img 
-    class="game-piece"    
+    class="game-piece"
     :class="currentClass"
     @click="handleClickPiece"
     :src="`public/pieces/Shogi_FCZ/${input.Icon}.svg`"
