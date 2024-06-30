@@ -3,7 +3,7 @@
     class="game-piece"
     :class="currentClass"
     @click="handleClickPiece"
-    :src="`public/pieces/Shogi_FCZ/${input.Icon}.svg`"
+    :src="`pieces/Shogi_FCZ/${input.Icon}.svg`"
     :id="input.Id"
     draggable="true" 
     >
@@ -16,7 +16,7 @@
   import { GamePieceModel } from '@/Models/Game';
   import { GameMode } from '@/State/Game/GameMode';
   import { useGameState } from '@/State/GameState';
-  import { defineProps, ref, watch } from 'vue';
+  import { ref, watch } from 'vue';
 
   //=== Setup ======================================================
   const game$ = useGameState();
