@@ -23,12 +23,14 @@ export class GamePieceModel {
   Player: number;
   Icon: string;
   Id: string;
+  IsFacingDefault: boolean
   
-  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "") {    
+  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.Player = player;
     this.Icon = icon;
+    this.IsFacingDefault = isFacingDefault;
   };
 };
 

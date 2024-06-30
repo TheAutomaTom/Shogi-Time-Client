@@ -1,3 +1,4 @@
+import { GamePieceType } from '@/Models/Game';
 import {  
   GameBoardModel,
   GameSquareModel,
@@ -36,6 +37,11 @@ export const useGameState = defineStore("GameState", () => {
     
   };
 
+  const getLegalMoves = (type: GamePieceType, player:number, x: number, y: number) =>{
+    
+
+  }
+
   const TryMove = async (square: GameSquareModel)=>{    
 
     GameBoardModel.value.Squares.map( s =>{
@@ -43,11 +49,9 @@ export const useGameState = defineStore("GameState", () => {
       if(s.Id == square.Id){
 
         // Create the new piece in that spot
-        const startingPosBegins = PieceMoveStart.value!.Id.indexOf("-")
-        const startingPos = PieceMoveStart.value!.Id.substring(startingPosBegins +1);
-        s.Piece = new GamePieceModel(PlayerTurn.value, PieceMoveStart.value!.Type, startingPos, PieceMoveStart.value!.Icon);
+        s.Piece = new GamePieceModel(PlayerTurn.value, PieceMoveStart.value!.Type, getStartPositionFromId(PieceMoveStart.value!.Id), PieceMoveStart.value!.Icon);
 
-        // Put empty pieces in the old spot
+        // Replace old spots with empty pieces
         PieceMoveStart.value = new GamePieceModel( );
         SquareMoveStart.value.Piece = new GamePieceModel( );
 
@@ -55,6 +59,13 @@ export const useGameState = defineStore("GameState", () => {
     });
     Mode.value = GameMode.TurnStart;
   }
+
+  //== Ancillary ===========================================================
+  const getStartPositionFromId=(id: string): string =>{
+    const begins = id.indexOf("-")
+    return id.substring(begins +1);
+
+  };
 
   
   return {
