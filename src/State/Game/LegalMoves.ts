@@ -125,12 +125,12 @@ export class MovementRule {
       case GamePieceType.Silver: 
         this.Mobility = {
           N:  1,
-          S:  1,
+          S:  0,
           E:  0,
           W:  0,
           NE: 1,
-          SE: 0,
-          SW: 0,
+          SE: 1,
+          SW: 1,
           NW: 1,
           K:  false
         } as Mobility;
