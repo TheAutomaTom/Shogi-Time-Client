@@ -1,7 +1,8 @@
 export enum GameMode {
 
-  StandBy,
+  TurnStart,
   MoveStart,
-  MoveEnd
+  MoveEnd,
+  TurnEnd
 
 }

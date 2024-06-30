@@ -3,7 +3,7 @@
     
     <game-square 
       v-for="square in Model.Squares"
-      :square="square"
+      :input="square"
     />
 
   </div>

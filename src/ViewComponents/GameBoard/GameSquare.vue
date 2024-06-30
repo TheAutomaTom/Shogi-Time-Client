@@ -2,11 +2,11 @@
 
   <div 
     class="game-square"
-    :class="getCurrentClass()"
-    :id="square.Id"
-    :style="setPosition()"
-    @click="handleClickSquare"
-    >
+    :id="input.Id"
+    :style="setGridPosition()"
+  >
+    <!-- :class="getCurrentClass()" -->
+    <!-- @click="handleClickSquare" -->
     <!-- @drop="drop($event)"  -->
     <!-- @dragover="dragOver($event)" -->
 
@@ -30,9 +30,8 @@
 
     <div class="game-square-piece" >      
       <game-piece 
-        v-if="piece != undefined"
-        :piece="piece"
-        @handle-click="handleClickPiece"
+        v-if="myself.Piece != undefined"
+        :input="myself.Piece"
       ></game-piece>
     </div>
 
@@ -42,8 +41,8 @@
 
 <!--  -->
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
-import type { GamePieceModel, GameSquareModel } from '@/Models/Game';
+import { defineProps, nextTick, reactive } from 'vue';
+import type { GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GameMode } from '@/State/Game/GameMode';
@@ -51,32 +50,32 @@ import { GameMode } from '@/State/Game/GameMode';
 //=== Setup ======================================================
 const game$ = useGameState();
 const props = defineProps({
-  square: {
+  input: {
     type: Object as () => GameSquareModel,
     required: true
   }
 });
-const setPosition = () => {
-  return `grid-row:${props.square.Y}; grid-column:${props.square.X};`
+const myself = reactive(props.input as GameSquareModel);
+
+const setGridPosition = () => {
+  return `grid-row:${myself.Y}; grid-column:${myself.X};`
 };
 
-const piece = ref(props.square?.Piece as GamePieceModel);
-
 const getNotationText = (xy: string):string => {
-  if(xy == "x" && props.square.X == 9){    
-    return (props.square.Y + 9).toString(36);
+  if(xy == "x" && myself.X == 9){    
+    return (myself.Y + 9).toString(36);
   }
-  if(xy == "y" && props.square.Y == 1){
-    return (Math.abs(props.square.X - 10).toString());
+  if(xy == "y" && myself.Y == 1){
+    return (Math.abs(myself.X - 10).toString());
   }  
   return "";
 };
 
 const getNotationStyle = (xy: string): string =>{
-  if(xy == "x" && props.square.X == 9){    
+  if(xy == "x" && myself.X == 9){    
     return "board-notation-right";  
   }
-  if(xy == "y" && props.square.Y == 1){
+  if(xy == "y" && myself.Y == 1){
     return "board-notation-top";
   }
   return "";
@@ -99,39 +98,30 @@ const getNotationStyle = (xy: string): string =>{
 //   ev.preventDefault();
 // }; 
 
-const handleClickPiece = ( piece: GamePieceModel ) => {
-  console.log(`2.GameSquare.handleClickPiece: ${props.square.Id}| `);
-  if(game$.GameMode == GameMode.StandBy){
-    game$.MoveStart(piece, props.square);
 
-  }
+// const handleClickSquare = () => {
 
-};
+//   // if(game$.GameMode == GameMode.MoveStart){
+//     console.log(`1B.GameSquare.handleClickSquare: ${myself.Id}`);
+//     game$.MoveEnd(myself);
+//   // }
+// };
 
-const handleClickSquare = () => {
-  console.log(`2.GameSquare.handleClickSquare: ${props.square.Id}`);
-  if(game$.GameMode == GameMode.MoveStart){
-    game$.MoveEnd(props.square);
+// const getCurrentClass = async () => {
 
-  }
-
-
-};
-
-const getCurrentClass = () => {
-
-  if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.Y == props.square.Y)
-  return "focussed-square-start";
-  // if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.y == props.square.Y)
-  // return "focussed-square-kill";
-  // if(game$.SquareToMoveFrom.X == props.square.X && game$.SquareToMoveFrom.y == props.square.Y)
-  // return "focussed-square-move";
-};
+//   console.warn(`game$.SquareToMoveFrom.Id= ${game$.SquareToMoveFrom.Id} : myself.Id= ${myself.Id}`);
+//   if(game$.SquareToMoveFrom.Id == myself.Id){
+//     console.warn(`GamePiece.getCurrentClass= "focussed-square-start"`);
+//     return await nextTick(()=>"focussed-square-start");
+//     // return "focussed-square-start";
+//   }
+  
+// };
 
 </script>
 
 <!--  -->
-<style lang="scss">
+<style scoped lang="scss">
 
   .game-square{
     position: relative;
@@ -161,15 +151,18 @@ const getCurrentClass = () => {
     right:0;
     
   }
-  .focussed-square-start{
-    background-color: yellow;
-  }
-  .focussed-square-move{
-    background-color: green;
-  }
-  .focussed-square-kill{
-    background-color: red;
-  }
+  // .focussed-square-start{
+  //   background-color: yellow !important;
+  //   color:yellow !important;
+  // }
+
+  // .focussed-square-move{
+  //   background-color: green;
+  // }
+
+  // .focussed-square-kill{
+  //   background-color: red;
+  // }
 
 // .info-box {
 //   position: relative;
