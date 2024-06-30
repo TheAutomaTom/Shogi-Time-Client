@@ -1,5 +1,5 @@
 <template>
-  <div><span>GameMode: {{ game$.Mode }}</span></div>
+  <div><span>CurrentPlayer: {{ game$.CurrentPlayer }}</span></div>
   <game-board></game-board>
 </template>
 

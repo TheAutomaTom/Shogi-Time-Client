@@ -3,7 +3,7 @@ import {
   GameSquareModel,
   GamePieceModel
 } from "../Models/Game";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
@@ -189,8 +189,7 @@ export const useGameState = defineStore("GameState", () => {
 
     GameBoardModel.value.Squares.map( s =>{
       // Find the square that was clicked and check if it's in the rules
-      if(s.Id == square.Id && SquareMovesPotential.value.includes(square.Id)){
-      
+      if(s.Id == square.Id && SquareMovesPotential.value.includes(square.Id)){      
 
         // Create the new piece in that spot
         s.Piece = new GamePieceModel(CurrentPlayer.value, PieceToBeMoved.value!.Type, getStartPositionFromId(PieceToBeMoved.value!.Id), PieceToBeMoved.value!.Icon);
@@ -204,6 +203,12 @@ export const useGameState = defineStore("GameState", () => {
 
       }
     });
+
+    if(CurrentPlayer.value == 1){
+      CurrentPlayer.value = 2;
+    } else {
+      CurrentPlayer.value = 1;
+    }
   }
 
   //== Ancillary ===========================================================
