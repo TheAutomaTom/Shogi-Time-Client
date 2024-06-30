@@ -80,7 +80,7 @@ watch( // Update highlight
   () => {
 
     if(game$.SquareMovesPotential.includes(props.input.Id)){
-      console.log(`9. SquareMovesPotential.includes ${props.input.Id}`)
+      // console.log(`9. SquareMovesPotential.includes ${props.input.Id}`)
       currentClass.value = "game-square-potential-move";
     }
     else {

@@ -43,7 +43,7 @@
 
   const handleClickPiece = async () => {
     
-    if( game$.PlayerTurn == props.input.Player 
+    if( game$.CurrentPlayer == props.input.Player 
       && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart)
       ){
         console.log(`\r\n1A.GamePiece.handleClickPiece: ${props.input.Id}`);
