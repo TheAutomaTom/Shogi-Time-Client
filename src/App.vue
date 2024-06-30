@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import Header from "@Components/Body/Header.vue";
 import Drawer from "@Components/Body/Drawer.vue";
+import Header from "@Components/Body/Header.vue";
 import Modal from '@Components/Body/Modal.vue'
-import { useAppState } from "./State/AppState";
 import { computed } from "vue";
+import { useAppState } from "./State/AppState";
 
 const app$ = useAppState();
 
@@ -12,25 +12,28 @@ const isUnfocussed = computed(() => {
 })
 
 </script>
-  <template>  
-  <div 
-    class="loading-screen"
-    v-show="app$.Layout$.IsLoading == true"  
-  >
-    "Loading..."
-  </div>
+  <template> 
+  
+    <div 
+      class="loading-screen"
+      v-show="app$.Layout$.IsLoading == true"  
+    >
+      "Loading..."
+    </div>
+    
     <modal 
       v-show="app$.Layout$.ModalIsOpen"
       class="modal-container"
       :class="isUnfocussed"
     />
-      <drawer></drawer>
+    
+    <drawer></drawer>
+    
     <div 
       id="root" 
       class="app-container"
       :class="isUnfocussed"
     >
-
       <div 
         style="grid-row:2;grid-column:2;cursor:pointer;"
         @click="app$.Layout$.ToggleDrawer()"
@@ -40,9 +43,7 @@ const isUnfocussed = computed(() => {
       <div style="grid-row:3/5;grid-column:2;">
       </div> 
       
-      <Header
-        v-show="!app$.Layout$.DrawerIsOpen"
-      ></Header>
+      <Header v-show="!app$.Layout$.DrawerIsOpen"></Header>
 
       <div class="content-wrapper">
         <router-view />
@@ -61,6 +62,7 @@ const isUnfocussed = computed(() => {
       </div> 
 
     </div>
+
   </template>
 <style scoped lang="scss">
 
@@ -83,9 +85,7 @@ const isUnfocussed = computed(() => {
   
   font-size: xx-large;
   vertical-align:baseline;
-
 }
-
 
 .modal-container{
   position: absolute;
@@ -95,18 +95,17 @@ const isUnfocussed = computed(() => {
   display: grid;
   overflow: hidden;
 
-  grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
-  grid-template-columns: 0em 2.5em 1fr 2.5em 0em;
+  grid-template-rows: 2.5em 1fr 2.5em;
+  grid-template-columns: 2.5em 1fr 2.5em;
 
   transition: 150ms;
   transition-timing-function: ease-out;
 }
 
-.app-container {
-  
+.app-container {  
   z-index: 0;
   height: 100vh;
-  width:100%;
+  width:100vw;
   display: grid;
   overflow: hidden;
 
@@ -120,10 +119,11 @@ const isUnfocussed = computed(() => {
 .content-wrapper{
   grid-row:3/4;
   grid-column:3;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
   
-  @apply w-full flex justify-center;
-
-
 }
 
 </style>
