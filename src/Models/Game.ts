@@ -8,15 +8,13 @@ export class GameSquareModel {
   Id: string;
   X: number;
   Y: number;
-  Piece?: GamePieceModel;
+  Piece: GamePieceModel;
   
-  constructor(x: number, y: number, piece?: GamePieceModel ) {
+  constructor(x: number, y: number, piece: GamePieceModel ) {
     this.Id = `Square-${x}${y}`;
     this.X = x;
     this.Y = y;
-    if(piece != undefined){
-      this.Piece = piece;
-    }
+    this.Piece = piece;
   }
 };
 
@@ -26,7 +24,7 @@ export class GamePieceModel {
   Icon: string;
   Id: string;
   
-  constructor(player: number, type: GamePieceType, startingPos: string, icon: string) {
+  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "") {    
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.Player = player;
@@ -35,6 +33,7 @@ export class GamePieceModel {
 };
 
 export enum GamePieceType{
+  None = "None",
   KingVictor = "KingVictor",
   KingChallenger = "KingChallenger",
   Rook = "Rook",

@@ -27,13 +27,13 @@
     }
   });
   const myself = reactive(props.input as GamePieceModel);
-  const currentClass = ref(game$.PieceMoveStart.Id == myself.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(game$.PieceMoveStart!.Id == myself.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
-    () => game$.PieceMoveStart.Id,
+    () => game$.PieceMoveStart!.Id,
     () => {
-      if (game$.PieceMoveStart.Id == myself.Id) {
+      if (game$.PieceMoveStart!.Id == myself.Id) {
         currentClass.value = "game-piece-move-start";
       }
       else {

@@ -21,13 +21,15 @@
     <div class="info-box">
       <span 
       v-if="piece != undefined"
-      class="info-text">{{ piece?.Type.toString() }}</span>
+      class="info-text">{{ piece.Type.toString() }}</span>
     </div> 
     -->
 
-    <div class="game-square-piece" >      
+    <div 
+      class="game-square-piece"
+    >   
       <game-piece 
-        v-if="myself.Piece != null"
+        v-show="myself.Piece.Player != 0"
         :input="myself.Piece"
       ></game-piece>
     </div>
@@ -60,39 +62,38 @@ const setGridPosition = () => {
 };
 
 const getNotationText = (xy: string):string => {
-  if(xy == "x" && myself.X == 9){    
-    return (myself.Y + 9).toString(36);
-  }
-  if(xy == "y" && myself.Y == 1){
-    return (Math.abs(myself.X - 10).toString());
-  }  
+  if(xy == "x" && myself.X == 9){ return (myself.Y + 9).toString(36); }
+  if(xy == "y" && myself.Y == 1){ return (Math.abs(myself.X - 10).toString()); }  
   return "";
 };
 
 const getNotationStyle = (xy: string): string =>{
-  if(xy == "x" && myself.X == 9){    
-    return "board-notation-right";  
-  }
-  if(xy == "y" && myself.Y == 1){
-    return "board-notation-top";
-  }
+  if(xy == "x" && myself.X == 9){ return "board-notation-right";  }
+  if(xy == "y" && myself.Y == 1){ return "board-notation-top";    }
   return "";
 };
 
 
-//=== Events =====================================================  
+//=== Events =====================================================
 watch(
-    () => game$.SquareMovesPotential.values,
-    () => {
+  () => game$.SquareMovesPotential.values,
+  () => {
 
-      if(game$.SquareMovesPotential.includes(myself)){
-        currentClass.value = "game-square-potential-move";
-      }
-      else {
-        currentClass.value = "";
-      }
+    if(game$.SquareMovesPotential.includes(myself)){
+      currentClass.value = "game-square-potential-move";
     }
-  );
+    else {
+      currentClass.value = "";
+    }
+  }
+);
+
+watch(
+  () => game$.GameBoardModel.Squares.filter(s => s.Id == myself.Id),
+() => {
+    myself.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == myself.Id))[0].Piece
+  }
+);
 
 const handleClickSquare = () => {
   console.log(`\r\n3A.GameSquare.handleClickSquare...`);
