@@ -7,8 +7,6 @@
     :id="input.Id"
     draggable="true" 
     >
-    <!-- @mousedown="handleClick()" -->
-    <!-- @dragstart="dragStart($event)" -->
   </img>
 </template>
 
@@ -18,8 +16,7 @@
   import { GamePieceModel } from '@/Models/Game';
   import { GameMode } from '@/State/Game/GameMode';
   import { useGameState } from '@/State/GameState';
-  import { defineProps, nextTick, reactive, ref, watch } from 'vue';
-  import { defineEmits } from 'vue';
+  import { defineProps, reactive, ref, watch } from 'vue';
 
   //=== Setup ======================================================
   const game$ = useGameState();
@@ -29,15 +26,10 @@
       required: true
     }
   });
-  // const emits = defineEmits(['handle-click']);
   const myself = reactive(props.input as GamePieceModel);
   const currentClass = ref(game$.PieceMoveStart.Id == myself.Id ? "game-piece-move-start" : "");
 
-  //=== Events =====================================================
-  watch(game$.PieceMoveStart, (newX) => {
-    console.log(`x is ${newX}`)
-  })
-  
+  //=== Events =====================================================  
   watch(
     () => game$.PieceMoveStart.Id,
     () => {
@@ -50,38 +42,16 @@
     }
   );
 
-
   const handleClickPiece = async () => {
-    console.log("");
-    console.log(`1A.GameSquare.handleClickPiece: ${myself.Id}`);
-    // if(game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart){
-
-      game$.MoveStart(myself);
-
-    // }
+    
+    if( game$.PlayerTurn == myself.Player 
+      && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart)
+      ){
+        console.log(`\r\n1A.GamePiece.handleClickPiece: ${myself.Id}`);
+        game$.MoveStart(myself);
+    }
   };
 
-  // const getCurrentClass = async () => {
-
-  //   if(game$.PieceMoveStart.Id == myself.Id){
-  //     console.warn(`(game$.PieceMoveStart.Id(${game$.PieceMoveStart.Id}) == myself.Id${myself.Id}) => "game-piece-move-start"`);
-  //     // return await nextTick(()=>"game-piece-move-start");
-  //     return "game-piece-move-start";
-  //   }
-    
-  // };
-
-  // const dragStart = (ev: any) => {
-  //   // trackedPiece.value = (((ev as DragEvent).target) as HTMLElement).id;
-  //   ev.dataTransfer.setData("text", ev.target.id);
-    
-  //   // trackedStart.value = (((((ev as DragEvent).target) as HTMLElement).parentElement) as HTMLElement).id;
-  // };
-
-  // const handleClick = () => {
-  //   console.log(`1.GamePiece.handleClick: ${props.piece.Id}`);
-  //   emits("handle-click", props.piece);
-  // };
   
 </script>
 

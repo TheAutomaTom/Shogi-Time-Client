@@ -4,11 +4,8 @@
     class="game-square"
     :id="input.Id"
     :style="setGridPosition()"
+    @click="handleClickSquare"
   >
-    <!-- :class="getCurrentClass()" -->
-    <!-- @click="handleClickSquare" -->
-    <!-- @drop="drop($event)"  -->
-    <!-- @dragover="dragOver($event)" -->
 
     <div 
       class="board-notation"
@@ -30,7 +27,7 @@
 
     <div class="game-square-piece" >      
       <game-piece 
-        v-if="myself.Piece != undefined"
+        v-if="myself.Piece != null"
         :input="myself.Piece"
       ></game-piece>
     </div>
@@ -41,7 +38,7 @@
 
 <!--  -->
 <script setup lang="ts">
-import { defineProps, nextTick, reactive } from 'vue';
+import { defineProps,  reactive, ref, watch } from 'vue';
 import type { GameSquareModel } from '@/Models/Game';
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
@@ -56,6 +53,7 @@ const props = defineProps({
   }
 });
 const myself = reactive(props.input as GameSquareModel);
+const currentClass = ref(game$.SquareMovesPotential.includes( myself) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
   return `grid-row:${myself.Y}; grid-column:${myself.X};`
@@ -81,42 +79,29 @@ const getNotationStyle = (xy: string): string =>{
   return "";
 };
 
-//=== Events =====================================================
-// const drop = (ev: any) => {
-//   console.log( `drop: ${(((ev as DragEvent).target) as HTMLElement).id}` );
 
-//   ev.preventDefault();
-//   var data = ev.dataTransfer.getData("text");
-//   ev.target.appendChild(document.getElementById(data));
+//=== Events =====================================================  
+watch(
+    () => game$.SquareMovesPotential.values,
+    () => {
 
-//   game$.MoveEnd((((ev as DragEvent).target) as HTMLElement).id)
-  
-// };
+      if(game$.SquareMovesPotential.includes(myself)){
+        currentClass.value = "game-square-potential-move";
+      }
+      else {
+        currentClass.value = "";
+      }
+    }
+  );
 
-// const dragOver = (ev: any) => {
-//   console.log( `dragOver: ${(((ev as DragEvent).target) as HTMLElement).id}` );
-//   ev.preventDefault();
-// }; 
+const handleClickSquare = () => {
+  console.log(`\r\n3A.GameSquare.handleClickSquare...`);
 
-
-// const handleClickSquare = () => {
-
-//   // if(game$.GameMode == GameMode.MoveStart){
-//     console.log(`1B.GameSquare.handleClickSquare: ${myself.Id}`);
-//     game$.MoveEnd(myself);
-//   // }
-// };
-
-// const getCurrentClass = async () => {
-
-//   console.warn(`game$.SquareToMoveFrom.Id= ${game$.SquareToMoveFrom.Id} : myself.Id= ${myself.Id}`);
-//   if(game$.SquareToMoveFrom.Id == myself.Id){
-//     console.warn(`GamePiece.getCurrentClass= "focussed-square-start"`);
-//     return await nextTick(()=>"focussed-square-start");
-//     // return "focussed-square-start";
-//   }
-  
-// };
+  if( game$.Mode == GameMode.MoveStart && game$.SquareMoveStart.Id != myself.Id){
+        console.log(`3B.GameSquare.handleClickSquare: ${myself.Id}`);
+        game$.TryMove(myself);
+    }
+};
 
 </script>
 
@@ -151,6 +136,11 @@ const getNotationStyle = (xy: string): string =>{
     right:0;
     
   }
+
+  .game-square-potential-move{
+    background-color: greenyellow;
+  }
+
   // .focussed-square-start{
   //   background-color: yellow !important;
   //   color:yellow !important;
