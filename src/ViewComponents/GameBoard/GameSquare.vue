@@ -29,8 +29,8 @@
       class="game-square-piece"
     >   
       <game-piece 
-        v-show="myself.Piece.Player != 0"
-        :input="myself.Piece"
+        v-show="props.input.Piece.Player != 0"
+        :input="props.input.Piece"
       ></game-piece>
     </div>
 
@@ -54,22 +54,21 @@ const props = defineProps({
     required: true
   }
 });
-const myself = reactive(props.input as GameSquareModel);
-const currentClass = ref(game$.SquareMovesPotential.includes( myself) ? "game-square-potential-move" : "");
+const currentClass = ref(game$.SquareMovesPotential.includes( props.input) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
-  return `grid-row:${myself.Y}; grid-column:${myself.X};`
+  return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
 };
 
 const getNotationText = (xy: string):string => {
-  if(xy == "x" && myself.X == 9){ return (myself.Y + 9).toString(36); }
-  if(xy == "y" && myself.Y == 1){ return (Math.abs(myself.X - 10).toString()); }  
+  if(xy == "x" && props.input.X == 9){ return (props.input.Y + 9).toString(36); }
+  if(xy == "y" && props.input.Y == 1){ return (Math.abs(props.input.X - 10).toString()); }  
   return "";
 };
 
 const getNotationStyle = (xy: string): string =>{
-  if(xy == "x" && myself.X == 9){ return "board-notation-right";  }
-  if(xy == "y" && myself.Y == 1){ return "board-notation-top";    }
+  if(xy == "x" && props.input.X == 9){ return "board-notation-right";  }
+  if(xy == "y" && props.input.Y == 1){ return "board-notation-top";    }
   return "";
 };
 
@@ -79,7 +78,7 @@ watch(
   () => game$.SquareMovesPotential.values,
   () => {
 
-    if(game$.SquareMovesPotential.includes(myself)){
+    if(game$.SquareMovesPotential.includes(props.input)){
       currentClass.value = "game-square-potential-move";
     }
     else {
@@ -89,18 +88,18 @@ watch(
 );
 
 watch(
-  () => game$.GameBoardModel.Squares.filter(s => s.Id == myself.Id),
+  () => game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id),
 () => {
-    myself.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == myself.Id))[0].Piece
+    props.input.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id))[0].Piece
   }
 );
 
 const handleClickSquare = () => {
   console.log(`\r\n3A.GameSquare.handleClickSquare...`);
 
-  if( game$.Mode == GameMode.MoveStart && game$.SquareMoveStart.Id != myself.Id){
-        console.log(`3B.GameSquare.handleClickSquare: ${myself.Id}`);
-        game$.TryMove(myself);
+  if( game$.Mode == GameMode.MoveStart && game$.SquareMoveStart.Id != props.input.Id){
+        console.log(`3B.GameSquare.handleClickSquare: ${props.input.Id}`);
+        game$.TryMove(props.input);
     }
 };
 

@@ -26,14 +26,13 @@
       required: true
     }
   });
-  const myself = reactive(props.input as GamePieceModel);
-  const currentClass = ref(game$.PieceMoveStart!.Id == myself.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(game$.PieceMoveStart!.Id == props.input.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
     () => game$.PieceMoveStart!.Id,
     () => {
-      if (game$.PieceMoveStart!.Id == myself.Id) {
+      if (game$.PieceMoveStart!.Id == props.input.Id) {
         currentClass.value = "game-piece-move-start";
       }
       else {
@@ -44,11 +43,11 @@
 
   const handleClickPiece = async () => {
     
-    if( game$.PlayerTurn == myself.Player 
+    if( game$.PlayerTurn == props.input.Player 
       && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart)
       ){
-        console.log(`\r\n1A.GamePiece.handleClickPiece: ${myself.Id}`);
-        game$.MoveStart(myself);
+        console.log(`\r\n1A.GamePiece.handleClickPiece: ${props.input.Id}`);
+        game$.MoveStart(props.input);
     }
   };
 
