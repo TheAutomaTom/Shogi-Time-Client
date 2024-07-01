@@ -12,35 +12,36 @@ import { Coordinate, MovementRule } from './Game/LegalMoves';
 export const useGameState = defineStore("GameState", () => {
   
   const GameBoardModel = ref({  Id:"111-zzz",
+                                CurrentPlayer:1,
                                 Squares: new DefaultNewGameLayout().Squares
                              } as GameBoardModel);
 
   const Mode = ref(GameMode.TurnStart);
-  const CurrentPlayer = ref(1);
-  const PieceToBeMoved = ref({} as (GamePieceModel | null));
-  const SquareStartingFrom = ref({} as GameSquareModel);
-  const SquareMovesPotential = ref([""] as string[]);
+  const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
+  const MovingPiece = ref({} as (GamePieceModel));
+  const MoveOrigin = ref({} as GameSquareModel);
+  const PotentialDestinations = ref([""] as string[]);
 
-  const PieceBoxP1 = ref([] as GamePieceModel[]);
-  const PieceBoxP2 = ref([] as GamePieceModel[]);
+  const CapturesP1 = ref([] as GamePieceModel[]);
+  const CapturesP2 = ref([] as GamePieceModel[]);
 
   //== Movement: Start =====================================================
-  const MoveStart = async  (piece: GamePieceModel) => {
+  const MoveBegin = async  (piece: GamePieceModel) => {
     
-    Mode.value = GameMode.MoveStart;
+    Mode.value = GameMode.MoveBegin;
     
     // Bookmark the piece in focus.
-    PieceToBeMoved.value = piece;   
+    MovingPiece.value = piece;   
 
     // Find the starting square based on the id of the piece it contains.
     GameBoardModel.value.Squares.forEach( square => {
       if(square.Piece.Id == piece.Id){
-        SquareStartingFrom.value = square;
+        MoveOrigin.value = square;
       }
     });
 
     // Highlight potential move squares
-    SquareMovesPotential.value = [""]; // reset prior
+    PotentialDestinations.value = [""]; // reset prior
     const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
     const facing = setPieceIsFacing(piece.IsFacingDefault);
 
@@ -50,8 +51,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X ,
-        Y: SquareStartingFrom.value.Y + i * facing
+        X: MoveOrigin.value.X ,
+        Y: MoveOrigin.value.Y + i * facing
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -63,8 +64,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X ,
-        Y: SquareStartingFrom.value.Y - i * facing
+        X: MoveOrigin.value.X ,
+        Y: MoveOrigin.value.Y - i * facing
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -76,8 +77,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X - i * facing ,
-        Y: SquareStartingFrom.value.Y
+        X: MoveOrigin.value.X - i * facing ,
+        Y: MoveOrigin.value.Y
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -89,8 +90,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X + i * facing ,
-        Y: SquareStartingFrom.value.Y
+        X: MoveOrigin.value.X + i * facing ,
+        Y: MoveOrigin.value.Y
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -102,8 +103,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X + i * facing ,
-        Y: SquareStartingFrom.value.Y + i * facing 
+        X: MoveOrigin.value.X + i * facing ,
+        Y: MoveOrigin.value.Y + i * facing 
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -115,8 +116,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X - i * facing ,
-        Y: SquareStartingFrom.value.Y + i * facing 
+        X: MoveOrigin.value.X - i * facing ,
+        Y: MoveOrigin.value.Y + i * facing 
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -128,8 +129,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X - i * facing ,
-        Y: SquareStartingFrom.value.Y - i * facing 
+        X: MoveOrigin.value.X - i * facing ,
+        Y: MoveOrigin.value.Y - i * facing 
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -141,8 +142,8 @@ export const useGameState = defineStore("GameState", () => {
       if(hitObstacle > 0) break;
 
       let target = { 
-        X: SquareStartingFrom.value.X + i * facing ,
-        Y: SquareStartingFrom.value.Y - i * facing 
+        X: MoveOrigin.value.X + i * facing ,
+        Y: MoveOrigin.value.Y - i * facing 
 
       } as Coordinate;
       hitObstacle = findValidMoves(target);
@@ -151,26 +152,26 @@ export const useGameState = defineStore("GameState", () => {
     // Process Knight ==============================================
     if(rangeOfMovement.K){
       let target = { 
-        X: SquareStartingFrom.value.X + 1 * facing,
-        Y: SquareStartingFrom.value.Y + 2 * facing
+        X: MoveOrigin.value.X + 1 * facing,
+        Y: MoveOrigin.value.Y + 2 * facing
       } as Coordinate;
 
       if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
         GameBoardModel.value.Squares.forEach( s => {
           if(s.X == target.X && s.Y == target.Y)
-            SquareMovesPotential.value.push(s.Id);
+            PotentialDestinations.value.push(s.Id);
         });
       }
 
       target = { 
-        X: SquareStartingFrom.value.X + -1 * facing,
-        Y: SquareStartingFrom.value.Y + 2 * facing
+        X: MoveOrigin.value.X + -1 * facing,
+        Y: MoveOrigin.value.Y + 2 * facing
       } as Coordinate;
 
       if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
         GameBoardModel.value.Squares.forEach( s => {
           if(s.X == target.X && s.Y == target.Y)
-            SquareMovesPotential.value.push(s.Id);
+            PotentialDestinations.value.push(s.Id);
         });
       }      
     }
@@ -188,23 +189,23 @@ export const useGameState = defineStore("GameState", () => {
 
 
   //== Movement: Move ======================================================
-  const TryMove = async (square: GameSquareModel)=>{    
+  const MoveAttempt = async (square: GameSquareModel)=>{    
 
     GameBoardModel.value.Squares.map( s =>{
       // Find the square that was clicked and check if it's in the rules
-      if(s.Id == square.Id && SquareMovesPotential.value.includes(square.Id)){      
+      if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
         // If a piece exists, move it to the in-hand box
         if(s.Piece.Player != 0){
           if(CurrentPlayer.value == 1){
-            PieceBoxP1.value.push(
+            CapturesP1.value.push(
               new GamePieceModel(
                 s.Piece.Player, s.Piece.Type, getStartPositionFromId(s.Piece.Id),s.Piece.Icon
               ));
       
           }
           if(CurrentPlayer.value == 2){
-            PieceBoxP2.value.push(
+            CapturesP2.value.push(
               new GamePieceModel(
                 s.Piece.Player, s.Piece.Type, getStartPositionFromId(s.Piece.Id),s.Piece.Icon
               ));
@@ -212,13 +213,13 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // Create the new piece in that spot
-        s.Piece = new GamePieceModel(CurrentPlayer.value, PieceToBeMoved.value!.Type, getStartPositionFromId(PieceToBeMoved.value!.Id), PieceToBeMoved.value!.Icon);
+        s.Piece = new GamePieceModel(CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon);
 
         // Replace old spots with empty pieces
-        PieceToBeMoved.value = new GamePieceModel( );
-        SquareStartingFrom.value.Piece = new GamePieceModel( );
+        MovingPiece.value = new GamePieceModel( );
+        MoveOrigin.value.Piece = new GamePieceModel( );
         
-        SquareMovesPotential.value = [""];
+        PotentialDestinations.value = [""];
         Mode.value = GameMode.TurnStart;
 
       }
@@ -257,13 +258,13 @@ export const useGameState = defineStore("GameState", () => {
         // Found enemy (only add first found)
         else if( hit == 0 
           && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
-            SquareMovesPotential.value.push(s.Id);
+            PotentialDestinations.value.push(s.Id);
             console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
             hit++;
         }
         // Found empty space
         else if(s.Piece.Player == 0){
-          SquareMovesPotential.value.push(s.Id);
+          PotentialDestinations.value.push(s.Id);
         }
       }
     });    
@@ -276,13 +277,13 @@ export const useGameState = defineStore("GameState", () => {
     GameBoardModel,
     CurrentPlayer,
     Mode,    
-    PieceToBeMoved,
-    SquareStartingFrom,
-    MoveStart,
-    TryMove,
-    SquareMovesPotential,
-    PieceBoxP1,
-    PieceBoxP2
+    MovingPiece,
+    MoveOrigin,
+    MoveBegin,
+    MoveAttempt,
+    PotentialDestinations,
+    CapturesP1,
+    CapturesP2
 
   };
 });

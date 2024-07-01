@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import LogoButton from "@Components/LogoButton.vue";
 import { useAppState } from "../../State/AppState";
-import { ModalContentType } from "@/State/Layout/ModalContentType";
 
 const app$ = useAppState();
 

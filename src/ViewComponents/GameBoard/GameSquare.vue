@@ -55,7 +55,7 @@ const props = defineProps({
     required: true
   }
 });
-const currentClass = ref(game$.SquareMovesPotential.includes( props.input.Id) ? "game-square-potential-move" : "");
+const currentClass = ref(game$.PotentialDestinations.includes( props.input.Id) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
   return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
@@ -76,11 +76,11 @@ const getNotationStyle = (xy: string): string =>{
 
 //=== Events =====================================================
 watch( // Update highlight
-  () => game$.SquareMovesPotential,
+  () => game$.PotentialDestinations,
   () => {
 
-    if(game$.SquareMovesPotential.includes(props.input.Id)){
-      // console.log(`9. SquareMovesPotential.includes ${props.input.Id}`)
+    if(game$.PotentialDestinations.includes(props.input.Id)){
+      // console.log(`9. PotentialDestinations.includes ${props.input.Id}`)
       currentClass.value = "game-square-potential-move";
     }
     else {
@@ -100,10 +100,10 @@ watch( // Update Piece movement
 
 const handleClickSquare = () => {
   
-  if( game$.Mode == GameMode.MoveStart && game$.SquareStartingFrom.Id != props.input.Id){
+  if( game$.Mode == GameMode.MoveBegin && game$.MoveOrigin.Id != props.input.Id){
     
         console.log(`3.GameSquare.handleClickSquare: ${props.input.Id}`);
-        game$.TryMove(props.input);
+        game$.MoveAttempt(props.input);
     }
 };
 

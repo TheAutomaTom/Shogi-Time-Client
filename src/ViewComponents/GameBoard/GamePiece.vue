@@ -26,13 +26,13 @@
       required: true
     }
   });
-  const currentClass = ref(game$.PieceToBeMoved!.Id == props.input.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(game$.MovingPiece!.Id == props.input.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
-    () => game$.PieceToBeMoved!.Id,
+    () => game$.MovingPiece!.Id,
     () => {
-      if (game$.PieceToBeMoved!.Id == props.input.Id) {
+      if (game$.MovingPiece!.Id == props.input.Id) {
         currentClass.value = "game-piece-move-start";
       }
       else {
@@ -44,10 +44,10 @@
   const handleClickPiece = async () => {
     
     if( game$.CurrentPlayer == props.input.Player 
-      && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart)
+      && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin)
       ){
         console.log(`\r\n1A.GamePiece.handleClickPiece: ${props.input.Id}`);
-        game$.MoveStart(props.input);
+        game$.MoveBegin(props.input);
     }
   };
 

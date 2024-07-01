@@ -1,7 +1,7 @@
 export enum GameMode {
 
   TurnStart = "TurnStart",
-  MoveStart = "MoveStart",
+  MoveBegin = "MoveBegin",
   MoveEnd = "MoveEnd",
   TurnEnd = "TurnEnd"
 
