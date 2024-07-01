@@ -41,12 +41,11 @@
     }
   );
 
-  const handleClickPiece = async () => {
-    
+  const handleClickPiece = async () => {  
     if( game$.CurrentPlayer == props.input.Player 
       && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin)
+      && game$.MovingPiece.Id != props.input.Id
       ){
-        console.log(`\r\n1A.GamePiece.handleClickPiece: ${props.input.Id}`);
         game$.MoveBegin(props.input);
     }
   };

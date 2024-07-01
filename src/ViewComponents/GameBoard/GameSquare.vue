@@ -1,13 +1,12 @@
 <template>
 
   <div 
-    class="game-square "
+    class="game-square"
     :id="input.Id"
     :style="setGridPosition()"
     :class="currentClass"
     @click="handleClickSquare"
   >
-
     <div 
       class="board-notation"
       :class="getNotationStyle('y')"
@@ -80,7 +79,6 @@ watch( // Update highlight
   () => {
 
     if(game$.PotentialDestinations.includes(props.input.Id)){
-      // console.log(`9. PotentialDestinations.includes ${props.input.Id}`)
       currentClass.value = "game-square-potential-move";
     }
     else {
@@ -91,7 +89,7 @@ watch( // Update highlight
 
 watch( // Update Piece movement
   () => game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id),
-() => {
+  () => {
     props.input.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id))[0].Piece
   }
 );
@@ -100,9 +98,10 @@ watch( // Update Piece movement
 
 const handleClickSquare = () => {
   
-  if( game$.Mode == GameMode.MoveBegin && game$.MoveOrigin.Id != props.input.Id){
-    
-        console.log(`3.GameSquare.handleClickSquare: ${props.input.Id}`);
+  if( game$.Mode == GameMode.MoveBegin 
+      && game$.MoveOrigin.Id != props.input.Id
+      && game$.PotentialDestinations.includes( props.input.Id)
+    ){    
         game$.MoveAttempt(props.input);
     }
 };
@@ -145,6 +144,7 @@ const handleClickSquare = () => {
     background-color: greenyellow;
   }
 
+  
   // .focussed-square-start{
   //   background-color: yellow !important;
   //   color:yellow !important;
