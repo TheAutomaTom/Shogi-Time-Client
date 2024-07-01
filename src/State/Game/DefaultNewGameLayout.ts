@@ -27,15 +27,24 @@ Squares = [
 
 
   // Player 1: Pawn Row /==================
-  new GameSquareModel( 1, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "9", "0FU")),
-  new GameSquareModel( 2, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "8", "0FU")),
-  new GameSquareModel( 3, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "7", "0FU")),
-  new GameSquareModel( 4, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "6", "0FU")),
-  new GameSquareModel( 5, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "5", "0FU")),
-  new GameSquareModel( 6, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "4", "0FU")),
-  new GameSquareModel( 7, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "3", "0FU")),
-  new GameSquareModel( 8, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "2", "0FU")),
-  new GameSquareModel( 9, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "1", "0FU")),
+  // new GameSquareModel( 1, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "9", "0FU")),
+  // new GameSquareModel( 2, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "8", "0FU")),
+  // new GameSquareModel( 3, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "7", "0FU")),
+  // new GameSquareModel( 4, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "6", "0FU")),
+  // new GameSquareModel( 5, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "5", "0FU")),
+  // new GameSquareModel( 6, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "4", "0FU")),
+  // new GameSquareModel( 7, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "3", "0FU")),
+  // new GameSquareModel( 8, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "2", "0FU")),
+  // new GameSquareModel( 9, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "1", "0FU")),
+  new GameSquareModel( 1, 7, 2 ),
+  new GameSquareModel( 2, 7, 2 ),
+  new GameSquareModel( 3, 7, 2 ),
+  new GameSquareModel( 4, 7, 2 ),
+  new GameSquareModel( 5, 7, 2 ),
+  new GameSquareModel( 6, 7, 2 ),
+  new GameSquareModel( 7, 7, 2 ),
+  new GameSquareModel( 8, 7, 2 ),
+  new GameSquareModel( 9, 7, 2 ),
 
   // Row F /==================
     new GameSquareModel( 1, 6 ),

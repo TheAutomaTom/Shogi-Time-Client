@@ -1,7 +1,8 @@
 import {  
   GameBoardModel,
   GameSquareModel,
-  GamePieceModel
+  GamePieceModel,
+  GamePieceType
 } from "../Models/Game";
 import { ref } from "vue";
 import { defineStore } from "pinia";
@@ -25,6 +26,28 @@ export const useGameState = defineStore("GameState", () => {
 
   const CapturesP1 = ref([] as GamePieceModel[]);
   const CapturesP2 = ref([] as GamePieceModel[]);
+
+  const Promotable = [
+    GamePieceType.Rook,
+    GamePieceType.Bishop,
+    GamePieceType.Silver,
+    GamePieceType.Knight,
+    GamePieceType.Lance,
+    GamePieceType.Pawn
+
+  ];
+  const Demotable = [
+    GamePieceType.None,
+    GamePieceType.KingVictor,
+    GamePieceType.KingChallenger,
+    GamePieceType.RookPro,
+    GamePieceType.BishopPro,
+    GamePieceType.Gold,
+    GamePieceType.SilverPro,
+    GamePieceType.KnightPro,
+    GamePieceType.LancePro,
+    GamePieceType.PawnPro
+  ];
 
   //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
@@ -189,6 +212,8 @@ export const useGameState = defineStore("GameState", () => {
       // Find the square that was clicked and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
+        // Destination.value = s;
+
         // If a piece exists there, move it to the in-hand box.
         if(s.Piece.Player != 0){
           if(CurrentPlayer.value == 1){
@@ -211,27 +236,60 @@ export const useGameState = defineStore("GameState", () => {
           CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon
         );
 
-        // Test for PromotionOption
-        Destination.value = s;
-        MoveOrigin.value.Piece = new GamePieceModel( );
-        console.log(`${Destination.value.PromotesPlayer != MovingPiece.value.Player}/ ${Destination.value.PromotesPlayer} != ${MovingPiece.value.Player}`)
-        if( Destination.value.PromotesPlayer != MovingPiece.value.Player ){
-          CompleteMove();
-        } else {
-          Mode.value = GameMode.PromoteOption;
+        // Remove the piece from the origin.
+        MoveOrigin.value.Piece = new GamePieceModel();
 
+        // Test for Promotion options.
+        console.log(`${s.PromotionZone != MovingPiece.value.Player}/ ${s.PromotionZone} != ${MovingPiece.value.Player}`)
+        
+        if( s.PromotionZone != MovingPiece.value.Player )
+        { 
+          return CompleteMove();
         }
 
+        if( s.PromotionZone == MovingPiece.value.Player ){
 
-        
+          // Handle mandatory promotions
+          // Pawns and lances on the back row get promoted.
+          if( ( MovingPiece.value.Type == GamePieceType.Pawn 
+                || MovingPiece.value.Type == GamePieceType.Lance  
+              ) && ( 
+                ( CurrentPlayer.value == 1 && Destination.value.Y == 1 )
+                || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
+              ) )
+          {
+            MovingPiece.value.Promote();
+            return CompleteMove();
+          }
+          // Knights get promoted from back 2 rows.
+          if(  MovingPiece.value.Type == GamePieceType.Knight
+               && ( 
+                ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
+                || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
+              ) )
+          {
+            MovingPiece.value.Promote();
+            return CompleteMove();
+          }
+
+          if(Promotable.includes(MovingPiece.value.Type)){            
+            Mode.value = GameMode.PromoteOption;
+            // PromotionModal will display to continue.
+          }
+        }
       }
     });
 
   };
 
-  const PromotePiece =(choice: boolean)=> {
-    console.error(`PromotePiece(${choice})`);
+  const PromotePiece=(toProceed: boolean)=> {
+    if(toProceed){
+      const newPiece = MovingPiece.value.Promote();
+
+    }
+    return CompleteMove();
   };
+
   
   // Note: CompleteMove can be called locally or by PromoteModal
   const CompleteMove =()=> {

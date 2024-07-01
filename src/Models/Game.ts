@@ -9,14 +9,14 @@ export class GameSquareModel {
   Id: string;
   X: number;
   Y: number;
-  PromotesPlayer: number;
+  PromotionZone: number;
   Piece: GamePieceModel;
   
   constructor(x: number, y: number, promotes: number = 0, piece: GamePieceModel = new GamePieceModel( )) {
     this.Id = `Square-${x}${y}`;
     this.X = x;
     this.Y = y;
-    this.PromotesPlayer = promotes;
+    this.PromotionZone = promotes;
     this.Piece = piece;
   }
 };
@@ -35,7 +35,81 @@ export class GamePieceModel {
     this.Icon = icon;
     this.IsFacingDefault = isFacingDefault;
   };
+
+  Promote =()=>{
+    // Icons prefixed with 1 face down (for player 2)
+    this.Icon = this.Player == 1 ? "0" : "1";
+
+    switch (this.Type) {
+      case GamePieceType.Bishop:
+        this.Type = GamePieceType.BishopPro;
+        this.Icon += "UM"
+        break;
+      case GamePieceType.Knight:
+        this.Type = GamePieceType.KnightPro;
+        this.Icon += "NK"
+        break;
+      case GamePieceType.Lance:
+        this.Type = GamePieceType.LancePro;
+        this.Icon += "NY"
+        break;
+      case GamePieceType.Rook:
+        this.Type = GamePieceType.RookPro;
+        this.Icon += "RY"
+        break;
+      case GamePieceType.Silver:
+        this.Type = GamePieceType.SilverPro;
+        this.Icon += "NG"
+        break;
+      case GamePieceType.Pawn:
+        this.Type = GamePieceType.PawnPro;
+        this.Icon += "TO"
+        break;
+      default:
+        this.Type = GamePieceType.None;
+        this.Icon += ""
+        break;
+    }
+  }
+  Demote =()=>{
+
+    // Icons prefixed with 1 face down (for player 2)
+    this.Icon = this.Player == 1 ? "0" : "1";
+
+    switch (this.Type) {
+      case GamePieceType.BishopPro:
+        this.Type = GamePieceType.Bishop;
+        this.Icon += "KA"
+        break;
+      case GamePieceType.KnightPro:
+        this.Type = GamePieceType.Knight;
+        this.Icon += "KE"
+        break;
+      case GamePieceType.LancePro:
+        this.Type = GamePieceType.Lance;
+        this.Icon += "KY"
+        break;
+      case GamePieceType.RookPro:
+        this.Type = GamePieceType.Rook;
+        this.Icon += "HI"
+        break;
+      case GamePieceType.SilverPro:
+        this.Type = GamePieceType.Silver;
+        this.Icon += "GI"
+        break;
+      case GamePieceType.PawnPro:
+        this.Type = GamePieceType.Pawn;
+        this.Icon += "TO"
+        break;
+      default:
+        this.Type = GamePieceType.None;
+        this.Icon += ""
+        break;
+    }
+  }
 };
+
+
 
 export enum GamePieceType{
   None = "None",
@@ -56,4 +130,3 @@ export enum GamePieceType{
   PawnPro = "PawnPro"
 
 };
-
