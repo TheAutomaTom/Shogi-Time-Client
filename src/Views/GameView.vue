@@ -4,7 +4,6 @@
     <div class="piece-box-p2">xxx</div>
     <game-board></game-board>
     <div class="piece-box-p1">xxx</div>
-    <div class="ad-space">Advertising Space</div>
   </div>
 </template>
 
@@ -43,22 +42,5 @@ const game$ = useGameState();
   display: flex;
   align-items: center;
 }
-
-.ad-space{
-  position: absolute;
-  background-color: indigo;
-  height: 5em;
-  width: 100%;
-  bottom:0;
-  left:0;
-  z-index: 300;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-variant: small-caps;
-}
-
-
 
 </style>

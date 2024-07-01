@@ -107,7 +107,7 @@ const isUnfocussed = computed(() => {
   height: 100vh;
   width:100vw;
   display: grid;
-  overflow: hidden;
+  overflow-x: hidden;
 
   grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
   grid-template-columns: 0em 2.5em 1fr 2.5em 0em;

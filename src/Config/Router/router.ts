@@ -1,11 +1,15 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Dashboard from "../../Views/Dashboard.vue";
+import Dashboard from "../../Views/DashboardView.vue";
 
 export const routes = [
   {
     path: "/",
     //  This is the only page that is NOT lazy-loaded, so it looks different from the other imported pages.    
     component: Dashboard,
+  },
+  {
+    path: "/account",
+    component: () => import("../../Views/AccountView.vue"),
   },
   {
     path: "/game",

@@ -35,11 +35,13 @@ const toggleDrawer=()=>{
     <div class="drawer-content">
       <div class="drawer-content-top">
 
-        <!-- Player -->
-        <div
+        <!-- Account -->
+        <router-link :to="'/account'"
           class="drawer-button"
-          @click="app$.Layout$.ToggleModal(ModalContentType.Account)"
-        >🫵&nbsp;Player</div>
+          @click="toggleDrawer()"
+        >
+        🫵&nbsp;Account
+        </router-link>
 
         <!-- Dashboard -->
         <router-link :to="'/'"
@@ -115,17 +117,14 @@ const toggleDrawer=()=>{
   display: grid;
   grid-template-columns: 2.5em 1fr;
 }
-
 .drawer-header-pre{
   grid-row:2;
   grid-column: 1;
 }
-
 .drawer-header-logo{
   grid-row:2;
   grid-column:2/4;
 }
-
 .drawer-content{
   grid-row:3;
   grid-column:2/4;
@@ -144,10 +143,9 @@ const toggleDrawer=()=>{
 // ========================
 .drawer-button{
   display: flex;
-  font-size:x-large;
+  font-size:large;
   border: none;
   color: white;
-  width:100% ;
   background-color: inherit;
   padding-left:1.5em;
   margin-bottom:0.75em;
@@ -164,11 +162,10 @@ const toggleDrawer=()=>{
 }
 .drawer-button-disabled:hover{
 text-decoration: line-through;
-
 }
 .drawer-button-disabled{
   display: flex;
-  font-size:x-large;
+  font-size:large;
   border: none;
   color: grey;
   width:100% ;
