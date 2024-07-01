@@ -9,12 +9,14 @@ export class GameSquareModel {
   Id: string;
   X: number;
   Y: number;
+  PromotesPlayer: number;
   Piece: GamePieceModel;
   
-  constructor(x: number, y: number, piece: GamePieceModel) {
+  constructor(x: number, y: number, promotes: number = 0, piece: GamePieceModel = new GamePieceModel( )) {
     this.Id = `Square-${x}${y}`;
     this.X = x;
     this.Y = y;
+    this.PromotesPlayer = promotes;
     this.Piece = piece;
   }
 };
