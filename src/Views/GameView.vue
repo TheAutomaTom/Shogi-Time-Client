@@ -1,6 +1,11 @@
 <template>
   <div>
-    <div class="game-header">CurrentPlayer: {{ game$.CurrentPlayer }}</div>
+    <promotion-modal></promotion-modal>
+    <div class="game-header">
+      <span>Player: {{ game$.CurrentPlayer }}</span>
+      <span>&nbsp;/&nbsp;</span>
+      <span>Mode: {{ game$.Mode }}</span>
+    </div>
     <div class="captures-p2">
       <img 
         v-for="piece in game$.CapturesP2"
@@ -28,6 +33,7 @@
 <!-- =============================================== -->
 <script setup lang="ts">
 import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
+import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
 import { useGameState } from "@/State/GameState";
 
 const game$ = useGameState();
@@ -42,6 +48,8 @@ const handleClickPieceInHand =()=> {
 <style scoped lang="scss">
 .game-header{
   padding:3px;
+  color: grey;
+  font-size:xx-small;
 }
 
 .captures-p2{

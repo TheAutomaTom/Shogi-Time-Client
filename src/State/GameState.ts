@@ -207,23 +207,36 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // Create the moved piece in that spot.
-        s.Piece = new GamePieceModel(CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon);
+        s.Piece = new GamePieceModel(
+          CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon
+        );
 
+        // Test for PromotionOption
         Destination.value = s;
+        MoveOrigin.value.Piece = new GamePieceModel( );
+        console.log(`${Destination.value.PromotesPlayer != MovingPiece.value.Player}/ ${Destination.value.PromotesPlayer} != ${MovingPiece.value.Player}`)
+        if( Destination.value.PromotesPlayer != MovingPiece.value.Player ){
+          CompleteMove();
+        } else {
+          Mode.value = GameMode.PromoteOption;
+
+        }
+
+
         
       }
     });
 
-    CompleteMove();
+  };
+
+  const PromotePiece =(choice: boolean)=> {
+    console.error(`PromotePiece(${choice})`);
   };
   
-
-  //== Ancillary ===========================================================
-
-  // Note: CompleteMove can be called by PromoteModal
+  // Note: CompleteMove can be called locally or by PromoteModal
   const CompleteMove =()=> {
+    console.log("CompleteMove()");
     MovingPiece.value = new GamePieceModel( );
-    MoveOrigin.value.Piece = new GamePieceModel( );
     PotentialDestinations.value = [""];
 
     if(CurrentPlayer.value == 1){
@@ -234,6 +247,7 @@ export const useGameState = defineStore("GameState", () => {
     Mode.value = GameMode.TurnStart;
   };
 
+  //== Ancillary ===========================================================
   const getStartPositionFromId=(id: string): string =>{
     const start = id.lastIndexOf("-")
     const result = id.substring(start +1);
@@ -292,6 +306,7 @@ export const useGameState = defineStore("GameState", () => {
     MoveAttempt,
     PotentialDestinations,
     Destination,
+    PromotePiece,
     CapturesP1,
     CapturesP2
 
