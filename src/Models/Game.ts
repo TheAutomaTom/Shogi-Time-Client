@@ -55,5 +55,5 @@ export enum GamePieceType{
   Pawn = "Pawn",
   PawnPro = "PawnPro"
 
-}
+};
 

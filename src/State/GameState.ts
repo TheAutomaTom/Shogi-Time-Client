@@ -21,6 +21,7 @@ export const useGameState = defineStore("GameState", () => {
   const MovingPiece = ref({} as (GamePieceModel));
   const MoveOrigin = ref({} as GameSquareModel);
   const PotentialDestinations = ref([""] as string[]);
+  const DestinationId = ref("");
 
   const CapturesP1 = ref([] as GamePieceModel[]);
   const CapturesP2 = ref([] as GamePieceModel[]);
@@ -179,23 +180,16 @@ export const useGameState = defineStore("GameState", () => {
   };
 
 
-  const setPieceIsFacing = (pieceIsFacingDefault: boolean) =>{
-
-    if(pieceIsFacingDefault){
-      return CurrentPlayer.value == 1 ? -1 : 1;
-    }
-    return CurrentPlayer.value == 1 ? 1 : -1;
-  }
-
 
   //== Movement: Move ======================================================
   const MoveAttempt = async (square: GameSquareModel)=>{    
 
     GameBoardModel.value.Squares.map( s =>{
-      // Find the square that was clicked and check if it's in the rules
+
+      // Find the square that was clicked and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
-        // If a piece exists, move it to the in-hand box
+        // If a piece exists there, move it to the in-hand box.
         if(s.Piece.Player != 0){
           if(CurrentPlayer.value == 1){
             CapturesP1.value.push(
@@ -212,27 +206,35 @@ export const useGameState = defineStore("GameState", () => {
           }
         }
 
-        // Create the new piece in that spot
+        // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon);
 
-        // Replace old spots with empty pieces
-        MovingPiece.value = new GamePieceModel( );
-        MoveOrigin.value.Piece = new GamePieceModel( );
+        // Replace origin with empty piece.
+        DestinationId.value = s.Id;
         
-        PotentialDestinations.value = [""];
-        Mode.value = GameMode.TurnStart;
-
       }
     });
+
+    CompleteMove();
+  };
+  
+
+  //== Ancillary ===========================================================
+
+  // Note: CompleteMove can be called by PromoteModal
+  const CompleteMove =()=> {
+    MovingPiece.value = new GamePieceModel( );
+    MoveOrigin.value.Piece = new GamePieceModel( );
+    PotentialDestinations.value = [""];
 
     if(CurrentPlayer.value == 1){
       CurrentPlayer.value = 2;
     } else {
       CurrentPlayer.value = 1;
     }
-  }
+    Mode.value = GameMode.TurnStart;
+  };
 
-  //== Ancillary ===========================================================
   const getStartPositionFromId=(id: string): string =>{
     const start = id.lastIndexOf("-")
     const result = id.substring(start +1);
@@ -269,7 +271,15 @@ export const useGameState = defineStore("GameState", () => {
       }
     });    
     return hit;
-  }
+  };
+
+  const setPieceIsFacing = (pieceIsFacingDefault: boolean) =>{
+
+    if(pieceIsFacingDefault){
+      return CurrentPlayer.value == 1 ? -1 : 1;
+    }
+    return CurrentPlayer.value == 1 ? 1 : -1;
+  };
   
 
   
@@ -282,6 +292,7 @@ export const useGameState = defineStore("GameState", () => {
     MoveBegin,
     MoveAttempt,
     PotentialDestinations,
+    DestinationId,
     CapturesP1,
     CapturesP2
 
