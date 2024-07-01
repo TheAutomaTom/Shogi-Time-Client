@@ -26,7 +26,7 @@
       required: true
     }
   });
-  const currentClass = ref(game$.MovingPiece!.Id == props.input.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(""); //game$.MovingPiece!.Id == props.input.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
@@ -34,7 +34,15 @@
     () => {
       if (game$.MovingPiece!.Id == props.input.Id) {
         currentClass.value = "game-piece-move-start";
+        return;
       }
+      if (game$.MovingPiece!.Id == props.input.Id
+          && game$.Mode == GameMode.PromoteOption
+      ) {
+        currentClass.value = "game-piece-promote-option";
+        return;
+      }
+
       else {
         currentClass.value = "";
       }
@@ -65,5 +73,8 @@
   }
   .game-piece-move-start{
     background-color: green;
+  }
+  .game-piece-promote-option{
+    background-color: lightseagreen;
   }
 </style>

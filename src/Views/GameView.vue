@@ -1,6 +1,7 @@
 <template>
   <div>
-    <div class="game-header">CurrentPlayer: {{ game$.CurrentPlayer }}</div>
+    <div class="game-header"><span>Player: {{ game$.CurrentPlayer }} | Mode: {{ game$.Mode }}</span></div>
+    
     <div class="captures-p2">
       <img 
         v-for="piece in game$.CapturesP2"
