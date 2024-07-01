@@ -94,6 +94,20 @@ watch( // Update Piece movement
   }
 );
 
+watch(
+  () => game$.Destination,
+  () => {
+    if ( game$.Destination.Id == props.input.Id
+    ) {
+      console.warn("game-piece-promotion-option");
+      currentClass.value = "game-piece-promotion-option";
+    }
+    else {
+      currentClass.value = "";
+    }
+  }
+);
+
 
 
 const handleClickSquare = () => {
@@ -142,6 +156,9 @@ const handleClickSquare = () => {
 
   .game-square-potential-move{
     background-color: greenyellow;
+  }
+  .game-piece-promotion-option{
+    background-color: lightseagreen;
   }
 
   

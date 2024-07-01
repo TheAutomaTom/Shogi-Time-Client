@@ -34,20 +34,8 @@
     () => game$.MovingPiece,
     () => {
       if (game$.MovingPiece.Id == props.input.Id) {
+        console.warn("game-piece-move-start");
         currentClass.value = "game-piece-move-start";
-      }
-      else {
-        currentClass.value = "";
-      }
-    }
-  );
-
-  watch(
-    () => game$.DestinationId,
-    () => {
-      if ( game$.DestinationId == props.input.Id
-      ) {
-        currentClass.value = "game-piece-promotion-option";
       }
       else {
         currentClass.value = "";
@@ -79,8 +67,5 @@
   }
   .game-piece-move-start{
     background-color: green;
-  }
-  .game-piece-promotion-option{
-    background-color: lightseagreen;
   }
 </style>

@@ -21,7 +21,7 @@ export const useGameState = defineStore("GameState", () => {
   const MovingPiece = ref({} as (GamePieceModel));
   const MoveOrigin = ref({} as GameSquareModel);
   const PotentialDestinations = ref([""] as string[]);
-  const DestinationId = ref("");
+  const Destination = ref({} as GameSquareModel);
 
   const CapturesP1 = ref([] as GamePieceModel[]);
   const CapturesP2 = ref([] as GamePieceModel[]);
@@ -182,7 +182,7 @@ export const useGameState = defineStore("GameState", () => {
 
 
   //== Movement: Move ======================================================
-  const MoveAttempt = async (square: GameSquareModel)=>{    
+  const MoveAttempt = async (square: GameSquareModel)=>{
 
     GameBoardModel.value.Squares.map( s =>{
 
@@ -209,8 +209,7 @@ export const useGameState = defineStore("GameState", () => {
         // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon);
 
-        // Replace origin with empty piece.
-        DestinationId.value = s.Id;
+        Destination.value = s;
         
       }
     });
@@ -292,7 +291,7 @@ export const useGameState = defineStore("GameState", () => {
     MoveBegin,
     MoveAttempt,
     PotentialDestinations,
-    DestinationId,
+    Destination,
     CapturesP1,
     CapturesP2
 
