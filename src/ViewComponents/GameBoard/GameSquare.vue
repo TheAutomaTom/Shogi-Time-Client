@@ -41,7 +41,7 @@
 <!--  -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { GameSquareModel } from '@/Models/Game';
+import type { GameSquareModel } from "@/Models/GameSquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GameMode } from '@/State/Game/GameMode';

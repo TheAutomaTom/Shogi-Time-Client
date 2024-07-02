@@ -6,14 +6,14 @@
   >
     <img 
       class="game-piece-in-hand"
-      :src="`pieces/Shogi_FCZ/${input.Icon}.svg`"
+      :src="`pieces/Shogi_FCZ/${input.IconPath}.svg`"
       :id="input.Id"
     />
   </button> 
 </template>
 
 <script setup lang="ts">
-import { GamePieceModel } from '@/Models/Game';
+import { GamePieceModel } from "@/Models/GamePieceModel";
 import { GameMode } from '@/State/Game/GameMode';
 import { useGameState } from '@/State/GameState';
 import { ref, watch } from 'vue';
@@ -35,7 +35,7 @@ import { ref, watch } from 'vue';
                 \tPlayer: ${props.input.Player}\r
                 \tId: ${props.input.Id}\r
                 \tStartingPos: ${props.input.StartingPos}\r
-                \tIcon: ${props.input.Icon}\r
+                \tIcon: ${props.input.IconPath}\r
                 \tType: ${props.input.Type}\r
                 `);
     
@@ -72,7 +72,7 @@ watch(
 
 .game-piece-in-hand{
   height:3em;
-  transform: rotate(180deg);
+  // transform: rotate(180deg);
 
 }
 

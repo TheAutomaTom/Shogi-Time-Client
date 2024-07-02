@@ -1,4 +1,4 @@
-import { GamePieceType } from "@/Models/Game";
+import { GamePieceType } from "@/Models/GamePieceType";
 
 type Mobility = {
   N: number,

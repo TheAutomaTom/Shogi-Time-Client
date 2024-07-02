@@ -1,15 +1,12 @@
-import {  
-  GameBoardModel,
-  GameSquareModel,
-  GamePieceModel,
-  GamePieceType
-} from "../Models/Game";
+import { GamePieceType } from "@/Models/GamePieceType";
+import { GamePieceModel } from "@/Models/GamePieceModel";
+import { GameBoardModel } from "@/Models/GameBoardModel";
+import { GameSquareModel } from "@/Models/GameSquareModel";
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
 import { Coordinate, MovementRule } from './Game/LegalMoves';
-import { nextTick } from "process";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -27,7 +24,7 @@ export const useGameState = defineStore("GameState", () => {
   const PieceInHand = ref({} as GamePieceModel);
 
   const CapturesP1 = ref([
-    new GamePieceModel( 1, GamePieceType.Lance, "Left", "1KY")
+
   ] as GamePieceModel[]);
   const CapturesP2 = ref([
 
@@ -60,7 +57,8 @@ export const useGameState = defineStore("GameState", () => {
       \tPlayer: ${input.Player}\r
       \tId: ${input.Id}\r
       \tStartingPos: ${input.StartingPos}\r
-      \tIcon: ${input.Icon}\r
+      \tIcon: ${input._icon}\r
+      \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
       `);
   };
@@ -124,7 +122,7 @@ export const useGameState = defineStore("GameState", () => {
 
         // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(
-          CurrentPlayer.value, PieceInHand.value!.Type, PieceInHand.value!.StartingPos, PieceInHand.value!.Icon
+          CurrentPlayer.value, PieceInHand.value!.Type, PieceInHand.value!.StartingPos, PieceInHand.value!._icon
         );
         logPieceDetails("s.Piece", s.Piece);
 
@@ -148,6 +146,7 @@ export const useGameState = defineStore("GameState", () => {
 
   //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
+    logPieceDetails("MoveBegin", piece);
     
     Mode.value = GameMode.MoveBegin;
     
@@ -315,24 +314,26 @@ export const useGameState = defineStore("GameState", () => {
         // If a piece exists there, move it to the in-hand box.
         if(s.Piece.Player != 0){
 
+          
+          let capturedPiece = new GamePieceModel(
+            s.Piece.Player, s.Piece.Type, `${s.Piece.StartingPos}.C${s.Piece.Player}` , s.Piece._icon);          
+          
+            logPieceDetails("capturedPiece", capturedPiece);            
+            capturedPiece.Demote();
+            logPieceDetails("capturedPiece.Demote", capturedPiece);
+
           if(CurrentPlayer.value == 1){
-            CapturesP1.value.push(
-              new GamePieceModel(
-                s.Piece.Player, s.Piece.Type, s.Piece.StartingPos, s.Piece.Icon
-              ));      
+            CapturesP1.value.push(capturedPiece);
           }
           if(CurrentPlayer.value == 2){
-            CapturesP2.value.push(
-              new GamePieceModel(
-                s.Piece.Player, s.Piece.Type, s.Piece.StartingPos, s.Piece.Icon
-              ));
+            CapturesP2.value.push(capturedPiece);
           }
 
         }
 
         // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(
-          CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!.Icon
+          CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!._icon
         );
 
         // Remove the piece from the origin.
@@ -345,10 +346,10 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // Test if piece can be promoted.
-        if( !_promotable.includes(PieceMoving.value.Type) )
-        { 
-          return CompleteMove();
-        }
+        // if( !_promotable.includes(PieceMoving.value.Type) )
+        // { 
+        //   return CompleteMove();
+        // }
 
         if( s.PromotionZone == PieceMoving.value.Player ){
           
@@ -390,9 +391,9 @@ export const useGameState = defineStore("GameState", () => {
     if(toProceed){
       GameBoardModel.value.Squares.map( s =>{
         if(s.Id == Destination.value.Id){
-          console.log(`Promote() before: ${s.Piece.Type}`);
+          logPieceDetails("Before Promote", PieceMoving.value!);
           s.Piece = PieceMoving.value.Promote();
-          console.log(`Promote() after : ${s.Piece.Type}`);
+          logPieceDetails("After Promote", PieceMoving.value);
         }
       });
     }
@@ -401,7 +402,7 @@ export const useGameState = defineStore("GameState", () => {
 
   // Note: CompleteMove can be called locally or by PromoteModal
   const CompleteMove =()=> {
-    console.log("CompleteMove()");
+    console.warn("CompleteMove()");
     PieceMoving.value = new GamePieceModel( );
     PotentialDestinations.value = [""];
 

@@ -3,7 +3,7 @@
     class="game-piece"
     :class="currentClass"
     @click="handleClickPiece"
-    :src="`pieces/Shogi_FCZ/${input.Icon}.svg`"
+    :src="`pieces/Shogi_FCZ/${input.IconPath}.svg`"
     :id="input.Id"
     draggable="true" 
     >
@@ -13,7 +13,7 @@
 <!--  -->
 <script setup lang="ts">
 
-  import { GamePieceModel } from '@/Models/Game';
+  import { GamePieceModel } from "@/Models/GamePieceModel";
   import { GameMode } from '@/State/Game/GameMode';
   import { useGameState } from '@/State/GameState';
   import { ref, watch } from 'vue';
