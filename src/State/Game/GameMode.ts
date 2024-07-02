@@ -6,6 +6,7 @@ export enum GameMode {
   PromoteOption = "promote-option",
   MoveEnd = "move-end",
   DropEnd = "drop-end",
-  TurnEnd = "turn-end"
+  TurnEnd = "turn-end",
+  GameOver = "game-over"
 
 }

@@ -336,9 +336,12 @@ export const useGameState = defineStore("GameState", () => {
 
         Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);
 
-        // If a piece exists there, move it to the in-hand box.
+        // If a piece exists at destination, kill it!
         if(s.Piece.Player != 0){
-          
+
+          if(s.Piece.Type == GamePieceType.KingChallenger || s.Piece.Type == GamePieceType.KingVictor){
+            return gameOver(CurrentPlayer.value);
+          }
           
           let capturedPiece = new GamePieceModel(
             CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPos}.C${CurrentPlayer.value}`, s.Piece._icon, true);
@@ -476,6 +479,12 @@ export const useGameState = defineStore("GameState", () => {
     }
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
+
+  const gameOver = (player: number) =>{
+    Mode.value = GameMode.GameOver;
+    
+
+  }
 
   return {
     GameBoardModel,
