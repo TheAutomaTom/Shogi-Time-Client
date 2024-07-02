@@ -34,7 +34,6 @@
     () => game$.PieceMoving,
     () => {
       if (game$.PieceMoving.Id == props.input.Id) {
-        // console.warn("game-piece-move-start");
         currentClass.value = "game-piece-move-start";
       }
       else {
@@ -45,8 +44,8 @@
 
   const handleClickPiece = async () => {
     if( game$.CurrentPlayer == props.input.Player 
-        && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin)
-        && game$.PieceMoving.Id != props.input.Id
+        && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin || game$.Mode == GameMode.DropStart)
+        && (game$.PieceMoving.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
       ){
         game$.MoveBegin(props.input);
     }

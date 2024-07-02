@@ -97,9 +97,8 @@ watch( // Update Piece movement
 watch(
   () => game$.Destination,
   () => {
-    if ( game$.Destination.Id == props.input.Id
+    if ( game$.Mode == GameMode.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
-      // console.warn("game-piece-promotion-option");
       currentClass.value = "game-piece-promotion-option";
     }
     else {
@@ -116,7 +115,7 @@ const handleClickSquare = () => {
         game$.MoveAttempt(props.input);
     }
 
-  if( game$.Mode == GameMode.DropBegin
+  if( game$.Mode == GameMode.DropStart
       && game$.MoveOrigin.Id != props.input.Id
       && game$.PotentialDestinations.includes( props.input.Id)
     ){    
@@ -159,7 +158,7 @@ const handleClickSquare = () => {
   }
 
   .game-square-potential-move{
-    background-color: greenyellow;
+    background-color: #431706;
   }
   .game-piece-promotion-option{
     background-color: lightseagreen;

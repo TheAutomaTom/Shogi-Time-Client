@@ -44,7 +44,7 @@ const game$ = useGameState();
 .captures-p2{
   height:2.5em;
   margin:0.5em 0;
-  background-color: black;
+  background-color: #0f0f0f;
 
   display: flex;
   align-items: center;
@@ -53,7 +53,7 @@ const game$ = useGameState();
 .captures-p1{
   height:2.5em;
   margin:0.5em 0;
-  background-color: black;
+  background-color: #0f0f0f;
 
   display: flex;
   align-items: center;

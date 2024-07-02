@@ -4,7 +4,7 @@ import { GameBoardModel } from "@/Models/GameBoardModel";
 import { GameSquareModel } from "@/Models/GameSquareModel";
 import { ref } from "vue";
 import { defineStore } from "pinia";
-import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
+import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
 import { Coordinate, MovementRule } from './Game/LegalMoves';
 
@@ -39,18 +39,19 @@ export const useGameState = defineStore("GameState", () => {
     GamePieceType.Pawn
 
   ];
-  const _demotable = [
-    GamePieceType.None,
-    GamePieceType.KingVictor,
-    GamePieceType.KingChallenger,
-    GamePieceType.RookPro,
-    GamePieceType.BishopPro,
-    GamePieceType.Gold,
-    GamePieceType.SilverPro,
-    GamePieceType.KnightPro,
-    GamePieceType.LancePro,
-    GamePieceType.PawnPro
-  ];
+
+  // const _demotable = [
+  //   GamePieceType.None,
+  //   GamePieceType.KingVictor,
+  //   GamePieceType.KingChallenger,
+  //   GamePieceType.RookPro,
+  //   GamePieceType.BishopPro,
+  //   GamePieceType.Gold,
+  //   GamePieceType.SilverPro,
+  //   GamePieceType.KnightPro,
+  //   GamePieceType.LancePro,
+  //   GamePieceType.PawnPro
+  // ];
 
   const logPieceDetails =(name: string, input: GamePieceModel) => {
     console.log(`${name}...\r
@@ -68,7 +69,7 @@ export const useGameState = defineStore("GameState", () => {
     
     logPieceDetails("DropBegin(piece)", piece);
     
-    Mode.value = GameMode.DropBegin;
+    Mode.value = GameMode.DropStart;
     
     // Bookmark the piece in focus.
     PieceInHand.value = piece;
@@ -168,6 +169,8 @@ export const useGameState = defineStore("GameState", () => {
 
   //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
+    PieceInHand.value = new GamePieceModel();
+    
     logPieceDetails("MoveBegin", piece);
     
     Mode.value = GameMode.MoveBegin;
@@ -361,21 +364,14 @@ export const useGameState = defineStore("GameState", () => {
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new GamePieceModel();
 
-        // Test for Promotion zone.
-        if( s.PromotionZone != PieceMoving.value.Player )
+        // Test for promotion zone and if piece type can be promoted.
+        if( s.PromotionZone != PieceMoving.value.Player || !_promotable.includes(PieceMoving.value.Type) )
         { 
           return CompleteMove();
         }
 
-        // Test if piece can be promoted.
-        // if( !_promotable.includes(PieceMoving.value.Type) )
-        // { 
-        //   return CompleteMove();
-        // }
-
-        if( s.PromotionZone == PieceMoving.value.Player 
-            && _promotable.includes(PieceMoving.value.Type)){
-          
+        if( s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)){
+          logPieceDetails(`Can promote? ${s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)}`, PieceMoving.value)
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
           if( ( PieceMoving.value.Type == GamePieceType.Pawn 
@@ -410,8 +406,10 @@ export const useGameState = defineStore("GameState", () => {
 
   };
 
+  // This may be called by PromotionModal
   const PromotePiece =(toProceed: boolean = true)=> {
-    if(toProceed){
+
+    if( toProceed && _promotable.includes(PieceMoving.value.Type)){
       GameBoardModel.value.Squares.map( s =>{
         if(s.Id == Destination.value.Id){
           logPieceDetails("Before Promote", PieceMoving.value!);
@@ -427,7 +425,9 @@ export const useGameState = defineStore("GameState", () => {
   const CompleteMove =()=> {
     console.warn("CompleteMove()");
     PieceMoving.value = new GamePieceModel( );
+    PieceInHand.value = new GamePieceModel( );
     PotentialDestinations.value = [""];
+    Destination.value = new GameSquareModel(0,0);
 
     if(CurrentPlayer.value == 1){
       CurrentPlayer.value = 2;
