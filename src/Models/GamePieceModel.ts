@@ -100,7 +100,7 @@ export class GamePieceModel {
         break;
       case GamePieceType.PawnPro:
         this.Type = GamePieceType.Pawn;
-        this._icon = "TO";
+        this._icon = "FU";
         break;
       default:
         this.Type = this.Type;

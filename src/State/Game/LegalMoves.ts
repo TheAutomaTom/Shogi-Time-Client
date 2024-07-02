@@ -1,6 +1,6 @@
 import { GamePieceType } from "@/Models/GamePieceType";
 
-type Mobility = {
+export type Mobility = {
   N: number,
   S: number,
   E: number,
@@ -9,7 +9,19 @@ type Mobility = {
   SE: number,
   SW: number,
   NW: number,
-  K: boolean
+  K: number
+};
+
+export enum MoveDirection {
+  N = "N",
+  S = "S",
+  E = "E",
+  W = "W",
+  NE = "NE",
+  SE = "SE",
+  SW = "SW",
+  NW = "NW",
+  K = "K"
 };
 
 export type Coordinate = {
@@ -34,7 +46,7 @@ export class MovementRule {
           SE: 1,
           SW: 1,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -48,7 +60,7 @@ export class MovementRule {
           SE: 1,
           SW: 1,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -62,7 +74,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 0,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -76,7 +88,7 @@ export class MovementRule {
           SE: 1,
           SW: 1,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -90,7 +102,7 @@ export class MovementRule {
           SE: 8,
           SW: 8,
           NW: 8,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -104,7 +116,7 @@ export class MovementRule {
           SE: 8,
           SW: 8,
           NW: 8,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -118,7 +130,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -132,7 +144,7 @@ export class MovementRule {
           SE: 1,
           SW: 1,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -146,7 +158,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -160,7 +172,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 0,
-          K:  true
+          K:  1
         } as Mobility;
         break;
     
@@ -174,7 +186,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -188,7 +200,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 0,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -202,7 +214,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -216,7 +228,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 0,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -230,7 +242,7 @@ export class MovementRule {
           SE: 0,
           SW: 0,
           NW: 1,
-          K:  false
+          K:  0
         } as Mobility;
         break;
     
@@ -244,7 +256,7 @@ export class MovementRule {
         SE: 0,
         SW: 0,
         NW: 0,
-        K:  false
+        K:  0
       } as Mobility;
         break;
     };
