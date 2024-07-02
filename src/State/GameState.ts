@@ -89,16 +89,38 @@ export const useGameState = defineStore("GameState", () => {
       
       GameBoardModel.value.Squares.map( s =>{
         // Highlight potential move squares
-
-
         if(s.Piece.Player == 0){
-          PotentialDestinations.value.push(s.Id);
+
+
+
+          // If not pawn, lance, or night: add whole board
+          if( PieceInHand.value.Type != GamePieceType.Pawn 
+              && PieceInHand.value.Type != GamePieceType.Lance 
+              && PieceInHand.value.Type != GamePieceType.Knight){
+              
+              PotentialDestinations.value.push(s.Id);
+            }
+            
+          // If pawn or lance: add all but back row
+          if(
+              (PieceInHand.value.Type == GamePieceType.Pawn || PieceInHand.value.Type == GamePieceType.Lance)
+               && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))
+          ){
+            PotentialDestinations.value.push(s.Id);
+          }
+            
+          // If knight: add all but back 2 rows
+          if(
+              (PieceInHand.value.Type == GamePieceType.Knight)
+               && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))
+          ){
+            PotentialDestinations.value.push(s.Id);
+          }
+
+
+          
         }
       });
-      
-      // TODO: Handle pawns, lances, and knights
-      // TODO: Handle pawns, lances, and knights
-      // TODO: Handle pawns, lances, and knights
       
     // }
   };
@@ -122,7 +144,7 @@ export const useGameState = defineStore("GameState", () => {
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPos, 
           PieceInHand.value._icon,
-           PieceInHand.value.IsFacingDefault
+          PieceInHand.value.IsFacingDefault
         );
         logPieceDetails("s.Piece", s.Piece);
 
