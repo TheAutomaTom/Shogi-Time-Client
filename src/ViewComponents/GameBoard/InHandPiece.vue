@@ -2,7 +2,7 @@
   <button
     class="in-hand-button"
     :class="currentClass"
-    @click="handleClickPieceInHand(input)"
+    @click="handleClickPieceInHand()"
   >
     <img 
       class="game-piece-in-hand"
@@ -14,28 +14,34 @@
 
 <script setup lang="ts">
 import { GamePieceModel } from '@/Models/Game';
+import { GameMode } from '@/State/Game/GameMode';
 import { useGameState } from '@/State/GameState';
 import { ref, watch } from 'vue';
 
-const game$ = useGameState();
-const props = defineProps({
-    input: {
-    type: Object as () => GamePieceModel,
-    required: true
-  }
-});
+  const game$ = useGameState();
+  const props = defineProps({
+      input: {
+      type: Object as () => GamePieceModel,
+      required: true
+    }
+  });
 
-const handleClickPieceInHand =(piece: GamePieceModel)=> {
-  console.log(`handleClickPieceInHand ${piece}`);
-  game$.InHand = piece;
+  const handleClickPieceInHand = async () => {
+    if( game$.CurrentPlayer == props.input.Player 
+        && (game$.Mode == GameMode.TurnStart 
+            || game$.Mode == GameMode.MoveBegin)
+        && game$.PieceMoving.Id != props.input.Id
+    ){
+        game$.DropBegin(props.input);
+    }
+  };
 
-}
-const currentClass = ref(game$.MovingPiece!.Id == props.input.Id ? "in-hand-button-active" : "");
+const currentClass = ref(game$.PieceMoving!.Id == props.input.Id ? "in-hand-button-active" : "");
 
 watch(
-  () => game$.InHand,
+  () => game$.PieceInHand,
   () => {
-    if ( game$.InHand.Id == props.input.Id
+    if ( game$.PieceInHand.Id == props.input.Id
     ) {
       console.warn("in-hand-button-active");
       currentClass.value = "in-hand-button-active";

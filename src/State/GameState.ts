@@ -19,11 +19,11 @@ export const useGameState = defineStore("GameState", () => {
 
   const Mode = ref(GameMode.TurnStart);
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
-  const MovingPiece = ref({} as (GamePieceModel));
+  const PieceMoving = ref({} as (GamePieceModel));
   const MoveOrigin = ref({} as GameSquareModel);
   const PotentialDestinations = ref([""] as string[]);
   const Destination = ref({} as GameSquareModel);
-  const InHand = ref({} as GamePieceModel);
+  const PieceInHand = ref({} as GamePieceModel);
 
   const CapturesP1 = ref([
     new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")
@@ -32,7 +32,7 @@ export const useGameState = defineStore("GameState", () => {
 
   ] as GamePieceModel[]);
 
-  const Promotable = [
+  const _promotable = [
     GamePieceType.Rook,
     GamePieceType.Bishop,
     GamePieceType.Silver,
@@ -41,7 +41,7 @@ export const useGameState = defineStore("GameState", () => {
     GamePieceType.Pawn
 
   ];
-  const Demotable = [
+  const _demotable = [
     GamePieceType.None,
     GamePieceType.KingVictor,
     GamePieceType.KingChallenger,
@@ -54,13 +54,38 @@ export const useGameState = defineStore("GameState", () => {
     GamePieceType.PawnPro
   ];
 
+  //== Movement: Drop ======================================================
+  const DropBegin =(piece: GamePieceModel)=> {
+    
+    Mode.value = GameMode.DropBegin;
+    
+    // Bookmark the piece in focus.
+    PieceInHand.value = piece;
+
+    // Find the starting square based on the id of the piece it contains.
+    if(CurrentPlayer.value == 1){
+      GameBoardModel.value.Squares.forEach( capture => {
+        if(capture.Piece.Id == piece.Id){
+          // MoveOrigin.value = capture;
+
+        }
+      });
+
+      // Highlight potential move squares
+      PotentialDestinations.value = [""]; // reset prior
+      const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
+      const facing = setPieceIsFacing(piece.IsFacingDefault);
+      
+    }
+};
+
   //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
     
     Mode.value = GameMode.MoveBegin;
     
     // Bookmark the piece in focus.
-    MovingPiece.value = piece;   
+    PieceMoving.value = piece;
 
     // Find the starting square based on the id of the piece it contains.
     GameBoardModel.value.Squares.forEach( square => {
@@ -212,9 +237,10 @@ export const useGameState = defineStore("GameState", () => {
   //== Movement: Move ======================================================
   const MoveAttempt = async (square: GameSquareModel)=>{
 
+    // Find the square that was clicked...
     GameBoardModel.value.Squares.map( s =>{
 
-      // Find the square that was clicked and check if it's in the movement rules.
+      // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
         Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);
@@ -239,51 +265,51 @@ export const useGameState = defineStore("GameState", () => {
 
         // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(
-          CurrentPlayer.value, MovingPiece.value!.Type, MovingPiece.value!.StartingPos, MovingPiece.value!.Icon
+          CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!.Icon
         );
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new GamePieceModel();
 
         // Test for Promotion zone.
-        if( s.PromotionZone != MovingPiece.value.Player )
+        if( s.PromotionZone != PieceMoving.value.Player )
         { 
           return CompleteMove();
         }
 
         // Test if piece can be promoted.
-        if( !Promotable.includes(MovingPiece.value.Type) )
+        if( !_promotable.includes(PieceMoving.value.Type) )
         { 
           return CompleteMove();
         }
 
-        if( s.PromotionZone == MovingPiece.value.Player ){
+        if( s.PromotionZone == PieceMoving.value.Player ){
           
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
-          if( ( MovingPiece.value.Type == GamePieceType.Pawn 
-                || MovingPiece.value.Type == GamePieceType.Lance  
+          if( ( PieceMoving.value.Type == GamePieceType.Pawn 
+                || PieceMoving.value.Type == GamePieceType.Lance  
               ) && ( 
                 ( CurrentPlayer.value == 1 && Destination.value.Y == 1 )
                 || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
               ) )
           {
-            console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
+            console.log(`Promotion mandatory (${PieceMoving.value.Type})`);
             return PromotePiece();
           }
 
           // Knights get promoted from back 2 rows.
-          if(  MovingPiece.value.Type == GamePieceType.Knight
+          if(  PieceMoving.value.Type == GamePieceType.Knight
             && ( 
               ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
               || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
             ) )
           {
-            console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
+            console.log(`Promotion mandatory (${PieceMoving.value.Type})`);
             return PromotePiece();
           }
    
-          console.log(`Promotable.includes(${MovingPiece.value.Type})`);
+          console.log(`Promotable.includes(${PieceMoving.value.Type})`);
           Mode.value = GameMode.PromoteOption;
           // PromotionModal will display to continue.
         
@@ -298,7 +324,7 @@ export const useGameState = defineStore("GameState", () => {
       GameBoardModel.value.Squares.map( s =>{
         if(s.Id == Destination.value.Id){
           console.log(`Promote() before: ${s.Piece.Type}`);
-          s.Piece = MovingPiece.value.Promote();
+          s.Piece = PieceMoving.value.Promote();
           console.log(`Promote() after : ${s.Piece.Type}`);
         }
       });
@@ -306,11 +332,10 @@ export const useGameState = defineStore("GameState", () => {
     return CompleteMove();
   };
 
-  
   // Note: CompleteMove can be called locally or by PromoteModal
   const CompleteMove =()=> {
     console.log("CompleteMove()");
-    MovingPiece.value = new GamePieceModel( );
+    PieceMoving.value = new GamePieceModel( );
     PotentialDestinations.value = [""];
 
     if(CurrentPlayer.value == 1){
@@ -360,15 +385,13 @@ export const useGameState = defineStore("GameState", () => {
     }
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
-  
 
-  
   return {
     GameBoardModel,
     CurrentPlayer,
     Mode,    
-    MovingPiece,
-    InHand,
+    PieceMoving,
+    PieceInHand,
     MoveOrigin,
     MoveBegin,
     MoveAttempt,
@@ -376,7 +399,8 @@ export const useGameState = defineStore("GameState", () => {
     Destination,
     PromotePiece,
     CapturesP1,
-    CapturesP2
+    CapturesP2,
+    DropBegin
 
   };
 });

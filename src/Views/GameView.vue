@@ -27,21 +27,9 @@
 import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
 import InHandPiece from "@/ViewComponents/GameBoard/InHandPiece.vue";
 import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
-import { GamePieceModel } from "@/Models/Game";
 import { useGameState } from "@/State/GameState";
-import { watch } from "vue";
 
 const game$ = useGameState();
-
-const handleClickPieceInHand =(piece: GamePieceModel)=> {
-  console.log(`handleClickPieceInHand ${piece}`);
-  game$.InHand = piece;
-
-}
-
-const getButtonClass =()=> {
-  
-};
 
 </script>
 

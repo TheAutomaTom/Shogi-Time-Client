@@ -27,13 +27,13 @@
     }
   });
 
-  const currentClass = ref(game$.MovingPiece!.Id == props.input.Id ? "game-piece-move-start" : "");
+  const currentClass = ref(game$.PieceMoving!.Id == props.input.Id ? "game-piece-move-start" : "");
 
   //=== Events =====================================================  
   watch(
-    () => game$.MovingPiece,
+    () => game$.PieceMoving,
     () => {
-      if (game$.MovingPiece.Id == props.input.Id) {
+      if (game$.PieceMoving.Id == props.input.Id) {
         console.warn("game-piece-move-start");
         currentClass.value = "game-piece-move-start";
       }
@@ -43,10 +43,10 @@
     }
   );
 
-  const handleClickPiece = async () => {  
+  const handleClickPiece = async () => {
     if( game$.CurrentPlayer == props.input.Player 
-      && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin)
-      && game$.MovingPiece.Id != props.input.Id
+        && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin)
+        && game$.PieceMoving.Id != props.input.Id
       ){
         game$.MoveBegin(props.input);
     }

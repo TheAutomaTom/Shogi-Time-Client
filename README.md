@@ -21,6 +21,6 @@
       - Are not to be promoted on the turn they are dropped.
     - Pawns... 
       - Cannot be dropped onto columns already containing one of your own un-promoted pawns.
-      - Cannot be dropped for immediate checkmate.
+      - Cannot be dropped into immediate checkmate.
     
 
