@@ -23,6 +23,7 @@ export class GameSquareModel {
 
 export class GamePieceModel {
   Type: GamePieceType;
+  StartingPos: string;
   Player: number;
   Icon: string;
   Id: string;
@@ -31,12 +32,13 @@ export class GamePieceModel {
   constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
+    this.StartingPos = startingPos;
     this.Player = player;
     this.Icon = icon;
     this.IsFacingDefault = isFacingDefault;
   };
 
-  Promote =()=>{
+  Promote =(): GamePieceModel=>{
     // Icons prefixed with 1 face down (for player 2)
     this.Icon = this.Player == 1 ? "0" : "1";
 
@@ -70,6 +72,7 @@ export class GamePieceModel {
         this.Icon += ""
         break;
     }
+    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
   }
   Demote =()=>{
 
@@ -108,8 +111,6 @@ export class GamePieceModel {
     }
   }
 };
-
-
 
 export enum GamePieceType{
   None = "None",

@@ -212,37 +212,42 @@ export const useGameState = defineStore("GameState", () => {
       // Find the square that was clicked and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
-        // Destination.value = s;
+        Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);
 
         // If a piece exists there, move it to the in-hand box.
         if(s.Piece.Player != 0){
+
           if(CurrentPlayer.value == 1){
             CapturesP1.value.push(
               new GamePieceModel(
-                s.Piece.Player, s.Piece.Type, getStartPositionFromId(s.Piece.Id),s.Piece.Icon
-              ));
-      
+                s.Piece.Player, s.Piece.Type, s.Piece.StartingPos, s.Piece.Icon
+              ));      
           }
           if(CurrentPlayer.value == 2){
             CapturesP2.value.push(
               new GamePieceModel(
-                s.Piece.Player, s.Piece.Type, getStartPositionFromId(s.Piece.Id),s.Piece.Icon
+                s.Piece.Player, s.Piece.Type, s.Piece.StartingPos, s.Piece.Icon
               ));
           }
+
         }
 
         // Create the moved piece in that spot.
         s.Piece = new GamePieceModel(
-          CurrentPlayer.value, MovingPiece.value!.Type, getStartPositionFromId(MovingPiece.value!.Id), MovingPiece.value!.Icon
+          CurrentPlayer.value, MovingPiece.value!.Type, MovingPiece.value!.StartingPos, MovingPiece.value!.Icon
         );
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new GamePieceModel();
 
-        // Test for Promotion options.
-        console.log(`${s.PromotionZone != MovingPiece.value.Player}/ ${s.PromotionZone} != ${MovingPiece.value.Player}`)
-        
+        // Test for Promotion zone.
         if( s.PromotionZone != MovingPiece.value.Player )
+        { 
+          return CompleteMove();
+        }
+
+        // Test if piece can be promoted.
+        if( !Promotable.includes(MovingPiece.value.Type) )
         { 
           return CompleteMove();
         }
@@ -258,24 +263,27 @@ export const useGameState = defineStore("GameState", () => {
                 || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
               ) )
           {
-            MovingPiece.value.Promote();
-            return CompleteMove();
-          }
-          // Knights get promoted from back 2 rows.
-          if(  MovingPiece.value.Type == GamePieceType.Knight
-               && ( 
-                ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
-                || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
-              ) )
-          {
+            console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
             MovingPiece.value.Promote();
             return CompleteMove();
           }
 
-          if(Promotable.includes(MovingPiece.value.Type)){            
-            Mode.value = GameMode.PromoteOption;
-            // PromotionModal will display to continue.
+          // Knights get promoted from back 2 rows.
+          if(  MovingPiece.value.Type == GamePieceType.Knight
+            && ( 
+              ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
+              || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
+            ) )
+          {
+            console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
+            MovingPiece.value.Promote();
+            return CompleteMove();
           }
+   
+          console.log(`Promotable.includes(${MovingPiece.value.Type})`);
+          Mode.value = GameMode.PromoteOption;
+          // PromotionModal will display to continue.
+        
         }
       }
     });
@@ -284,8 +292,13 @@ export const useGameState = defineStore("GameState", () => {
 
   const PromotePiece=(toProceed: boolean)=> {
     if(toProceed){
-      const newPiece = MovingPiece.value.Promote();
-
+      GameBoardModel.value.Squares.map( s =>{
+        if(s.Id == Destination.value.Id){
+          console.log(`Promote() before: ${s.Piece.Type}`);
+          s.Piece = MovingPiece.value.Promote();
+          console.log(`Promote() after : ${s.Piece.Type}`);
+        }
+      });
     }
     return CompleteMove();
   };
@@ -306,13 +319,6 @@ export const useGameState = defineStore("GameState", () => {
   };
 
   //== Ancillary ===========================================================
-  const getStartPositionFromId=(id: string): string =>{
-    const start = id.lastIndexOf("-")
-    const result = id.substring(start +1);
-    return result;
-
-  };
-
   const findValidMoves = (target: Coordinate):number =>{
     let hit = 0;
     // All coordinate locations are to be between 1 and 9
