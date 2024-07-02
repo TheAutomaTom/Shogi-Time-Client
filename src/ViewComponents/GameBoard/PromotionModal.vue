@@ -7,8 +7,8 @@
     Promote?
   </div>
   <div class="modal-choice">
-    <button class="drawer-button" @click="game$.PromotePiece(true)">Yes</button>
-    <button class="drawer-button" @click="game$.PromotePiece(false)">No</button>
+    <button class="modal-choice-button" @click="game$.PromotePiece(true)">Yes</button>
+    <button class="modal-choice-button" @click="game$.PromotePiece(false)">No</button>
   </div>
 </div>
 </template>
@@ -34,7 +34,6 @@ watch( // Update highlight
 );
 
 </script>
-
 
 <style scoped lang="scss">
 .promotion-window{
@@ -80,7 +79,7 @@ watch( // Update highlight
 }
 
 // ========================
-.drawer-button{
+.modal-choice-button{
   display: flex;
   align-items: center;
   justify-content: center;
@@ -95,14 +94,15 @@ watch( // Update highlight
   cursor: pointer;
   text-decoration: none;
   background-color: black;
-
+  // 
   width:20%;
+  margin:3px;
 }
-.drawer-button:hover{
+.modal-choice-button:hover{
   color: black;
   background-color: goldenrod;
 }
-.drawer-button:active{
+.modal-choice-button:active{
   color: gold;
   background-color: black;
 }

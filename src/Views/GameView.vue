@@ -7,25 +7,17 @@
       <span>Mode: {{ game$.Mode }}</span>
     </div>
     <div class="captures-p2">
-      <img 
+      <in-hand-piece
         v-for="piece in game$.CapturesP2"
-        class="game-piece-in-hand"
-        @click="handleClickPieceInHand"
-        :src="`pieces/Shogi_FCZ/${piece.Icon}.svg`"
-        :id="piece.Id" 
-        >
-      </img>
+        :input="piece"
+      ></in-hand-piece>
     </div>
     <game-board></game-board>
     <div class="captures-p1">
-      <img 
+      <in-hand-piece
         v-for="piece in game$.CapturesP1"
-        class="game-piece-in-hand"
-        @click="handleClickPieceInHand"
-        :src="`pieces/Shogi_FCZ/${piece.Icon}.svg`"
-        :id="piece.Id" 
-        >
-      </img>
+        :input="piece"
+      ></in-hand-piece>
     </div>
   </div>
 </template>
@@ -33,14 +25,23 @@
 <!-- =============================================== -->
 <script setup lang="ts">
 import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
+import InHandPiece from "@/ViewComponents/GameBoard/InHandPiece.vue";
 import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
+import { GamePieceModel } from "@/Models/Game";
 import { useGameState } from "@/State/GameState";
+import { watch } from "vue";
 
 const game$ = useGameState();
 
-const handleClickPieceInHand =()=> {
+const handleClickPieceInHand =(piece: GamePieceModel)=> {
+  console.log(`handleClickPieceInHand ${piece}`);
+  game$.InHand = piece;
 
 }
+
+const getButtonClass =()=> {
+  
+};
 
 </script>
 
@@ -70,9 +71,4 @@ const handleClickPieceInHand =()=> {
   align-items: center;
 }
 
-.game-piece-in-hand{
-  height:3em;
-  transform: rotate(180deg);
-
-}
 </style>

@@ -23,9 +23,14 @@ export const useGameState = defineStore("GameState", () => {
   const MoveOrigin = ref({} as GameSquareModel);
   const PotentialDestinations = ref([""] as string[]);
   const Destination = ref({} as GameSquareModel);
+  const InHand = ref({} as GamePieceModel);
 
-  const CapturesP1 = ref([] as GamePieceModel[]);
-  const CapturesP2 = ref([] as GamePieceModel[]);
+  const CapturesP1 = ref([
+    new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")
+  ] as GamePieceModel[]);
+  const CapturesP2 = ref([
+
+  ] as GamePieceModel[]);
 
   const Promotable = [
     GamePieceType.Rook,
@@ -363,6 +368,7 @@ export const useGameState = defineStore("GameState", () => {
     CurrentPlayer,
     Mode,    
     MovingPiece,
+    InHand,
     MoveOrigin,
     MoveBegin,
     MoveAttempt,
