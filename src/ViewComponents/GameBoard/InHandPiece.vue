@@ -20,7 +20,7 @@ import { ref, watch } from 'vue';
 
   const game$ = useGameState();
   const props = defineProps({
-      input: {
+    input: {
       type: Object as () => GamePieceModel,
       required: true
     }
@@ -41,12 +41,10 @@ import { ref, watch } from 'vue';
     
 
     console.log(`${ game$.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
-    console.log(`${game$.Mode == GameMode.TurnStart 
-        || game$.Mode == GameMode.MoveBegin}: game$.Mode == GameMode.TurnStart 
-        || game$.Mode == GameMode.MoveBegin`);
+    console.log(`${game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin`);
     console.log(`${game$.PieceMoving.Id != props.input.Id}: game$.PieceMoving.Id != props.input.Id`);
     
-    if( game$.CurrentPlayer == props.input.Player 
+    if( game$.CurrentPlayer == props.input.Player
     && (game$.Mode == GameMode.TurnStart 
         || game$.Mode == GameMode.MoveBegin)
     && game$.PieceMoving.Id != props.input.Id

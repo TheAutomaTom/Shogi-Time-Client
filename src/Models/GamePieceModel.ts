@@ -15,7 +15,15 @@ export class GamePieceModel {
   _icon: string;
 
   public get iconPrefix() {
-    return this.Player == 1 ? "0" : "1";
+    if(this.Player == 1){
+      return this.IsFacingDefault == true ? "0" : "1";
+    }
+    if(this.Player == 2){
+      return this.IsFacingDefault == true ? "1" : "0";
+    }
+    // Player = 0...
+    return "";
+
   }
 
   public get IconPath() {

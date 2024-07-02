@@ -109,20 +109,20 @@ export const useGameState = defineStore("GameState", () => {
     // Find the square that was clicked...
     GameBoardModel.value.Squares.map( async s =>{
       // ...and check if it's in the movement rules.
-      if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){   
+      if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
 
         Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);        
         console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
-
-        // If a piece exists there, move it to the in-hand box.
-        // if(s.Piece.Player != 0){} /* Not required, because only open squares are included. */
-
         
         logPieceDetails("PieceInHand", PieceInHand.value);
 
-        // Create the moved piece in that spot.
+        // Create the dropped piece in that spot.
         s.Piece = new GamePieceModel(
-          CurrentPlayer.value, PieceInHand.value!.Type, PieceInHand.value!.StartingPos, PieceInHand.value!._icon
+          CurrentPlayer.value, 
+          PieceInHand.value.Type, 
+          PieceInHand.value.StartingPos, 
+          PieceInHand.value._icon,
+           PieceInHand.value.IsFacingDefault
         );
         logPieceDetails("s.Piece", s.Piece);
 
@@ -313,10 +313,10 @@ export const useGameState = defineStore("GameState", () => {
 
         // If a piece exists there, move it to the in-hand box.
         if(s.Piece.Player != 0){
-
+          
           
           let capturedPiece = new GamePieceModel(
-            s.Piece.Player, s.Piece.Type, `${s.Piece.StartingPos}.C${s.Piece.Player}` , s.Piece._icon);          
+            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPos}.C${CurrentPlayer.value}`, s.Piece._icon, true);
           
             logPieceDetails("capturedPiece", capturedPiece);            
             capturedPiece.Demote();
@@ -351,7 +351,8 @@ export const useGameState = defineStore("GameState", () => {
         //   return CompleteMove();
         // }
 
-        if( s.PromotionZone == PieceMoving.value.Player ){
+        if( s.PromotionZone == PieceMoving.value.Player 
+            && _promotable.includes(PieceMoving.value.Type)){
           
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
