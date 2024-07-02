@@ -99,7 +99,7 @@ watch(
   () => {
     if ( game$.Destination.Id == props.input.Id
     ) {
-      console.warn("game-piece-promotion-option");
+      // console.warn("game-piece-promotion-option");
       currentClass.value = "game-piece-promotion-option";
     }
     else {
@@ -109,11 +109,18 @@ watch(
 );
 
 const handleClickSquare = () => {  
-  if( game$.Mode == GameMode.MoveBegin 
+  if( game$.Mode == GameMode.MoveBegin
       && game$.MoveOrigin.Id != props.input.Id
       && game$.PotentialDestinations.includes( props.input.Id)
     ){    
         game$.MoveAttempt(props.input);
+    }
+
+  if( game$.Mode == GameMode.DropBegin
+      && game$.MoveOrigin.Id != props.input.Id
+      && game$.PotentialDestinations.includes( props.input.Id)
+    ){    
+        game$.DropAttempt(props.input);
     }
 };
 

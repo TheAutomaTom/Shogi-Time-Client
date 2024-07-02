@@ -41,7 +41,7 @@ Squares = [
   new GameSquareModel( 3, 7, 2 ),
   new GameSquareModel( 4, 7, 2 ),
   new GameSquareModel( 5, 7, 2 ),
-  new GameSquareModel( 6, 7, 2 ),
+  new GameSquareModel( 6, 7, 2, new GamePieceModel( 1, GamePieceType.Pawn, "4", "0FU")),
   new GameSquareModel( 7, 7, 2 ),
   new GameSquareModel( 8, 7, 2 ),
   new GameSquareModel( 9, 7, 2 ),
@@ -79,18 +79,51 @@ Squares = [
     new GameSquareModel( 8, 4 ),
     new GameSquareModel( 9, 4 ),
 
-  // Player 2: Pawn Row /==================
-  new GameSquareModel( 1, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "9", "1FU")),
-  new GameSquareModel( 2, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "8", "1FU")),
-  new GameSquareModel( 3, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "7", "1FU")),
-  new GameSquareModel( 4, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "6", "1FU")),
-  new GameSquareModel( 5, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "5", "1FU")),
-  new GameSquareModel( 6, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "4", "1FU")),
-  new GameSquareModel( 7, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "3", "1FU")),
-  new GameSquareModel( 8, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "2", "1FU")),
-  new GameSquareModel( 9, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "1", "1FU")),
+  // // Player 2: Pawn Row /==================
+  // new GameSquareModel( 1, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "9", "1FU")),
+  // new GameSquareModel( 2, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "8", "1FU")),
+  // new GameSquareModel( 3, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "7", "1FU")),
+  // new GameSquareModel( 4, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "6", "1FU")),
+  // new GameSquareModel( 5, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "5", "1FU")),
+  // new GameSquareModel( 6, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "4", "1FU")),
+  // new GameSquareModel( 7, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "3", "1FU")),
+  // new GameSquareModel( 8, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "2", "1FU")),
+  // new GameSquareModel( 9, 3, 1, new GamePieceModel( 2, GamePieceType.Pawn, "1", "1FU")),
   
-  // Player 2: Mid Row /==================
+  // // Player 2: Mid Row /==================
+  //   new GameSquareModel( 1, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 2, 2, 1, new GamePieceModel( 2, GamePieceType.Rook, "Right", "1HI")),
+  //   new GameSquareModel( 3, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 4, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 5, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 6, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 7, 2, 1, new GamePieceModel( )),
+  //   new GameSquareModel( 8, 2, 1, new GamePieceModel( 2, GamePieceType.Bishop, "Left", "1KA")),
+  //   new GameSquareModel( 9, 2, 1, new GamePieceModel( )),
+
+  // // Player 2: Back Row /==================
+  //   new GameSquareModel( 1, 1, 1, new GamePieceModel( 2, GamePieceType.Lance, "Right", "1KY")),
+  //   new GameSquareModel( 2, 1, 1, new GamePieceModel( 2, GamePieceType.Knight, "Right", "1KE")),
+  //   new GameSquareModel( 3, 1, 1, new GamePieceModel( 2, GamePieceType.Silver, "Right", "1GI")),
+  //   new GameSquareModel( 4, 1, 1, new GamePieceModel( 2, GamePieceType.Gold, "Right", "1KI")),
+  //   new GameSquareModel( 5, 1, 1, new GamePieceModel( 2, GamePieceType.KingChallenger, "Center", "1GY")),
+  //   new GameSquareModel( 6, 1, 1, new GamePieceModel( 2, GamePieceType.Gold, "Left", "1KI")),
+  //   new GameSquareModel( 7, 1, 1, new GamePieceModel( 2, GamePieceType.Silver, "Left", "1GI")),
+  //   new GameSquareModel( 8, 1, 1, new GamePieceModel( 2, GamePieceType.Knight, "Left", "1KE")),
+  //   new GameSquareModel( 9, 1, 1, new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")),
+
+  // Player 2: Pawn Row (empty) /==================
+  new GameSquareModel( 1, 3, 1 ),
+  new GameSquareModel( 2, 3, 1 ),
+  new GameSquareModel( 3, 3, 1 ),
+  new GameSquareModel( 4, 3, 1 ),
+  new GameSquareModel( 5, 3, 1 ),
+  new GameSquareModel( 6, 3, 1 ),
+  new GameSquareModel( 7, 3, 1 ),
+  new GameSquareModel( 8, 3, 1 ),
+  new GameSquareModel( 9, 3, 1 ),
+  
+  // Player 2: Mid Row (empty) /==================
     new GameSquareModel( 1, 2, 1, new GamePieceModel( )),
     new GameSquareModel( 2, 2, 1, new GamePieceModel( 2, GamePieceType.Rook, "Right", "1HI")),
     new GameSquareModel( 3, 2, 1, new GamePieceModel( )),
@@ -101,16 +134,16 @@ Squares = [
     new GameSquareModel( 8, 2, 1, new GamePieceModel( 2, GamePieceType.Bishop, "Left", "1KA")),
     new GameSquareModel( 9, 2, 1, new GamePieceModel( )),
 
-  // Player 2: Back Row /==================
-    new GameSquareModel( 1, 1, 1, new GamePieceModel( 2, GamePieceType.Lance, "Right", "1KY")),
-    new GameSquareModel( 2, 1, 1, new GamePieceModel( 2, GamePieceType.Knight, "Right", "1KE")),
-    new GameSquareModel( 3, 1, 1, new GamePieceModel( 2, GamePieceType.Silver, "Right", "1GI")),
-    new GameSquareModel( 4, 1, 1, new GamePieceModel( 2, GamePieceType.Gold, "Right", "1KI")),
-    new GameSquareModel( 5, 1, 1, new GamePieceModel( 2, GamePieceType.KingChallenger, "Center", "1GY")),
-    new GameSquareModel( 6, 1, 1, new GamePieceModel( 2, GamePieceType.Gold, "Left", "1KI")),
-    new GameSquareModel( 7, 1, 1, new GamePieceModel( 2, GamePieceType.Silver, "Left", "1GI")),
-    new GameSquareModel( 8, 1, 1, new GamePieceModel( 2, GamePieceType.Knight, "Left", "1KE")),
-    new GameSquareModel( 9, 1, 1, new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")),
+  // Player 2: Back Row (empty) /==================
+    new GameSquareModel( 1, 1, 1 ),
+    new GameSquareModel( 2, 1, 1 ),
+    new GameSquareModel( 3, 1, 1 ),
+    new GameSquareModel( 4, 1, 1 ),
+    new GameSquareModel( 5, 1, 1 ),
+    new GameSquareModel( 6, 1, 1 ),
+    new GameSquareModel( 7, 1, 1 ),
+    new GameSquareModel( 8, 1, 1 ),
+    new GameSquareModel( 9, 1, 1 ),
   
   ] // ...Squares
 };

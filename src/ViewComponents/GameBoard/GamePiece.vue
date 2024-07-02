@@ -34,7 +34,7 @@
     () => game$.PieceMoving,
     () => {
       if (game$.PieceMoving.Id == props.input.Id) {
-        console.warn("game-piece-move-start");
+        // console.warn("game-piece-move-start");
         currentClass.value = "game-piece-move-start";
       }
       else {

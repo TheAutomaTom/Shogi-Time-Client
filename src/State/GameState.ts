@@ -9,6 +9,7 @@ import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
 import { Coordinate, MovementRule } from './Game/LegalMoves';
+import { nextTick } from "process";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -26,7 +27,7 @@ export const useGameState = defineStore("GameState", () => {
   const PieceInHand = ref({} as GamePieceModel);
 
   const CapturesP1 = ref([
-    new GamePieceModel( 2, GamePieceType.Lance, "Left", "1KY")
+    new GamePieceModel( 1, GamePieceType.Lance, "Left", "1KY")
   ] as GamePieceModel[]);
   const CapturesP2 = ref([
 
@@ -54,8 +55,20 @@ export const useGameState = defineStore("GameState", () => {
     GamePieceType.PawnPro
   ];
 
+  const logPieceDetails =(name: string, input: GamePieceModel) => {
+    console.log(`${name}...\r
+      \tPlayer: ${input.Player}\r
+      \tId: ${input.Id}\r
+      \tStartingPos: ${input.StartingPos}\r
+      \tIcon: ${input.Icon}\r
+      \tType: ${input.Type}\r
+      `);
+  };
+
   //== Movement: Drop ======================================================
   const DropBegin =(piece: GamePieceModel)=> {
+    
+    logPieceDetails("DropBegin(piece)", piece);
     
     Mode.value = GameMode.DropBegin;
     
@@ -63,21 +76,75 @@ export const useGameState = defineStore("GameState", () => {
     PieceInHand.value = piece;
 
     // Find the starting square based on the id of the piece it contains.
-    if(CurrentPlayer.value == 1){
-      GameBoardModel.value.Squares.forEach( capture => {
-        if(capture.Piece.Id == piece.Id){
-          // MoveOrigin.value = capture;
+    // if(CurrentPlayer.value == 1){
+      // GameBoardModel.value.Squares.forEach( capture => {
+      //   if(capture.Piece.Id == piece.Id){
+      //     // MoveOrigin.value = capture;
 
-        }
-      });
+      //   }
+      // });
 
       // Highlight potential move squares
       PotentialDestinations.value = [""]; // reset prior
-      const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
-      const facing = setPieceIsFacing(piece.IsFacingDefault);
       
-    }
-};
+      // const facing = setPieceIsFacing(piece.IsFacingDefault);
+      
+      GameBoardModel.value.Squares.map( s =>{
+        // Highlight potential move squares
+
+
+        if(s.Piece.Player == 0){
+          PotentialDestinations.value.push(s.Id);
+        }
+      });
+      
+      // TODO: Handle pawns, lances, and knights
+      // TODO: Handle pawns, lances, and knights
+      // TODO: Handle pawns, lances, and knights
+      
+    // }
+  };
+
+
+  const DropAttempt = async (square: GameSquareModel) =>{
+    
+    // Find the square that was clicked...
+    GameBoardModel.value.Squares.map( async s =>{
+      // ...and check if it's in the movement rules.
+      if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){   
+
+        Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);        
+        console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
+
+        // If a piece exists there, move it to the in-hand box.
+        // if(s.Piece.Player != 0){} /* Not required, because only open squares are included. */
+
+        
+        logPieceDetails("PieceInHand", PieceInHand.value);
+
+        // Create the moved piece in that spot.
+        s.Piece = new GamePieceModel(
+          CurrentPlayer.value, PieceInHand.value!.Type, PieceInHand.value!.StartingPos, PieceInHand.value!.Icon
+        );
+        logPieceDetails("s.Piece", s.Piece);
+
+        // Remove the piece from the origin.
+        if(CurrentPlayer.value == 1){
+          console.log(`Removing drop from CapturesP1.`);
+          CapturesP1.value = CapturesP1.value.filter( p => p.Id != PieceInHand.value.Id);
+        } else if (CurrentPlayer.value == 2){
+          console.log(`Removing drop from CapturesP2.`);
+          CapturesP2.value = CapturesP2.value.filter( p => p.Id != PieceInHand.value.Id);
+          
+        }
+        CompleteMove();
+
+      }
+
+
+    });
+  }
+
 
   //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
@@ -351,7 +418,7 @@ export const useGameState = defineStore("GameState", () => {
     let hit = 0;
     // All coordinate locations are to be between 1 and 9
     if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
-      console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
+      // console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
       return 8;
     }
     // Find the target square
@@ -359,14 +426,14 @@ export const useGameState = defineStore("GameState", () => {
       if(s.X == target.X && s.Y == target.Y){
         // Found ally
         if( s.Piece.Player == CurrentPlayer.value ){
-          console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
+          // console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
           hit++;
         }        
         // Found enemy (only add first found)
         else if( hit == 0 
           && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
             PotentialDestinations.value.push(s.Id);
-            console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
+            // console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
             hit++;
         }
         // Found empty space
@@ -400,7 +467,8 @@ export const useGameState = defineStore("GameState", () => {
     PromotePiece,
     CapturesP1,
     CapturesP2,
-    DropBegin
+    DropBegin,
+    DropAttempt
 
   };
 });
