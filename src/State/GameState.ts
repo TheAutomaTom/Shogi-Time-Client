@@ -253,8 +253,8 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         if( s.PromotionZone == MovingPiece.value.Player ){
-
-          // Handle mandatory promotions
+          
+          // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
           if( ( MovingPiece.value.Type == GamePieceType.Pawn 
                 || MovingPiece.value.Type == GamePieceType.Lance  
@@ -264,8 +264,7 @@ export const useGameState = defineStore("GameState", () => {
               ) )
           {
             console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
-            MovingPiece.value.Promote();
-            return CompleteMove();
+            return PromotePiece();
           }
 
           // Knights get promoted from back 2 rows.
@@ -276,8 +275,7 @@ export const useGameState = defineStore("GameState", () => {
             ) )
           {
             console.log(`Promotion mandatory (${MovingPiece.value.Type})`);
-            MovingPiece.value.Promote();
-            return CompleteMove();
+            return PromotePiece();
           }
    
           console.log(`Promotable.includes(${MovingPiece.value.Type})`);
@@ -290,7 +288,7 @@ export const useGameState = defineStore("GameState", () => {
 
   };
 
-  const PromotePiece=(toProceed: boolean)=> {
+  const PromotePiece =(toProceed: boolean = true)=> {
     if(toProceed){
       GameBoardModel.value.Squares.map( s =>{
         if(s.Id == Destination.value.Id){
