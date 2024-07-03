@@ -1,33 +1,23 @@
 import { GamePieceType } from "./GamePieceType";
 
-
 export class GamePieceModel {
   Type: GamePieceType;
   StartingPos: string;
   Player: number;
   Id: string;
   IsFacingDefault: boolean;
+  Icon: string;
 
-  // TODO: Why can't `_icon` be private setter? 
-  // It's only referenced within this file, 
-  // but `private set` causes compile errors 
-  // when using the class as a param.
-  _icon: string;
-
+  // Why does `private get iconPrefix` cause compile errors?
   public get iconPrefix() {
-    if(this.Player == 1){
-      return this.IsFacingDefault == true ? "0" : "1";
-    }
-    if(this.Player == 2){
-      return this.IsFacingDefault == true ? "1" : "0";
-    }
+    if(this.Player == 1){ return this.IsFacingDefault == true ? "0" : "1"; }
+    if(this.Player == 2){ return this.IsFacingDefault == true ? "1" : "0"; }
     // Player = 0...
     return "";
-
   }
 
   public get IconPath() {
-    return this.iconPrefix + this._icon;
+    return this.iconPrefix + this.Icon;
   }
 
   constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
@@ -36,7 +26,7 @@ export class GamePieceModel {
     this.StartingPos = startingPos;
     this.Player = player;
 
-    this._icon = icon;
+    this.Icon = icon;
 
     this.IsFacingDefault = isFacingDefault;
   };
@@ -46,67 +36,67 @@ export class GamePieceModel {
     switch (this.Type) {
       case GamePieceType.Bishop:
         this.Type = GamePieceType.BishopPro;
-        this._icon = "UM";
+        this.Icon = "UM";
         break;
       case GamePieceType.Knight:
         this.Type = GamePieceType.KnightPro;
-        this._icon = "NK";
+        this.Icon = "NK";
         break;
       case GamePieceType.Lance:
         this.Type = GamePieceType.LancePro;
-        this._icon = "NY";
+        this.Icon = "NY";
         break;
       case GamePieceType.Rook:
         this.Type = GamePieceType.RookPro;
-        this._icon = "RY";
+        this.Icon = "RY";
         break;
       case GamePieceType.Silver:
         this.Type = GamePieceType.SilverPro;
-        this._icon = "NG";
+        this.Icon = "NG";
         break;
       case GamePieceType.Pawn:
         this.Type = GamePieceType.PawnPro;
-        this._icon = "TO";
+        this.Icon = "TO";
         break;
       default:
         this.Type = this.Type;
-        this._icon = this._icon;
+        this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this._icon, this.IsFacingDefault);
+    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
   };
   
   Demote = (): GamePieceModel => {
     switch (this.Type) {
       case GamePieceType.BishopPro:
         this.Type = GamePieceType.Bishop;
-        this._icon = "KA";
+        this.Icon = "KA";
         break;
       case GamePieceType.KnightPro:
         this.Type = GamePieceType.Knight;
-        this._icon = "KE";
+        this.Icon = "KE";
         break;
       case GamePieceType.LancePro:
         this.Type = GamePieceType.Lance;
-        this._icon = "KY";
+        this.Icon = "KY";
         break;
       case GamePieceType.RookPro:
         this.Type = GamePieceType.Rook;
-        this._icon = "HI";
+        this.Icon = "HI";
         break;
       case GamePieceType.SilverPro:
         this.Type = GamePieceType.Silver;
-        this._icon = "GI";
+        this.Icon = "GI";
         break;
       case GamePieceType.PawnPro:
         this.Type = GamePieceType.Pawn;
-        this._icon = "FU";
+        this.Icon = "FU";
         break;
       default:
         this.Type = this.Type;
-        this._icon = this._icon;
+        this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this._icon, this.IsFacingDefault);
+    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
   };
 }

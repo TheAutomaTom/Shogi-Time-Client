@@ -33,17 +33,8 @@ export const useGameState = defineStore("GameState", () => {
     GamePieceType.Knight,
     GamePieceType.Lance,
     GamePieceType.Pawn
-
   ];
-
   
-
-
-
-
-
-
-  //== Movement: Start =====================================================
   const MoveBegin = async  (piece: GamePieceModel) => {
     PieceInHand.value = new GamePieceModel();
     
@@ -69,10 +60,7 @@ export const useGameState = defineStore("GameState", () => {
     setValidMobility(rangeOfMovement, facing);
   
   };
-
-
-
-  //== Movement: Move ======================================================
+  
   const MoveAttempt = async (square: GameSquareModel)=>{
 
     // Find the square that was clicked...
@@ -91,25 +79,19 @@ export const useGameState = defineStore("GameState", () => {
           }
           
           let capturedPiece = new GamePieceModel(
-            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPos}.C${CurrentPlayer.value}`, s.Piece._icon, true);
+            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPos}.C${CurrentPlayer.value}`, s.Piece.Icon, true);
           
             logPieceDetails("capturedPiece", capturedPiece);            
             capturedPiece.Demote();
             logPieceDetails("capturedPiece.Demote", capturedPiece);
 
-          if(CurrentPlayer.value == 1){
-            CapturesP1.value.push(capturedPiece);
-          }
-          if(CurrentPlayer.value == 2){
-            CapturesP2.value.push(capturedPiece);
-          }
+          if(CurrentPlayer.value == 1){ CapturesP1.value.push(capturedPiece); }
+          if(CurrentPlayer.value == 2){ CapturesP2.value.push(capturedPiece); }
 
         }
 
         // Create the moved piece in that spot.
-        s.Piece = new GamePieceModel(
-          CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!._icon
-        );
+        s.Piece = new GamePieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!.Icon );
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new GamePieceModel();
@@ -122,6 +104,7 @@ export const useGameState = defineStore("GameState", () => {
 
         if( s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)){
           logPieceDetails(`Can promote? ${s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)}`, PieceMoving.value)
+          
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
           if( ( PieceMoving.value.Type == GamePieceType.Pawn 
@@ -131,7 +114,7 @@ export const useGameState = defineStore("GameState", () => {
                 || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
               ) )
           {
-            console.log(`Promotion mandatory (${PieceMoving.value.Type})`);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
             return PromotePiece();
           }
 
@@ -142,13 +125,13 @@ export const useGameState = defineStore("GameState", () => {
               || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
             ) )
           {
-            console.log(`Promotion mandatory (${PieceMoving.value.Type})`);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
             return PromotePiece();
           }
    
-          console.log(`Promotable.includes(${PieceMoving.value.Type})`);
+          logPieceDetails(`Possible promotion`, PieceMoving.value);
+          // PromotionModal will display, pending input to continue workflow.
           Mode.value = GameMode.PromoteOption;
-          // PromotionModal will display to continue.
         
         }
       }
@@ -205,29 +188,22 @@ export const useGameState = defineStore("GameState", () => {
             }
             
           // If pawn or lance: add all but back row
-          else if(
-              (PieceInHand.value.Type == GamePieceType.Pawn || PieceInHand.value.Type == GamePieceType.Lance)
-               && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))
-          ){
+          else if( (PieceInHand.value.Type == GamePieceType.Pawn || PieceInHand.value.Type == GamePieceType.Lance)
+                    && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))  )
+          {
             PotentialDestinations.value.push(s.Id);
           }
             
           // If knight: add all but back 2 rows
-          else if(
-              (PieceInHand.value.Type == GamePieceType.Knight)
-               && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))
-          ){
+          else if( (PieceInHand.value.Type == GamePieceType.Knight)
+                    && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))  )
+          {
             PotentialDestinations.value.push(s.Id);
           }
-
-
           
         }
       });
-      
-    // }
   };
-
 
   const DropAttempt = async (square: GameSquareModel) =>{
     
@@ -246,7 +222,7 @@ export const useGameState = defineStore("GameState", () => {
           CurrentPlayer.value, 
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPos, 
-          PieceInHand.value._icon,
+          PieceInHand.value.Icon,
           PieceInHand.value.IsFacingDefault
         );
         logPieceDetails("s.Piece", s.Piece);
@@ -261,13 +237,11 @@ export const useGameState = defineStore("GameState", () => {
           
         }
         CompleteMove();
-
       }
     });
   }
 
-  
-  // Note: CompleteMove can be called locally or by PromoteModal
+  // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
     console.warn("CompleteMove()");
     PieceMoving.value = new GamePieceModel( );
@@ -321,7 +295,6 @@ export const useGameState = defineStore("GameState", () => {
     }
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
-
   
   const setValidMobility = async (rangeOfMovement: Mobility, facing: number)=> {
     
@@ -465,7 +438,7 @@ export const useGameState = defineStore("GameState", () => {
       \tPlayer: ${input.Player}\r
       \tId: ${input.Id}\r
       \tStartingPos: ${input.StartingPos}\r
-      \tIcon: ${input._icon}\r
+      \tIcon: ${input.Icon}\r
       \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
       `);
