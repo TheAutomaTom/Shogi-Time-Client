@@ -108,7 +108,7 @@ watch(
 );
 
 const handleClickSquare = () => {  
-  if( game$.Mode == GameMode.MoveBegin
+  if( game$.Mode == GameMode.MoveStart
       && game$.MoveOrigin.Id != props.input.Id
       && game$.PotentialDestinations.includes( props.input.Id)
     ){    

@@ -19,7 +19,8 @@ export const useGameState = defineStore("GameState", () => {
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
   const PieceMoving = ref({} as (GamePieceModel));
   const MoveOrigin = ref({} as GameSquareModel);
-  const PotentialDestinations = ref([""] as string[]);
+  const PotentialDestinations = ref([""] as string[]);  
+  const CheckPins = ref([""] as string[]);
   const Destination = ref({} as GameSquareModel);
   const PieceInHand = ref({} as GamePieceModel);
 
@@ -40,7 +41,7 @@ export const useGameState = defineStore("GameState", () => {
     
     logPieceDetails("MoveBegin", piece);
     
-    Mode.value = GameMode.MoveBegin;
+    Mode.value = GameMode.MoveStart;
     
     // Bookmark the piece in focus.
     PieceMoving.value = piece;
@@ -57,7 +58,7 @@ export const useGameState = defineStore("GameState", () => {
     const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
     const facing = setPieceIsFacing(piece.IsFacingDefault);
 
-    setValidMobility(rangeOfMovement, facing);
+    evaluateMobility(rangeOfMovement, facing);
   
   };
   
@@ -257,36 +258,25 @@ export const useGameState = defineStore("GameState", () => {
     Mode.value = GameMode.TurnStart;
   };
 
+  
   //== Ancillary ===========================================================
-  const findValidMoves = (target: Coordinate):number =>{
-    let hit = 0;
-    // All coordinate locations are to be between 1 and 9
-    if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
-      // console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
-      return 8;
-    }
-    // Find the target square
-    GameBoardModel.value.Squares.forEach( s => {
-      if(s.X == target.X && s.Y == target.Y){
-        // Found ally
-        if( s.Piece.Player == CurrentPlayer.value ){
-          // console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
-          hit++;
-        }        
-        // Found enemy (only add first found)
-        else if( hit == 0 
-          && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
-            PotentialDestinations.value.push(s.Id);
-            // console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
-            hit++;
-        }
-        // Found empty space
-        else if(s.Piece.Player == 0){
-          PotentialDestinations.value.push(s.Id);
-        }
-      }
-    });    
-    return hit;
+
+  const findPins =()=> {
+    // TODO...
+  };
+
+  const buildGameModel =(): GameBoardModel=>{
+
+    let squares = [] as GameSquareModel[]
+    GameBoardModel.value.Squares.forEach(square => {
+      // var s = new GameSquareModel(square.X, square.X, square.PromotionZone, square.Piece);
+      squares.push(square);    
+    });
+    const result =  { Id:GameBoardModel.value.Id,
+                      CurrentPlayer:CurrentPlayer.value,
+                      Squares: squares
+                    } as GameBoardModel
+    return result; 
   };
 
   const setPieceIsFacing = (pieceIsFacingDefault: boolean) =>{
@@ -296,19 +286,24 @@ export const useGameState = defineStore("GameState", () => {
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
   
-  const setValidMobility = async (rangeOfMovement: Mobility, facing: number)=> {
+  const evaluateMobility = async (rangeOfMovement: Mobility, facing: number)=> {
     
     // Process North ===============================================
     let hitObstacle = 0;
     for (let i = 1; i <= rangeOfMovement.N; i++) {
-      if(hitObstacle > 0) break;
-
+      
       let target = { 
         X: MoveOrigin.value.X ,
-        Y: MoveOrigin.value.Y + i * facing
-
+        Y: MoveOrigin.value.Y + i * facing  
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+
+      if(hitObstacle == 0){
+        hitObstacle = validateMoveCoordinate(target);
+      }
+      else {
+
+      }
+
     }
     
     // Process South ===============================================
@@ -320,7 +315,7 @@ export const useGameState = defineStore("GameState", () => {
         X: MoveOrigin.value.X ,
         Y: MoveOrigin.value.Y - i * facing
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process East ================================================
@@ -332,7 +327,7 @@ export const useGameState = defineStore("GameState", () => {
         X: MoveOrigin.value.X - i * facing ,
         Y: MoveOrigin.value.Y
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
     
     // Process West ================================================
@@ -345,7 +340,7 @@ export const useGameState = defineStore("GameState", () => {
         Y: MoveOrigin.value.Y
 
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process North-West ==========================================
@@ -358,7 +353,7 @@ export const useGameState = defineStore("GameState", () => {
         Y: MoveOrigin.value.Y + i * facing 
 
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process North-East ==========================================
@@ -371,7 +366,7 @@ export const useGameState = defineStore("GameState", () => {
         Y: MoveOrigin.value.Y + i * facing 
 
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process South-East =========================================
@@ -384,7 +379,7 @@ export const useGameState = defineStore("GameState", () => {
         Y: MoveOrigin.value.Y - i * facing 
 
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process South-West ==========================================
@@ -397,7 +392,7 @@ export const useGameState = defineStore("GameState", () => {
         Y: MoveOrigin.value.Y - i * facing 
 
       } as Coordinate;
-      hitObstacle = findValidMoves(target);
+      hitObstacle = validateMoveCoordinate(target);
     }
 
     // Process Knight ==============================================
@@ -426,6 +421,41 @@ export const useGameState = defineStore("GameState", () => {
         });
       }      
     }
+  };
+
+  const validateMoveCoordinate = (target: Coordinate):number =>{
+    let hit = 0;
+    // All coordinate locations are to be between 1 and 9
+    if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
+      // console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
+      return 8;
+    }
+    // Find the target square
+    GameBoardModel.value.Squares.forEach( s => {
+      if(s.X == target.X && s.Y == target.Y){
+
+        // Found ally
+        if( s.Piece.Player == CurrentPlayer.value ){
+          // console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
+          hit++;
+        }
+
+        // Found enemy (only add first found)
+        else if( hit == 0 
+          && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
+
+            PotentialDestinations.value.push(s.Id);
+            // console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
+            hit++;
+        }
+
+        // Found empty space
+        else if(s.Piece.Player == 0){
+          PotentialDestinations.value.push(s.Id);
+        }
+      }
+    });    
+    return hit;
   };
 
   const gameOver = (player: number) =>{

@@ -1,12 +1,10 @@
 export enum GameMode {
 
   TurnStart = "turn-start",
-  MoveBegin = "move-begin",
-  DropStart = "drop-begin",
+  MoveStart = "move-start",
+  DropStart = "drop-start",
   PromoteOption = "promote-option",
-  MoveEnd = "move-end",
-  DropEnd = "drop-end",
-  TurnEnd = "turn-end",
+  CheckCondition = "check-condition",
   GameOver = "game-over"
 
 }
