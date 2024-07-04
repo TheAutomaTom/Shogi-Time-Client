@@ -1,4 +1,4 @@
-import { GamePieceModel } from "./GamePieceModel";
+import { GamePieceModel } from "./Pieces/PieceModel";
 
 
 export class GameSquareModel {

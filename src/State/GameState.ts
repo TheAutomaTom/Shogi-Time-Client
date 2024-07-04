@@ -1,14 +1,14 @@
 import { GamePieceType } from "@/State/Game/GamePieceType";
-import { GamePieceModel } from "@/State/Game/GamePieceModel";
 import { GameBoardModel } from "@/State/Game/GameBoardModel";
 import { GameSquareModel } from "@/State/Game/GameSquareModel";
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
-import { MovementRule } from './Game/MovementRule';
-import { PotentialRange } from "./Game/PotentialRange";
+import { MovementRule } from './Game/Pieces/MovementRule';
+import { PotentialRange } from "./Game/Pieces/PotentialRange";
 import { Coordinate } from "./Game/Coordinate";
+import { GamePieceModel } from "./Game/Pieces/PieceModel";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -264,32 +264,7 @@ export const useGameState = defineStore("GameState", () => {
   
   //== Ancillary ===========================================================
 
-  // 1. Mode.TurnEnd
-  //     `buildGameModel()`...
-  // 1.  `foreach => setAllPossibleRange()`
-  //      - Gets every move every piece could make, if unobstructed.
-  //    
-  //      - If the enemy hits an ally,
-  //        then the next piece hit by that enemy is your king,
-  //        then that ally piece is pinned
-  //        and can only move along the line of sight between the king and attacker.
-  //    
-  //      - Track `RestrictedTo` list of pieces' mobility.
-  //        If a piece appears twice, condense the range.
-  //    
-  //      - Track `IsProtected` state so you know if a king can kill a piece.
-  //      - Track if any king is the first to be hit in any range.
-  //    
-  //        Track if opponent's king is hit to set check condition.
-  //
-  // 1. - foreach => piecePossiblyPinned
-  //        
-  // 1. - 
-  // 1. TurnStart
 
-  const findPins =()=> {
-    // TODO...
-  };
 
   const buildGameModel =(): GameBoardModel=>{
 
