@@ -6,7 +6,9 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
-import { Coordinate, Range, MovementRule } from './Game/MovementRule';
+import { MovementRule } from './Game/MovementRule';
+import { PotentialRange } from "./Game/PotentialRange";
+import { Coordinate } from "./Game/Coordinate";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -310,7 +312,7 @@ export const useGameState = defineStore("GameState", () => {
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
   
-  const evaluateRangeOfMovement = async (rangeOfMovement: Range, facing: number)=> {
+  const evaluateRangeOfMovement = async (rangeOfMovement: PotentialRange, facing: number)=> {
     
     // Process North ===============================================
     let hitObstacle = 0;

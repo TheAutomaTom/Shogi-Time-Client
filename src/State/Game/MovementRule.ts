@@ -1,37 +1,9 @@
 import { GamePieceType } from "@/Models/GamePieceType";
-
-export type Range = {
-  N: number,
-  S: number,
-  E: number,
-  W: number,
-  NE: number,
-  SE: number,
-  SW: number,
-  NW: number,
-  K: number
-};
-
-export enum Direction {
-  N = "N",
-  S = "S",
-  E = "E",
-  W = "W",
-  NE = "NE",
-  SE = "SE",
-  SW = "SW",
-  NW = "NW",
-  K = "K"
-};
-
-export type Coordinate = {
-  X: number,
-  Y: number
-};
+import { PotentialRange } from "./PotentialRange";
 
 export class MovementRule {
   Piece: GamePieceType;
-  Range: Range;
+  Range: PotentialRange;
   
   constructor(piece: GamePieceType) {  
     this.Piece = piece;
@@ -47,7 +19,7 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.KingChallenger: 
@@ -61,7 +33,7 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Rook: 
@@ -75,7 +47,7 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.RookPro: 
@@ -89,7 +61,7 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Bishop: 
@@ -103,7 +75,7 @@ export class MovementRule {
           SW: 8,
           NW: 8,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.BishopPro: 
@@ -117,7 +89,7 @@ export class MovementRule {
           SW: 8,
           NW: 8,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Gold: 
@@ -131,7 +103,7 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Silver: 
@@ -145,7 +117,7 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.SilverPro: 
@@ -159,7 +131,7 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Knight: 
@@ -173,7 +145,7 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  1
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.KnightPro: 
@@ -187,7 +159,7 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Lance: 
@@ -201,7 +173,7 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.LancePro: 
@@ -215,7 +187,7 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.Pawn: 
@@ -229,7 +201,7 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       case GamePieceType.PawnPro: 
@@ -243,7 +215,7 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Range;
+        } as PotentialRange;
         break;
     
       default: //GamePieceType.None: 
@@ -257,7 +229,7 @@ export class MovementRule {
         SW: 0,
         NW: 0,
         K:  0
-      } as Range;
+      } as PotentialRange;
         break;
     };
       
