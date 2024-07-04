@@ -6,7 +6,6 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
-import { MovementRule } from './Game/MovementRule';
 import { PotentialRange } from "./Game/PotentialRange";
 import { Coordinate } from "./Game/Coordinate";
 
@@ -58,10 +57,10 @@ export const useGameState = defineStore("GameState", () => {
 
     // Highlight potential move squares
     PotentialDestinations.value = [""]; // reset prior
-    const rangeOfMovement = (new MovementRule(piece.Type)).Range;
+    const potentialRange = PieceInHand.value.PotentialRange;
     const facing = setPieceIsFacing(piece.IsFacingDefault);
 
-    evaluateRangeOfMovement(rangeOfMovement, facing);
+    evaluateRangeOfMovement(potentialRange, facing);
   
   };
   
@@ -312,11 +311,11 @@ export const useGameState = defineStore("GameState", () => {
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
   
-  const evaluateRangeOfMovement = async (rangeOfMovement: PotentialRange, facing: number)=> {
+  const evaluateRangeOfMovement = async (potentialRange: PotentialRange, facing: number)=> {
     
     // Process North ===============================================
     let hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.N; i++) {
+    for (let i = 1; i <= potentialRange.N; i++) {
       
       let target = { 
         X: MoveOrigin.value.X ,
@@ -328,7 +327,7 @@ export const useGameState = defineStore("GameState", () => {
     
     // Process South ===============================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.S; i++) {
+    for (let i = 1; i <= potentialRange.S; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -340,7 +339,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Process East ================================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.E; i++) {
+    for (let i = 1; i <= potentialRange.E; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -352,7 +351,7 @@ export const useGameState = defineStore("GameState", () => {
     
     // Process West ================================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.W; i++) {
+    for (let i = 1; i <= potentialRange.W; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -365,7 +364,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Process North-West ==========================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.NW; i++) {
+    for (let i = 1; i <= potentialRange.NW; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -378,7 +377,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Process North-East ==========================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.NE; i++) {
+    for (let i = 1; i <= potentialRange.NE; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -391,7 +390,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Process South-East =========================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.SE; i++) {
+    for (let i = 1; i <= potentialRange.SE; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -404,7 +403,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Process South-West ==========================================
     hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.SW; i++) {
+    for (let i = 1; i <= potentialRange.SW; i++) {
       if(hitObstacle > 0) break;
 
       let target = { 
@@ -416,7 +415,7 @@ export const useGameState = defineStore("GameState", () => {
     }
 
     // Process Knight ==============================================
-    if(rangeOfMovement.K){
+    if(potentialRange.K){
       let target = { 
         X: MoveOrigin.value.X + 1 * facing,
         Y: MoveOrigin.value.Y + 2 * facing

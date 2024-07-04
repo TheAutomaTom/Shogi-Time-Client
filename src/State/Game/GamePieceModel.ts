@@ -1,4 +1,6 @@
 import { GamePieceType } from "./GamePieceType";
+import { Obstacle } from './Obstacle';
+import { PotentialRange } from "./PotentialRange";
 
 export class GamePieceModel {
   Type: GamePieceType;
@@ -7,6 +9,9 @@ export class GamePieceModel {
   Id: string;
   IsFacingDefault: boolean;
   Icon: string;
+  Obstacles: Obstacle[];
+  PotentialRange: PotentialRange;
+  IsProtected: boolean;
 
   // Why does `private get iconPrefix` cause compile errors?
   public get iconPrefix() {
@@ -20,7 +25,7 @@ export class GamePieceModel {
     return this.iconPrefix + this.Icon;
   }
 
-  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
+  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true, isProtected = false) {
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.StartingPos = startingPos;
@@ -29,7 +34,13 @@ export class GamePieceModel {
     this.Icon = icon;
 
     this.IsFacingDefault = isFacingDefault;
+
+    this.PotentialRange = this.getPotentialRange();
+    this.Obstacles = [];
+    this.IsProtected = isProtected
   };
+
+
 
   Promote = (): GamePieceModel => {
     switch (this.Type) {
@@ -98,4 +109,219 @@ export class GamePieceModel {
     }
     return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
   };
+
+  getPotentialRange = (): PotentialRange => {
+  switch (this.Type) {
+    case GamePieceType.KingVictor: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 1,
+        SW: 1,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.KingChallenger: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 1,
+        SW: 1,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Rook: 
+      return {
+        N:  8,
+        S:  8,
+        E:  8,
+        W:  8,
+        NE: 0,
+        SE: 0,
+        SW: 0,
+        NW: 0,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.RookPro: 
+      return {
+        N:  8,
+        S:  8,
+        E:  8,
+        W:  8,
+        NE: 1,
+        SE: 1,
+        SW: 1,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Bishop: 
+      return {
+        N:  0,
+        S:  0,
+        E:  0,
+        W:  0,
+        NE: 8,
+        SE: 8,
+        SW: 8,
+        NW: 8,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.BishopPro: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 8,
+        SE: 8,
+        SW: 8,
+        NW: 8,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Gold: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 0,
+        SW: 0,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Silver: 
+      return {
+        N:  1,
+        S:  0,
+        E:  0,
+        W:  0,
+        NE: 1,
+        SE: 1,
+        SW: 1,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.SilverPro: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 0,
+        SW: 0,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Knight: 
+      return {
+        N:  0,
+        S:  0,
+        E:  0,
+        W:  0,
+        NE: 0,
+        SE: 0,
+        SW: 0,
+        NW: 0,
+        K:  1
+      } as PotentialRange;
+  
+    case GamePieceType.KnightPro: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 0,
+        SW: 0,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Lance: 
+      return {
+        N:  8,
+        S:  0,
+        E:  0,
+        W:  0,
+        NE: 0,
+        SE: 0,
+        SW: 0,
+        NW: 0,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.LancePro: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 0,
+        SW: 0,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.Pawn: 
+      return {
+        N:  1,
+        S:  0,
+        E:  0,
+        W:  0,
+        NE: 0,
+        SE: 0,
+        SW: 0,
+        NW: 0,
+        K:  0
+      } as PotentialRange;
+  
+    case GamePieceType.PawnPro: 
+      return {
+        N:  1,
+        S:  1,
+        E:  1,
+        W:  1,
+        NE: 1,
+        SE: 0,
+        SW: 0,
+        NW: 1,
+        K:  0
+      } as PotentialRange;
+  
+    default: //GamePieceType.None: 
+    return {
+      N:  0,
+      S:  0,
+      E:  0,
+      W:  0,
+      NE: 0,
+      SE: 0,
+      SW: 0,
+      NW: 0,
+      K:  0
+      } as PotentialRange;
+      
+    };
+    
+  };
+
 }
