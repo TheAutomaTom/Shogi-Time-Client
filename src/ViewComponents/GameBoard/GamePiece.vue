@@ -13,7 +13,7 @@
 <!--  -->
 <script setup lang="ts">
 
-  import { GamePieceModel } from "@/Models/GamePieceModel";
+  import { GamePieceModel } from "@/State/Game/GamePieceModel";
   import { GameMode } from '@/State/Game/GameMode';
   import { useGameState } from '@/State/GameState';
   import { ref, watch } from 'vue';

@@ -1,4 +1,4 @@
-import { GamePieceType } from "@/Models/GamePieceType";
+import { GamePieceType } from "@/State/Game/GamePieceType";
 import { PotentialRange } from "./PotentialRange";
 
 export class MovementRule {

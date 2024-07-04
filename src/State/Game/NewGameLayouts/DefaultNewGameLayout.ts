@@ -1,6 +1,6 @@
-import { GamePieceType } from "@/Models/GamePieceType";
-import { GamePieceModel } from "@/Models/GamePieceModel";
-import { GameSquareModel } from "@/Models/GameSquareModel";
+import { GamePieceType } from "@/State/Game/GamePieceType";
+import { GamePieceModel } from "@/State/Game/GamePieceModel";
+import { GameSquareModel } from "@/State/Game/GameSquareModel";
 
 export class DefaultNewGameLayout {
 Squares = [

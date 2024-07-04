@@ -1,7 +1,7 @@
-import { GamePieceType } from "@/Models/GamePieceType";
-import { GamePieceModel } from "@/Models/GamePieceModel";
-import { GameBoardModel } from "@/Models/GameBoardModel";
-import { GameSquareModel } from "@/Models/GameSquareModel";
+import { GamePieceType } from "@/State/Game/GamePieceType";
+import { GamePieceModel } from "@/State/Game/GamePieceModel";
+import { GameBoardModel } from "@/State/Game/GameBoardModel";
+import { GameSquareModel } from "@/State/Game/GameSquareModel";
 import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
@@ -22,7 +22,7 @@ export const useGameState = defineStore("GameState", () => {
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
   const PieceMoving = ref({} as (GamePieceModel));
   const MoveOrigin = ref({} as GameSquareModel);
-  const PotentialDestinations = ref([""] as string[]);  
+  const PotentialDestinations = ref([""] as string[]);
   const CheckPins = ref([""] as string[]);
   const Destination = ref({} as GameSquareModel);
   const PieceInHand = ref({} as GamePieceModel);
@@ -264,9 +264,9 @@ export const useGameState = defineStore("GameState", () => {
   
   //== Ancillary ===========================================================
 
-  // 1. `buildGameModel()`
-  //    
-  // 1. `foreach => setAllPossibleRange()`
+  // 1. Mode.TurnEnd
+  //     `buildGameModel()`...
+  // 1.  `foreach => setAllPossibleRange()`
   //      - Gets every move every piece could make, if unobstructed.
   //    
   //      - If the enemy hits an ally,
@@ -295,8 +295,8 @@ export const useGameState = defineStore("GameState", () => {
 
     let squares = [] as GameSquareModel[]
     GameBoardModel.value.Squares.forEach(square => {
-      // var s = new GameSquareModel(square.X, square.X, square.PromotionZone, square.Piece);
-      squares.push(square);    
+
+      squares.push(square);
     });
     const result =  { Id:GameBoardModel.value.Id,
                       CurrentPlayer:CurrentPlayer.value,
@@ -322,13 +322,7 @@ export const useGameState = defineStore("GameState", () => {
         X: MoveOrigin.value.X ,
         Y: MoveOrigin.value.Y + i * facing  
       } as Coordinate;
-
-      if(hitObstacle == 0){
-        hitObstacle = validateMoveCoordinate(target);
-      }
-      else {
-
-      }
+      hitObstacle = validateMoveCoordinate(target);
 
     }
     

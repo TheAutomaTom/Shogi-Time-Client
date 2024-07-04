@@ -32,7 +32,6 @@ export class GamePieceModel {
   };
 
   Promote = (): GamePieceModel => {
-
     switch (this.Type) {
       case GamePieceType.Bishop:
         this.Type = GamePieceType.BishopPro;
