@@ -6,13 +6,14 @@ import { ref } from "vue";
 import { defineStore } from "pinia";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { GameMode } from "./Game/GameMode";
-import { Coordinate, Mobility, MovementRule } from './Game/LegalMoves';
+import { Coordinate, Range, MovementRule } from './Game/MovementRule';
 
 export const useGameState = defineStore("GameState", () => {
   
   const GameBoardModel = ref({  Id:"111-zzz",
                                 CurrentPlayer:1,
-                                Squares: new DefaultNewGameLayout().Squares
+                                Squares: new DefaultNewGameLayout().Squares,
+
                              } as GameBoardModel);
 
   const Mode = ref(GameMode.TurnStart);
@@ -55,10 +56,10 @@ export const useGameState = defineStore("GameState", () => {
 
     // Highlight potential move squares
     PotentialDestinations.value = [""]; // reset prior
-    const rangeOfMovement = (new MovementRule(piece.Type)).Mobility;
+    const rangeOfMovement = (new MovementRule(piece.Type)).Range;
     const facing = setPieceIsFacing(piece.IsFacingDefault);
 
-    evaluateMobility(rangeOfMovement, facing);
+    evaluateRangeOfMovement(rangeOfMovement, facing);
   
   };
   
@@ -261,6 +262,29 @@ export const useGameState = defineStore("GameState", () => {
   
   //== Ancillary ===========================================================
 
+  // 1. `buildGameModel()`
+  //    
+  // 1. `foreach => setAllPossibleRange()`
+  //      - Gets every move every piece could make, if unobstructed.
+  //    
+  //      - If the enemy hits an ally,
+  //        then the next piece hit by that enemy is your king,
+  //        then that ally piece is pinned
+  //        and can only move along the line of sight between the king and attacker.
+  //    
+  //      - Track `RestrictedTo` list of pieces' mobility.
+  //        If a piece appears twice, condense the range.
+  //    
+  //      - Track `IsProtected` state so you know if a king can kill a piece.
+  //      - Track if any king is the first to be hit in any range.
+  //    
+  //        Track if opponent's king is hit to set check condition.
+  //
+  // 1. - foreach => piecePossiblyPinned
+  //        
+  // 1. - 
+  // 1. TurnStart
+
   const findPins =()=> {
     // TODO...
   };
@@ -286,7 +310,7 @@ export const useGameState = defineStore("GameState", () => {
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
   
-  const evaluateMobility = async (rangeOfMovement: Mobility, facing: number)=> {
+  const evaluateRangeOfMovement = async (rangeOfMovement: Range, facing: number)=> {
     
     // Process North ===============================================
     let hitObstacle = 0;

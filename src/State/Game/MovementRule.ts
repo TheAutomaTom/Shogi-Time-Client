@@ -1,6 +1,6 @@
 import { GamePieceType } from "@/Models/GamePieceType";
 
-export type Mobility = {
+export type Range = {
   N: number,
   S: number,
   E: number,
@@ -12,7 +12,7 @@ export type Mobility = {
   K: number
 };
 
-export enum MoveDirection {
+export enum Direction {
   N = "N",
   S = "S",
   E = "E",
@@ -30,14 +30,14 @@ export type Coordinate = {
 };
 
 export class MovementRule {
-  PieceType: GamePieceType;
-  Mobility: Mobility;
+  Piece: GamePieceType;
+  Range: Range;
   
-  constructor(pieceType: GamePieceType) {  
-    this.PieceType = pieceType;
-    switch (pieceType) {
+  constructor(piece: GamePieceType) {  
+    this.Piece = piece;
+    switch (piece) {
       case GamePieceType.KingVictor: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -47,11 +47,11 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.KingChallenger: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -61,11 +61,11 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Rook: 
-        this.Mobility = {
+        this.Range = {
           N:  8,
           S:  8,
           E:  8,
@@ -75,11 +75,11 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.RookPro: 
-        this.Mobility = {
+        this.Range = {
           N:  8,
           S:  8,
           E:  8,
@@ -89,11 +89,11 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Bishop: 
-        this.Mobility = {
+        this.Range = {
           N:  0,
           S:  0,
           E:  0,
@@ -103,11 +103,11 @@ export class MovementRule {
           SW: 8,
           NW: 8,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.BishopPro: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -117,11 +117,11 @@ export class MovementRule {
           SW: 8,
           NW: 8,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Gold: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -131,11 +131,11 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Silver: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  0,
           E:  0,
@@ -145,11 +145,11 @@ export class MovementRule {
           SW: 1,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.SilverPro: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -159,11 +159,11 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Knight: 
-        this.Mobility = {
+        this.Range = {
           N:  0,
           S:  0,
           E:  0,
@@ -173,11 +173,11 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  1
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.KnightPro: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -187,11 +187,11 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Lance: 
-        this.Mobility = {
+        this.Range = {
           N:  8,
           S:  0,
           E:  0,
@@ -201,11 +201,11 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.LancePro: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -215,11 +215,11 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.Pawn: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  0,
           E:  0,
@@ -229,11 +229,11 @@ export class MovementRule {
           SW: 0,
           NW: 0,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       case GamePieceType.PawnPro: 
-        this.Mobility = {
+        this.Range = {
           N:  1,
           S:  1,
           E:  1,
@@ -243,11 +243,11 @@ export class MovementRule {
           SW: 0,
           NW: 1,
           K:  0
-        } as Mobility;
+        } as Range;
         break;
     
       default: //GamePieceType.None: 
-      this.Mobility = {
+      this.Range = {
         N:  0,
         S:  0,
         E:  0,
@@ -257,7 +257,7 @@ export class MovementRule {
         SW: 0,
         NW: 0,
         K:  0
-      } as Mobility;
+      } as Range;
         break;
     };
       
