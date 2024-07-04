@@ -9,5 +9,4 @@ export enum Direction {
   SW = "SW",
   NW = "NW",
   K = "K" // Knight
-}
-;
+};

@@ -1,4 +1,4 @@
-import { GamePieceType } from "../GamePieceType";
+import { GamePieceType } from "./GamePieceType";
 import { PotentialRange } from "./PotentialRange";
 
 export class GamePieceModel {
@@ -311,4 +311,5 @@ export class GamePieceModel {
     }
     return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
   };
+  
 }
