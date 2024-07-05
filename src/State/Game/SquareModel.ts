@@ -1,7 +1,7 @@
 import { GamePieceModel } from "./Pieces/PieceModel";
 
 
-export class GameSquareModel {
+export class SquareModel {
   Id: string;
   X: number;
   Y: number;

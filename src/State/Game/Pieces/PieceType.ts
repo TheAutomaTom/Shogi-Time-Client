@@ -1,5 +1,5 @@
 
-export enum GamePieceType {
+export enum PieceType {
   None = "None",
   KingVictor = "KingVictor",
   KingChallenger = "KingChallenger",

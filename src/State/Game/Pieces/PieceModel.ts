@@ -1,16 +1,16 @@
-import { GamePieceType } from "./GamePieceType";
-import { PotentialRange } from "./PotentialRange";
+import { PieceType } from "./PieceType";
+import { PieceRange } from "./PieceRange";
 
 export class GamePieceModel {
-  Type: GamePieceType;
+  Type: PieceType;
   StartingPos: string;
   Player: number;
   Id: string;
   IsFacingDefault: boolean;
   Icon: string;
-  PotentialRange: PotentialRange;
+  PotentialRange: PieceRange;
 
-  constructor(player: number = 0, type: GamePieceType = GamePieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
+  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     this.Id = `Player${player}-${type.toString()}-${startingPos}`;
     this.Type = type;
     this.StartingPos = startingPos;
@@ -32,9 +32,9 @@ export class GamePieceModel {
 
   public get IconPath() { return this.iconPrefix + this.Icon; }
 
-  setRange = (): PotentialRange =>{
+  setRange = (): PieceRange =>{
     switch (this.Type) {
-      case GamePieceType.KingVictor: 
+      case PieceType.KingVictor: 
         return {
           N:  1,
           S:  1,
@@ -45,9 +45,9 @@ export class GamePieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.KingChallenger: 
+      case PieceType.KingChallenger: 
         return {
           N:  1,
           S:  1,
@@ -58,9 +58,9 @@ export class GamePieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Rook: 
+      case PieceType.Rook: 
         return {
           N:  8,
           S:  8,
@@ -71,9 +71,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.RookPro: 
+      case PieceType.RookPro: 
         return {
           N:  8,
           S:  8,
@@ -84,9 +84,9 @@ export class GamePieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Bishop: 
+      case PieceType.Bishop: 
         return {
           N:  0,
           S:  0,
@@ -97,9 +97,9 @@ export class GamePieceModel {
           SW: 8,
           NW: 8,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.BishopPro: 
+      case PieceType.BishopPro: 
         return {
           N:  1,
           S:  1,
@@ -110,9 +110,9 @@ export class GamePieceModel {
           SW: 8,
           NW: 8,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Gold: 
+      case PieceType.Gold: 
         return {
           N:  1,
           S:  1,
@@ -123,9 +123,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Silver: 
+      case PieceType.Silver: 
         return {
           N:  1,
           S:  0,
@@ -136,9 +136,9 @@ export class GamePieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.SilverPro: 
+      case PieceType.SilverPro: 
         return {
           N:  1,
           S:  1,
@@ -149,9 +149,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Knight: 
+      case PieceType.Knight: 
         return {
           N:  0,
           S:  0,
@@ -162,9 +162,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 0,
           K:  1
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.KnightPro: 
+      case PieceType.KnightPro: 
         return {
           N:  1,
           S:  1,
@@ -175,9 +175,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Lance: 
+      case PieceType.Lance: 
         return {
           N:  8,
           S:  0,
@@ -188,9 +188,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.LancePro: 
+      case PieceType.LancePro: 
         return {
           N:  1,
           S:  1,
@@ -201,9 +201,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.Pawn: 
+      case PieceType.Pawn: 
         return {
           N:  1,
           S:  0,
@@ -214,9 +214,9 @@ export class GamePieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
-      case GamePieceType.PawnPro: 
+      case PieceType.PawnPro: 
         return {
           N:  1,
           S:  1,
@@ -227,7 +227,7 @@ export class GamePieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PotentialRange;
+        } as PieceRange;
     
       default: //GamePieceType.None: 
       return {
@@ -240,34 +240,34 @@ export class GamePieceModel {
         SW: 0,
         NW: 0,
         K:  0
-      } as PotentialRange;
+      } as PieceRange;
     };
   };
 
   Promote = (): GamePieceModel => {
     switch (this.Type) {
-      case GamePieceType.Bishop:
-        this.Type = GamePieceType.BishopPro;
+      case PieceType.Bishop:
+        this.Type = PieceType.BishopPro;
         this.Icon = "UM";
         break;
-      case GamePieceType.Knight:
-        this.Type = GamePieceType.KnightPro;
+      case PieceType.Knight:
+        this.Type = PieceType.KnightPro;
         this.Icon = "NK";
         break;
-      case GamePieceType.Lance:
-        this.Type = GamePieceType.LancePro;
+      case PieceType.Lance:
+        this.Type = PieceType.LancePro;
         this.Icon = "NY";
         break;
-      case GamePieceType.Rook:
-        this.Type = GamePieceType.RookPro;
+      case PieceType.Rook:
+        this.Type = PieceType.RookPro;
         this.Icon = "RY";
         break;
-      case GamePieceType.Silver:
-        this.Type = GamePieceType.SilverPro;
+      case PieceType.Silver:
+        this.Type = PieceType.SilverPro;
         this.Icon = "NG";
         break;
-      case GamePieceType.Pawn:
-        this.Type = GamePieceType.PawnPro;
+      case PieceType.Pawn:
+        this.Type = PieceType.PawnPro;
         this.Icon = "TO";
         break;
       default:
@@ -280,28 +280,28 @@ export class GamePieceModel {
   
   Demote = (): GamePieceModel => {
     switch (this.Type) {
-      case GamePieceType.BishopPro:
-        this.Type = GamePieceType.Bishop;
+      case PieceType.BishopPro:
+        this.Type = PieceType.Bishop;
         this.Icon = "KA";
         break;
-      case GamePieceType.KnightPro:
-        this.Type = GamePieceType.Knight;
+      case PieceType.KnightPro:
+        this.Type = PieceType.Knight;
         this.Icon = "KE";
         break;
-      case GamePieceType.LancePro:
-        this.Type = GamePieceType.Lance;
+      case PieceType.LancePro:
+        this.Type = PieceType.Lance;
         this.Icon = "KY";
         break;
-      case GamePieceType.RookPro:
-        this.Type = GamePieceType.Rook;
+      case PieceType.RookPro:
+        this.Type = PieceType.Rook;
         this.Icon = "HI";
         break;
-      case GamePieceType.SilverPro:
-        this.Type = GamePieceType.Silver;
+      case PieceType.SilverPro:
+        this.Type = PieceType.Silver;
         this.Icon = "GI";
         break;
-      case GamePieceType.PawnPro:
-        this.Type = GamePieceType.Pawn;
+      case PieceType.PawnPro:
+        this.Type = PieceType.Pawn;
         this.Icon = "FU";
         break;
       default:

@@ -1,5 +1,5 @@
 
-export type PotentialRange = {
+export type PieceRange = {
   N: number;
   S: number;
   E: number;

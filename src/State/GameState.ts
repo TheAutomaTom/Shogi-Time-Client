@@ -1,14 +1,13 @@
-import { GamePieceType } from "@/State/Game/GamePieceType";
-import { GameBoardModel } from "@/State/Game/GameBoardModel";
-import { GameSquareModel } from "@/State/Game/GameSquareModel";
-import { ref } from "vue";
-import { defineStore } from "pinia";
+import { Coordinate } from "./Game/Movement/Coordinate";
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
+import { BoardModel } from "@/State/Game/BoardModel";
 import { GameMode } from "./Game/GameMode";
-import { MovementRule } from './Game/Pieces/MovementRule';
-import { PotentialRange } from "./Game/Pieces/PotentialRange";
-import { Coordinate } from "./Game/Coordinate";
 import { GamePieceModel } from "./Game/Pieces/PieceModel";
+import { SquareModel } from "@/State/Game/SquareModel";
+import { PieceType } from "./Game/Pieces/PieceType";
+import { PieceRange } from "./Game/Pieces/PieceRange";
+import { defineStore } from "pinia";
+import { ref } from "vue";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -16,27 +15,26 @@ export const useGameState = defineStore("GameState", () => {
                                 CurrentPlayer:1,
                                 Squares: new DefaultNewGameLayout().Squares,
 
-                             } as GameBoardModel);
+                             } as BoardModel);
 
   const Mode = ref(GameMode.TurnStart);
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
   const PieceMoving = ref({} as (GamePieceModel));
-  const MoveOrigin = ref({} as GameSquareModel);
+  const MoveOrigin = ref({} as SquareModel);
   const PotentialDestinations = ref([""] as string[]);
-  const CheckPins = ref([""] as string[]);
-  const Destination = ref({} as GameSquareModel);
+  const Destination = ref({} as SquareModel);
   const PieceInHand = ref({} as GamePieceModel);
 
   const CapturesP1 = ref([] as GamePieceModel[]);
   const CapturesP2 = ref([] as GamePieceModel[]);
 
   const _promotable = [
-    GamePieceType.Rook,
-    GamePieceType.Bishop,
-    GamePieceType.Silver,
-    GamePieceType.Knight,
-    GamePieceType.Lance,
-    GamePieceType.Pawn
+    PieceType.Rook,
+    PieceType.Bishop,
+    PieceType.Silver,
+    PieceType.Knight,
+    PieceType.Lance,
+    PieceType.Pawn
   ];
   
   const MoveBegin = async  (piece: GamePieceModel) => {
@@ -58,14 +56,13 @@ export const useGameState = defineStore("GameState", () => {
 
     // Highlight potential move squares
     PotentialDestinations.value = [""]; // reset prior
-    const rangeOfMovement = (new MovementRule(piece.Type)).Range;
-    const facing = setPieceIsFacing(piece.IsFacingDefault);
-
-    evaluateRangeOfMovement(rangeOfMovement, facing);
+    // ! const rangeOfMovement = (new MovementRule(piece.Type)).Range;
+    // ! const facing = setPieceIsFacing(piece.IsFacingDefault);
+    // ! evaluateRangeOfMovement(rangeOfMovement, facing);
   
   };
   
-  const MoveAttempt = async (square: GameSquareModel)=>{
+  const MoveAttempt = async (square: SquareModel)=>{
 
     // Find the square that was clicked...
     GameBoardModel.value.Squares.map( s =>{
@@ -73,12 +70,12 @@ export const useGameState = defineStore("GameState", () => {
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
-        Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);
+        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);
 
         // If a piece exists at destination, kill it!
         if(s.Piece.Player != 0){
 
-          if(s.Piece.Type == GamePieceType.KingChallenger || s.Piece.Type == GamePieceType.KingVictor){
+          if(s.Piece.Type == PieceType.KingChallenger || s.Piece.Type == PieceType.KingVictor){
             return gameOver(CurrentPlayer.value);
           }
           
@@ -111,8 +108,8 @@ export const useGameState = defineStore("GameState", () => {
           
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
-          if( ( PieceMoving.value.Type == GamePieceType.Pawn 
-                || PieceMoving.value.Type == GamePieceType.Lance  
+          if( ( PieceMoving.value.Type == PieceType.Pawn 
+                || PieceMoving.value.Type == PieceType.Lance  
               ) && ( 
                 ( CurrentPlayer.value == 1 && Destination.value.Y == 1 )
                 || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
@@ -123,7 +120,7 @@ export const useGameState = defineStore("GameState", () => {
           }
 
           // Knights get promoted from back 2 rows.
-          if(  PieceMoving.value.Type == GamePieceType.Knight
+          if(  PieceMoving.value.Type == PieceType.Knight
             && ( 
               ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
               || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
@@ -184,22 +181,22 @@ export const useGameState = defineStore("GameState", () => {
         if(s.Piece.Player == 0){
 
           // If not pawn, lance, or night: add whole board
-          if( PieceInHand.value.Type != GamePieceType.Pawn 
-              && PieceInHand.value.Type != GamePieceType.Lance 
-              && PieceInHand.value.Type != GamePieceType.Knight){
+          if( PieceInHand.value.Type != PieceType.Pawn 
+              && PieceInHand.value.Type != PieceType.Lance 
+              && PieceInHand.value.Type != PieceType.Knight){
               
               PotentialDestinations.value.push(s.Id);
             }
             
           // If pawn or lance: add all but back row
-          else if( (PieceInHand.value.Type == GamePieceType.Pawn || PieceInHand.value.Type == GamePieceType.Lance)
+          else if( (PieceInHand.value.Type == PieceType.Pawn || PieceInHand.value.Type == PieceType.Lance)
                     && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))  )
           {
             PotentialDestinations.value.push(s.Id);
           }
             
           // If knight: add all but back 2 rows
-          else if( (PieceInHand.value.Type == GamePieceType.Knight)
+          else if( (PieceInHand.value.Type == PieceType.Knight)
                     && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))  )
           {
             PotentialDestinations.value.push(s.Id);
@@ -209,14 +206,14 @@ export const useGameState = defineStore("GameState", () => {
       });
   };
 
-  const DropAttempt = async (square: GameSquareModel) =>{
+  const DropAttempt = async (square: SquareModel) =>{
     
     // Find the square that was clicked...
     GameBoardModel.value.Squares.map( async s =>{
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
 
-        Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZone);        
+        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);        
         console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
         
         logPieceDetails("PieceInHand", PieceInHand.value);
@@ -251,7 +248,7 @@ export const useGameState = defineStore("GameState", () => {
     PieceMoving.value = new GamePieceModel( );
     PieceInHand.value = new GamePieceModel( );
     PotentialDestinations.value = [""];
-    Destination.value = new GameSquareModel(0,0);
+    Destination.value = new SquareModel(0,0);
 
     if(CurrentPlayer.value == 1){
       CurrentPlayer.value = 2;
@@ -263,12 +260,9 @@ export const useGameState = defineStore("GameState", () => {
 
   
   //== Ancillary ===========================================================
+  const buildGameModel =(): BoardModel=>{
 
-
-
-  const buildGameModel =(): GameBoardModel=>{
-
-    let squares = [] as GameSquareModel[]
+    let squares = [] as SquareModel[]
     GameBoardModel.value.Squares.forEach(square => {
 
       squares.push(square);
@@ -276,7 +270,7 @@ export const useGameState = defineStore("GameState", () => {
     const result =  { Id:GameBoardModel.value.Id,
                       CurrentPlayer:CurrentPlayer.value,
                       Squares: squares
-                    } as GameBoardModel
+                    } as BoardModel
     return result; 
   };
 
@@ -287,171 +281,6 @@ export const useGameState = defineStore("GameState", () => {
     return CurrentPlayer.value == 1 ? 1 : -1;
   };
   
-  const evaluateRangeOfMovement = async (rangeOfMovement: PotentialRange, facing: number)=> {
-    
-    // Process North ===============================================
-    let hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.N; i++) {
-      
-      let target = { 
-        X: MoveOrigin.value.X ,
-        Y: MoveOrigin.value.Y + i * facing  
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-
-    }
-    
-    // Process South ===============================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.S; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X ,
-        Y: MoveOrigin.value.Y - i * facing
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process East ================================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.E; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X - i * facing ,
-        Y: MoveOrigin.value.Y
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-    
-    // Process West ================================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.W; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X + i * facing ,
-        Y: MoveOrigin.value.Y
-
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process North-West ==========================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.NW; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X + i * facing ,
-        Y: MoveOrigin.value.Y + i * facing 
-
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process North-East ==========================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.NE; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X - i * facing ,
-        Y: MoveOrigin.value.Y + i * facing 
-
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process South-East =========================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.SE; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X - i * facing ,
-        Y: MoveOrigin.value.Y - i * facing 
-
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process South-West ==========================================
-    hitObstacle = 0;
-    for (let i = 1; i <= rangeOfMovement.SW; i++) {
-      if(hitObstacle > 0) break;
-
-      let target = { 
-        X: MoveOrigin.value.X + i * facing ,
-        Y: MoveOrigin.value.Y - i * facing 
-
-      } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
-    }
-
-    // Process Knight ==============================================
-    if(rangeOfMovement.K){
-      let target = { 
-        X: MoveOrigin.value.X + 1 * facing,
-        Y: MoveOrigin.value.Y + 2 * facing
-      } as Coordinate;
-
-      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
-        GameBoardModel.value.Squares.forEach( s => {
-          if(s.X == target.X && s.Y == target.Y)
-            PotentialDestinations.value.push(s.Id);
-        });
-      }
-
-      target = { 
-        X: MoveOrigin.value.X + -1 * facing,
-        Y: MoveOrigin.value.Y + 2 * facing
-      } as Coordinate;
-
-      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
-        GameBoardModel.value.Squares.forEach( s => {
-          if(s.X == target.X && s.Y == target.Y)
-            PotentialDestinations.value.push(s.Id);
-        });
-      }      
-    }
-  };
-
-  const validateMoveCoordinate = (target: Coordinate):number =>{
-    let hit = 0;
-    // All coordinate locations are to be between 1 and 9
-    if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
-      // console.warn(`Hit off the map @ ${target.X}:${target.Y}... return 8`);
-      return 8;
-    }
-    // Find the target square
-    GameBoardModel.value.Squares.forEach( s => {
-      if(s.X == target.X && s.Y == target.Y){
-
-        // Found ally
-        if( s.Piece.Player == CurrentPlayer.value ){
-          // console.warn(`Hit Ally @ ${s.Id} (${target.X}:${target.Y})... return 1`);
-          hit++;
-        }
-
-        // Found enemy (only add first found)
-        else if( hit == 0 
-          && s.Piece.Player > 0 && s.Piece.Player != CurrentPlayer.value ){
-
-            PotentialDestinations.value.push(s.Id);
-            // console.warn(`Hit Enemy@ ${s.Id} (${target.X}:${target.Y})... return 1`);
-            hit++;
-        }
-
-        // Found empty space
-        else if(s.Piece.Player == 0){
-          PotentialDestinations.value.push(s.Id);
-        }
-      }
-    });    
-    return hit;
-  };
 
   const gameOver = (player: number) =>{
     Mode.value = GameMode.GameOver;

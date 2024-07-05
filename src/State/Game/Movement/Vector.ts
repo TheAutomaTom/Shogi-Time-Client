@@ -1,5 +1,5 @@
 
-export enum Direction {
+export enum Vector {
   N = "N",
   S = "S",
   E = "E",

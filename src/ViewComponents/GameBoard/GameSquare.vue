@@ -41,7 +41,7 @@
 <!--  -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { GameSquareModel } from "@/State/Game/GameSquareModel";
+import type { SquareModel } from "@/State/Game/SquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GameMode } from '@/State/Game/GameMode';
@@ -50,7 +50,7 @@ import { GameMode } from '@/State/Game/GameMode';
 const game$ = useGameState();
 const props = defineProps({
   input: {
-    type: Object as () => GameSquareModel,
+    type: Object as () => SquareModel,
     required: true
   }
 });
