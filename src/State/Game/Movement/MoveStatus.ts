@@ -3,5 +3,6 @@ export enum MoveStatus {
   Ally = "ally",
   Enemy = "enemy",
   Pinned = "pinned",
-  Check = "check"
+  Check = "check",
+  OutOfRange = "out-of-range"
 }

@@ -1,5 +1,6 @@
 import { PieceType } from "./PieceType";
 import { PieceRange } from "./PieceRange";
+import { PieceMobility } from "./PieceMobility";
 
 export class GamePieceModel {
   Player: number;
@@ -7,7 +8,8 @@ export class GamePieceModel {
   StartingPosition: string;
   IsFacingDefault: boolean;
   Icon: string;
-  PotentialRange: PieceRange;
+  Range: PieceRange;
+  Mobility: PieceMobility[];
 
   constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     
@@ -18,7 +20,9 @@ export class GamePieceModel {
     this.Icon = icon;
 
     this.IsFacingDefault = isFacingDefault;
-    this.PotentialRange = this.setRange();
+    this.Range = this.setRange();
+
+    this.Mobility = [];
   };
 
   public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
