@@ -19,7 +19,7 @@ export class MobilityEngine {
           board, 
           { X: square.Coordinate.X, Y: square.Coordinate.Y } as Coordinate,
           square.Piece.Range,
-          square.Piece.IsFacingDefault
+          this.setPieceIsFacing(square.Piece.Player, square.Piece.IsFacingDefault)
         )
       }      
     });
@@ -32,7 +32,14 @@ export class MobilityEngine {
     
     return result;
   };
-  
+    
+  setPieceIsFacing = (player: number, isDefault: boolean): number =>{
+    if(isDefault){
+      return player == 1 ? -1 : 1;
+    }
+    return player == 1 ? 1 : -1;
+  };
+
   evaluateVector = async ( 
     player: number, board: BoardModel, target: Coordinate 
   ): Promise<PieceMobility> =>{
@@ -66,10 +73,9 @@ export class MobilityEngine {
   };
 
   evaluateVectors = async (
-    player: number, board: BoardModel, origin: Coordinate, range: PieceRange, isFacing: boolean
+    player: number, board: BoardModel, origin: Coordinate, range: PieceRange, facing: number
   ): Promise<PieceMobility[]> => {
 
-    const facing = isFacing ? 1 : -1;   
     let mobility = [] as PieceMobility[];
     
     // Process North ===============================================

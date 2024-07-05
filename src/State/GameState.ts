@@ -271,12 +271,6 @@ export const useGameState = defineStore("GameState", () => {
     return result; 
   };
 
-  const setPieceIsFacing = (pieceIsFacingDefault: boolean) =>{
-    if(pieceIsFacingDefault){
-      return CurrentPlayer.value == 1 ? -1 : 1;
-    }
-    return CurrentPlayer.value == 1 ? 1 : -1;
-  };
   
 
   const gameOver = (player: number) =>{
