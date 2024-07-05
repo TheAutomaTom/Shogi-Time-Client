@@ -1,6 +1,6 @@
 import { PieceType } from "./PieceType";
 import { PieceRange } from "./PieceRange";
-import { PieceMobility } from "./PieceMobility";
+import { TravelVectors } from "../Movement/TravelVectors";
 
 export class GamePieceModel {
   Player: number;
@@ -9,7 +9,7 @@ export class GamePieceModel {
   IsFacingDefault: boolean;
   Icon: string;
   Range: PieceRange;
-  Mobility: PieceMobility[];
+  TravelVectors: TravelVectors;
 
   constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     
@@ -22,7 +22,17 @@ export class GamePieceModel {
     this.IsFacingDefault = isFacingDefault;
     this.Range = this.setRange();
 
-    this.Mobility = [];
+    this.TravelVectors = {
+      N:  [],
+      S:  [],
+      E:  [],
+      W:  [],
+      NW: [],
+      NE: [],
+      SW: [],
+      SE: [],
+      K:  [],
+    }
   };
 
   public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };

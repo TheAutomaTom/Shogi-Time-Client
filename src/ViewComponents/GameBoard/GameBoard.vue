@@ -2,7 +2,7 @@
   
   <div class="game-board" >
     <game-square 
-      v-for="square in Model.Squares"
+      v-for="square in game$.GameBoardModel.Squares"
       :input="square"
     />
   </div>
@@ -11,11 +11,16 @@
 <!-- =============================================== -->
 <script setup lang="ts">
 import GameSquare from "./GameSquare.vue";
-import { ref } from "vue";
 import { useGameState } from "@/State/GameState";
 
 const game$ = useGameState();
-const Model = ref(game$.GameBoardModel);
+
+import { onMounted } from "vue";
+
+onMounted(() => {
+  console.log(`GameBoard.onMounted()`);
+  game$.TurnStart();
+});
 
 </script>
 <!-- =============================================== -->
@@ -50,6 +55,7 @@ const Model = ref(game$.GameBoardModel);
   border-bottom: 8px solid #250c04;
   border-radius: 4px;
 }
+
 
 
 

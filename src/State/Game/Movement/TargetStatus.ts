@@ -1,4 +1,4 @@
-export enum MoveStatus {
+export enum TargetStatus {
   Open = "open",
   Ally = "ally",
   Enemy = "enemy",

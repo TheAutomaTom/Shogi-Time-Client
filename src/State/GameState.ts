@@ -6,17 +6,18 @@ import { SquareModel } from "@/State/Game/SquareModel";
 import { PieceType } from "./Game/Pieces/PieceType";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { MobilityEngine } from "./Game/Movement/MobilityEngine";
 
 export const useGameState = defineStore("GameState", () => {
   
+  const Mode = ref(GameMode.TurnStart);
   const GameBoardModel = ref({  Id:"111-zzz",
                                 CurrentPlayer:1,
                                 Squares: new DefaultNewGameLayout().Squares
                              } as BoardModel);
 
-  const Mode = ref(GameMode.TurnStart);
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
-  const PieceMoving = ref({} as (GamePieceModel));
+  const PieceMoving = ref({} as GamePieceModel);
   const MoveOrigin = ref({} as SquareModel);
   const PotentialDestinations = ref([""] as string[]);
   const Destination = ref({} as SquareModel);
@@ -24,6 +25,8 @@ export const useGameState = defineStore("GameState", () => {
 
   const CapturesP1 = ref([] as GamePieceModel[]);
   const CapturesP2 = ref([] as GamePieceModel[]);
+
+  const _engine = new MobilityEngine();
 
   const _promotable = [
     PieceType.Rook,
@@ -33,6 +36,10 @@ export const useGameState = defineStore("GameState", () => {
     PieceType.Lance,
     PieceType.Pawn
   ];
+
+  const TurnStart = () => {
+    _engine.Rebuild( CurrentPlayer.value, GameBoardModel.value );
+  };
   
   const MoveBegin = async  (piece: GamePieceModel) => {
     PieceInHand.value = new GamePieceModel();
@@ -52,7 +59,7 @@ export const useGameState = defineStore("GameState", () => {
     });
 
     // Highlight potential move squares
-    PotentialDestinations.value = [""]; // reset prior
+    // PotentialDestinations.value = [""]; // reset prior
     // ! const rangeOfMovement = (new MovementRule(piece.Type)).Range;
     // ! const facing = setPieceIsFacing(piece.IsFacingDefault);
     // ! evaluateRangeOfMovement(rangeOfMovement, facing);
@@ -257,22 +264,7 @@ export const useGameState = defineStore("GameState", () => {
 
   
   //== Ancillary ===========================================================
-  const buildGameModel =(): BoardModel=>{
-
-    let squares = [] as SquareModel[]
-    GameBoardModel.value.Squares.forEach(square => {
-
-      squares.push(square);
-    });
-    const result =  { Id:GameBoardModel.value.Id,
-                      CurrentPlayer:CurrentPlayer.value,
-                      Squares: squares
-                    } as BoardModel
-    return result; 
-  };
-
   
-
   const gameOver = (player: number) =>{
     Mode.value = GameMode.GameOver;
     console.log(`Player ${player} wins.`);
@@ -291,6 +283,7 @@ export const useGameState = defineStore("GameState", () => {
 
   return {
     GameBoardModel,
+    TurnStart,
     CurrentPlayer,
     Mode,    
     PieceMoving,

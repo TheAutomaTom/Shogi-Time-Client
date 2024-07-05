@@ -45,6 +45,7 @@ import type { SquareModel } from "@/State/Game/SquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GameMode } from '@/State/Game/GameMode';
+import { TargetStatus as SquareCondition } from '@/State/Game/Movement/TargetStatus';
 
 //=== Setup ======================================================
 const game$ = useGameState();
@@ -57,32 +58,51 @@ const props = defineProps({
 const currentClass = ref(game$.PotentialDestinations.includes( props.input.Id) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
-  return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
+  return `grid-row:${props.input.Coordinate.Y}; grid-column:${props.input.Coordinate.X};`
 };
 
 const getNotationText = (xy: string):string => {
-  if(xy == "x" && props.input.X == 9){ return (props.input.Y + 9).toString(36); }
-  if(xy == "y" && props.input.Y == 1){ return (Math.abs(props.input.X - 10).toString()); }  
+  if(xy == "x" && props.input.Coordinate.X == 9){ return (props.input.Coordinate.Y + 9).toString(36); }
+  if(xy == "y" && props.input.Coordinate.Y == 1){ return (Math.abs(props.input.Coordinate.X - 10).toString()); }  
   return "";
 };
 
 const getNotationStyle = (xy: string): string =>{
-  if(xy == "x" && props.input.X == 9){ return "board-notation-right";  }
-  if(xy == "y" && props.input.Y == 1){ return "board-notation-top";    }
+  if(xy == "x" && props.input.Coordinate.X == 9){ return "board-notation-right";  }
+  if(xy == "y" && props.input.Coordinate.Y == 1){ return "board-notation-top";    }
   return "";
 };
 
 
 //=== Events =====================================================
+// watch( // Update highlight
+//   () => game$.PotentialDestinations,
+//   () => {
+
+//     if(game$.PotentialDestinations.includes(props.input.Id)){
+//       currentClass.value = "game-square-potential-move";
+//     }
+//     else {
+//       currentClass.value = "";
+//     }
+//   }
+// );
 watch( // Update highlight
-  () => game$.PotentialDestinations,
+  () => game$.PieceMoving,
   () => {
 
-    if(game$.PotentialDestinations.includes(props.input.Id)){
-      currentClass.value = "game-square-potential-move";
-    }
-    else {
-      currentClass.value = "";
+    const mobility = game$.PieceMoving.TravelVectors // flatten// .filter( m =>
+      m.Coordinate.X == props.input.Coordinate.X && m.Coordinate.Y == props.input.Coordinate.Y
+    )[0];
+    
+    switch (mobility.Condition) {
+      case SquareCondition.Open:
+        return "game-square-potential-move";
+      case SquareCondition.Enemy:
+        return "game-square-potential-move";
+      default: //case SquareCondition.Ally:
+        return "";
+      
     }
   }
 );
@@ -122,6 +142,7 @@ const handleClickSquare = () => {
         game$.DropAttempt(props.input);
     }
 };
+
 
 </script>
 
