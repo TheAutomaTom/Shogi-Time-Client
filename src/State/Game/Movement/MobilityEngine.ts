@@ -1,4 +1,3 @@
-import { Coordinate } from "./Coordinate";
 import { BoardModel } from "../BoardModel";
 import { SquareModel } from "../SquareModel";
 import { PieceRange } from "../Pieces/PieceRange";
@@ -17,7 +16,8 @@ export class MobilityEngine {
         square.Piece.VectorSet = this.evaluateVectors(
           player,
           board, 
-          { X: square.Coordinate.X, Y: square.Coordinate.Y } as Coordinate,
+          square.X, 
+          square.Y,
           square.Piece.Range,
           this.setPieceIsFacing(square.Piece.Player, square.Piece.IsFacingDefault)
         )
@@ -34,32 +34,32 @@ export class MobilityEngine {
   };
 
   evaluateVector = ( 
-    player: number, board: BoardModel, target: Coordinate 
+    player: number, board: BoardModel, targetX: number, targetY: number, 
   ): TargetSquare[] =>{
     
     let result = [] as TargetSquare[];
 
     // All coordinate locations are to be between 1 and 9
     // if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){
-    if(target.X >= 1 && target.X <= 9 && target.Y >= 1 && target.Y <= 9){
+    if(targetX >= 1 && targetX <= 9 && targetY >= 1 && targetY <= 9){
           
       // Find the target square
       board.Squares.forEach( s => {
-        if(s.Coordinate.X == target.X && s.Coordinate.Y == target.Y){
+        if(s.X == targetX && s.Y == targetY){
           
 
           // Found ally
           if( s.Piece.Player == player ){
-            console.log(`${target.X}, ${target.Y}: Ally`);
-            result.push( new TargetSquare(s.Coordinate.X, s.Coordinate.Y, TargetStatus.Ally ));
+            console.log(`${targetX}, ${targetY}: Ally`);
+            result.push( new TargetSquare(s.X, s.Y, TargetStatus.Ally ));
           }
           // Found enemy
           if( s.Piece.Player != player && s.Piece.Player != 0 ){
-            console.log(`${target.X}, ${target.Y}: Enemy`);
-            result.push( new TargetSquare(s.Coordinate.X, s.Coordinate.Y, TargetStatus.Enemy ));
+            console.log(`${targetX}, ${targetY}: Enemy`);
+            result.push( new TargetSquare(s.X, s.Y, TargetStatus.Enemy ));
           }
           // Found open square
-            result.push( new TargetSquare(s.Coordinate.X, s.Coordinate.Y, TargetStatus.Open ));
+            result.push( new TargetSquare(s.X, s.Y, TargetStatus.Open ));
         }
       });
     }
@@ -68,117 +68,98 @@ export class MobilityEngine {
   };
 
   evaluateVectors = (
-    player: number, board: BoardModel, origin: Coordinate, range: PieceRange, facing: number
+    player: number, board: BoardModel, originX: number, originY: number, range: PieceRange, facing: number
   ): VectorSet => {
 
-    console.warn(`EvaluateVectors ${origin.X}, ${origin.Y}`);
+    console.warn(`EvaluateVectors ${originX}, ${originY}`);
     
     let mobility = {} as VectorSet;
     
     // Process North ===============================================
     for (let i = 1; i <= range.N; i++) {
-      console.warn(`Range ${range.N}`);
-      let target = { 
-        X: origin.X ,
-        Y: origin.Y + i * facing  
-      } as Coordinate;
-      mobility.N = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.N}`);      
+        let x = originX;
+        let y = originY + i * facing 
+      mobility.N = this.evaluateVector( player, board, x, y );
     }
     
     // Process South ===============================================
     for (let i = 1; i <= range.S; i++) {
       console.warn(`Range ${range.S}`);
-      let target = { 
-        X: origin.X ,
-        Y: origin.Y - i * facing
-      } as Coordinate;
-      mobility.S = this.evaluateVector( player, board, target );
+        let x = originX;
+        let y = originY - i * facing;
+      mobility.S = this.evaluateVector( player, board, x, y );
     }
 
     // Process East ================================================
     for (let i = 1; i <= range.E; i++) {    
-      console.warn(`Range ${range.E}`);  
-      let target = { 
-        X: origin.X - i * facing ,
-        Y: origin.Y
-      } as Coordinate;
-      mobility.E = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.E}`);
+        let x = originX - i * facing;
+        let y = originY;
+      mobility.E = this.evaluateVector( player, board, x, y );
     }
       
     // Process West ================================================
     for (let i = 1; i <= range.W; i++) { 
-      console.warn(`Range ${range.W}`);     
-      let target = { 
-        X: origin.X + i * facing ,
-        Y: origin.Y
-      } as Coordinate;
-      mobility.W = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.W}`);
+        let x = originX + i * facing;
+        let y = originY;
+      mobility.W = this.evaluateVector( player, board, x, y );
     }
       
     // Process North-West ==========================================
     for (let i = 1; i <= range.NW; i++) {  
-      console.warn(`Range ${range.NW}`);    
-      let target = { 
-        X: origin.X + i * facing ,
-        Y: origin.Y + i * facing 
-      } as Coordinate;
-      mobility.NW = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.NW}`);
+        let x = originX + i * facing;
+        let y = originY + i * facing;
+      mobility.NW = this.evaluateVector( player, board, x, y );
     }
       
     // Process North-East ==========================================
     for (let i = 1; i <= range.NE; i++) {    
-      console.warn(`Range ${range.NE}`);  
-      let target = { 
-        X: origin.X - i * facing ,
-        Y: origin.Y + i * facing 
-      } as Coordinate;
-      mobility.NE = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.NE}`);
+        let x = originX - i * facing;
+        let y = originY + i * facing;
+      mobility.NE = this.evaluateVector( player, board, x, y );
     }
       
     // Process South-East =========================================
     for (let i = 1; i <= range.SE; i++) {   
-      console.warn(`Range ${range.SE}`);   
-      let target = { 
-        X: origin.X - i * facing ,
-        Y: origin.Y - i * facing 
-      } as Coordinate;
-      mobility.SE = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.SE}`);
+        let x = originX - i * facing;
+        let y = originY - i * facing; 
+      mobility.SE = this.evaluateVector( player, board, x, y );
     }
       
     // Process South-West ==========================================
     for (let i = 1; i <= range.SW; i++) {  
-      console.warn(`Range ${range.SW}`);    
-      let target = { 
-        X: origin.X + i * facing ,
-        Y: origin.Y - i * facing 
-      } as Coordinate;
-      mobility.SW = this.evaluateVector( player, board, target );
+      console.warn(`Range ${range.SW}`);
+        let x = originX + i * facing;
+        let y = originY - i * facing; 
+      mobility.SW = this.evaluateVector( player, board, x, y );
     }
       
     // Process Knight ==============================================
     if(range.K){
       console.warn(`Range ${range.K}`);
-      let target = { 
-        X: origin.X + 1 * facing,
-        Y: origin.Y + 2 * facing
-      } as Coordinate;
+      
+        let targetX = originX + 1 * facing;
+        let targetY = originY + 2 * facing;
 
-      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( s => {
-          if(s.Coordinate.X == target.X && s.Coordinate.Y == target.Y)
-            mobility.K = this.evaluateVector( player, board, target );
+          if(s.X == targetX && s.Y == targetY)
+            mobility.K = this.evaluateVector( player, board, targetX, targetY );
         });
       }
 
-      target = { 
-        X: origin.X + -1 * facing,
-        Y: origin.Y + 2 * facing
-      } as Coordinate;
+      targetX = originX + -1 * facing;
+      targetY = originY + 2 * facing;
 
-      if(target.X > 0 && target.X < 10 && target.Y > 0 && target.Y < 10){
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( s => {
-          if(s.Coordinate.X == target.X && s.Coordinate.Y == target.Y)
-            mobility.K = this.evaluateVector( player, board, target );
+          if(s.X == targetX && s.Y == targetY)
+            mobility.K = this.evaluateVector( player, board, targetX, targetY );
         });
       }
     }

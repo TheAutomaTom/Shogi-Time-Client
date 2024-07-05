@@ -58,18 +58,18 @@ const props = defineProps({
 const currentClass = ref(game$.PotentialDestinations.includes( props.input.Id) ? "game-square-potential-move" : "");
 
 const setGridPosition = () => {
-  return `grid-row:${props.input.Coordinate.Y}; grid-column:${props.input.Coordinate.X};`
+  return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
 };
 
 const getNotationText = (xy: string):string => {
-  if(xy == "x" && props.input.Coordinate.X == 9){ return (props.input.Coordinate.Y + 9).toString(36); }
-  if(xy == "y" && props.input.Coordinate.Y == 1){ return (Math.abs(props.input.Coordinate.X - 10).toString()); }  
+  if(xy == "x" && props.input.X == 9){ return (props.input.Y + 9).toString(36); }
+  if(xy == "y" && props.input.Y == 1){ return (Math.abs(props.input.X - 10).toString()); }  
   return "";
 };
 
 const getNotationStyle = (xy: string): string =>{
-  if(xy == "x" && props.input.Coordinate.X == 9){ return "board-notation-right";  }
-  if(xy == "y" && props.input.Coordinate.Y == 1){ return "board-notation-top";    }
+  if(xy == "x" && props.input.X == 9){ return "board-notation-right";  }
+  if(xy == "y" && props.input.Y == 1){ return "board-notation-top";    }
   return "";
 };
 
@@ -92,7 +92,7 @@ watch( // Update highlight
   () => {
 
     const mobility = game$.PieceMoving.VectorSet // flatten// .filter( m =>
-      m.Coordinate.X == props.input.Coordinate.X && m.Coordinate.Y == props.input.Coordinate.Y
+      m.X == props.input.X && m.Y == props.input.Y
     )[0];
     
     switch (mobility.Condition) {

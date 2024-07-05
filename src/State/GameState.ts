@@ -74,7 +74,7 @@ export const useGameState = defineStore("GameState", () => {
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
 
-        Destination.value = new SquareModel(s.Coordinate.X, s.Coordinate.Y, s.PromotionZone);
+        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);
 
         // If a piece exists at destination, kill it!
         if(s.Piece.Player != 0){
@@ -115,22 +115,22 @@ export const useGameState = defineStore("GameState", () => {
           if( ( PieceMoving.value.Type == PieceType.Pawn 
                 || PieceMoving.value.Type == PieceType.Lance  
               ) && ( 
-                ( CurrentPlayer.value == 1 && Destination.value.Coordinate.Y == 1 )
-                || ( CurrentPlayer.value == 2 && Destination.value.Coordinate.Y == 9 )
+                ( CurrentPlayer.value == 1 && Destination.value.Y == 1 )
+                || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
               ) )
           {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Coordinate.Y}`, PieceMoving.value);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
             return PromotePiece();
           }
 
           // Knights get promoted from back 2 rows.
           if(  PieceMoving.value.Type == PieceType.Knight
             && ( 
-              ( CurrentPlayer.value == 1 && Destination.value.Coordinate.Y <= 2 )
-              || ( CurrentPlayer.value == 2 && Destination.value.Coordinate.Y >= 8 )
+              ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
+              || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
             ) )
           {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Coordinate.Y}`, PieceMoving.value);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
             return PromotePiece();
           }
    
@@ -194,14 +194,14 @@ export const useGameState = defineStore("GameState", () => {
             
           // If pawn or lance: add all but back row
           else if( (PieceInHand.value.Type == PieceType.Pawn || PieceInHand.value.Type == PieceType.Lance)
-                    && ((CurrentPlayer.value == 1 &&  s.Coordinate.Y != 1) || (CurrentPlayer.value == 2 && s.Coordinate.Y != 9))  )
+                    && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))  )
           {
             PotentialDestinations.value.push(s.Id);
           }
             
           // If knight: add all but back 2 rows
           else if( (PieceInHand.value.Type == PieceType.Knight)
-                    && ((CurrentPlayer.value == 1 &&  (s.Coordinate.Y > 2)) || (CurrentPlayer.value == 2 && (s.Coordinate.Y < 8)))  )
+                    && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))  )
           {
             PotentialDestinations.value.push(s.Id);
           }
@@ -217,8 +217,8 @@ export const useGameState = defineStore("GameState", () => {
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
 
-        Destination.value = new SquareModel(s.Coordinate.X, s.Coordinate.Y, s.PromotionZone);        
-        console.log(`Destination: ${Destination.value.Coordinate.X}/${Destination.value.Coordinate.Y}/${Destination.value.PromotionZone}`);
+        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);        
+        console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
         
         logPieceDetails("PieceInHand", PieceInHand.value);
 
