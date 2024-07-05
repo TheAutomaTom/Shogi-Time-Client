@@ -91,7 +91,7 @@ watch( // Update highlight
   () => game$.PieceMoving,
   () => {
 
-    const mobility = game$.PieceMoving.TravelVectors // flatten// .filter( m =>
+    const mobility = game$.PieceMoving.VectorSet // flatten// .filter( m =>
       m.Coordinate.X == props.input.Coordinate.X && m.Coordinate.Y == props.input.Coordinate.Y
     )[0];
     

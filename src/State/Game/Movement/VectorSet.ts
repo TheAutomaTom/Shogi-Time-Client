@@ -1,6 +1,6 @@
 import { TargetSquare } from "./TargetSquare"
 
-export type TravelVectors = {
+export type VectorSet = {
 
   N: TargetSquare[];
   S: TargetSquare[];

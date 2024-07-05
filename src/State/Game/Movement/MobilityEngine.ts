@@ -4,7 +4,7 @@ import { SquareModel } from "../SquareModel";
 import { PieceRange } from "../Pieces/PieceRange";
 import { TargetSquare } from "./TargetSquare";
 import { TargetStatus } from "./TargetStatus";
-import { TravelVectors } from "./TravelVectors";
+import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
   
@@ -14,7 +14,7 @@ export class MobilityEngine {
     // First iterations establishes all possible move range and tracks obstacles.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
-        square.Piece.TravelVectors = this.evaluateVectors(
+        square.Piece.VectorSet = this.evaluateVectors(
           player,
           board, 
           { X: square.Coordinate.X, Y: square.Coordinate.Y } as Coordinate,
@@ -69,11 +69,11 @@ export class MobilityEngine {
 
   evaluateVectors = (
     player: number, board: BoardModel, origin: Coordinate, range: PieceRange, facing: number
-  ): TravelVectors => {
+  ): VectorSet => {
 
     console.warn(`EvaluateVectors ${origin.X}, ${origin.Y}`);
     
-    let mobility = {} as TravelVectors;
+    let mobility = {} as VectorSet;
     
     // Process North ===============================================
     for (let i = 1; i <= range.N; i++) {
