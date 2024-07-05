@@ -13,7 +13,7 @@ export class MobilityEngine {
     // First iterations establishes all possible moves, and tracks obstacles.
     input.Squares.forEach( square => {
       if(square.Piece.Player != 0){
-        
+        evaluateVectors
 
 
       }
@@ -32,7 +32,7 @@ export class MobilityEngine {
   };
 
   
-  evaluateRangeOfMovement = async (
+  evaluateVectors = async (
     board: BoardModel, origin: Coordinate, rangeOfMovement: PieceRange, facing: number
   ): Promise<SquareModel[]> => {
     
@@ -44,7 +44,7 @@ export class MobilityEngine {
         X: origin.X ,
         Y: origin.Y + i * facing  
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
     
     // Process South ===============================================
@@ -56,7 +56,7 @@ export class MobilityEngine {
         X: origin.X ,
         Y: origin.Y - i * facing
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process East ================================================
@@ -68,7 +68,7 @@ export class MobilityEngine {
         X: origin.X - i * facing ,
         Y: origin.Y
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
     
     // Process West ================================================
@@ -81,7 +81,7 @@ export class MobilityEngine {
         Y: origin.Y
 
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process North-West ==========================================
@@ -94,7 +94,7 @@ export class MobilityEngine {
         Y: origin.Y + i * facing 
 
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process North-East ==========================================
@@ -107,7 +107,7 @@ export class MobilityEngine {
         Y: origin.Y + i * facing 
 
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process South-East =========================================
@@ -120,7 +120,7 @@ export class MobilityEngine {
         Y: origin.Y - i * facing 
 
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process South-West ==========================================
@@ -133,7 +133,7 @@ export class MobilityEngine {
         Y: origin.Y - i * facing 
 
       } as Coordinate;
-      hitObstacle = validateMoveCoordinate(target);
+      hitObstacle = evaluateDestination(target);
     }
 
     // Process Knight ==============================================
@@ -164,7 +164,7 @@ export class MobilityEngine {
     }
   };
 
-  validateMoveCoordinate = async ( player: number, board: BoardModel, target: Coordinate ): Promise<SquareModel[]> =>{
+  evaluateDestination = async ( player: number, board: BoardModel, target: Coordinate ): Promise<SquareModel[]> =>{
     let hit = 0;
     // All coordinate locations are to be between 1 and 9
     if(target.X < 1 && target.X > 9 && target.Y < 1 && target.Y > 9){

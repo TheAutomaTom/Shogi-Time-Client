@@ -2,18 +2,17 @@ import { PieceType } from "./PieceType";
 import { PieceRange } from "./PieceRange";
 
 export class GamePieceModel {
-  Type: PieceType;
-  StartingPos: string;
   Player: number;
-  Id: string;
+  Type: PieceType;
+  StartingPosition: string;
   IsFacingDefault: boolean;
   Icon: string;
   PotentialRange: PieceRange;
 
   constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
-    this.Id = `Player${player}-${type.toString()}-${startingPos}`;
+    
     this.Type = type;
-    this.StartingPos = startingPos;
+    this.StartingPosition = startingPos;
     this.Player = player;
 
     this.Icon = icon;
@@ -22,13 +21,15 @@ export class GamePieceModel {
     this.PotentialRange = this.setRange();
   };
 
+  public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
+
   // Why does `private get iconPrefix` cause compile errors?
   public get iconPrefix() {
     if(this.Player == 1){ return this.IsFacingDefault == true ? "0" : "1"; }
     if(this.Player == 2){ return this.IsFacingDefault == true ? "1" : "0"; }
     // Player = 0...
     return "";
-  }
+  };
 
   public get IconPath() { return this.iconPrefix + this.Icon; }
 
@@ -275,7 +276,7 @@ export class GamePieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
+    return new GamePieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
   };
   
   Demote = (): GamePieceModel => {
@@ -309,7 +310,7 @@ export class GamePieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPos, this.Icon, this.IsFacingDefault);
+    return new GamePieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
   };
   
 }

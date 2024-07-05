@@ -80,7 +80,7 @@ export const useGameState = defineStore("GameState", () => {
           }
           
           let capturedPiece = new GamePieceModel(
-            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPos}.C${CurrentPlayer.value}`, s.Piece.Icon, true);
+            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPosition}.C${CurrentPlayer.value}`, s.Piece.Icon, true);
           
             logPieceDetails("capturedPiece", capturedPiece);            
             capturedPiece.Demote();
@@ -92,7 +92,7 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // Create the moved piece in that spot.
-        s.Piece = new GamePieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPos, PieceMoving.value!.Icon );
+        s.Piece = new GamePieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPosition, PieceMoving.value!.Icon );
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new GamePieceModel();
@@ -222,7 +222,7 @@ export const useGameState = defineStore("GameState", () => {
         s.Piece = new GamePieceModel(
           CurrentPlayer.value, 
           PieceInHand.value.Type, 
-          PieceInHand.value.StartingPos, 
+          PieceInHand.value.StartingPosition, 
           PieceInHand.value.Icon,
           PieceInHand.value.IsFacingDefault
         );
@@ -291,7 +291,7 @@ export const useGameState = defineStore("GameState", () => {
     console.log(`${name}...\r
       \tPlayer: ${input.Player}\r
       \tId: ${input.Id}\r
-      \tStartingPos: ${input.StartingPos}\r
+      \tStartingPos: ${input.StartingPosition}\r
       \tIcon: ${input.Icon}\r
       \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
