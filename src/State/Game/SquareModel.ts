@@ -1,13 +1,13 @@
-import { GamePieceModel } from "./Pieces/PieceModel";
+import { PieceModel } from "./Pieces/PieceModel";
 
 export class SquareModel {
   Id: string;
   X: number;
   Y: number;
   PromotionZone: number;
-  Piece: GamePieceModel;
+  Piece: PieceModel;
 
-  constructor(x: number, y: number, promotes: number = 0, piece: GamePieceModel = new GamePieceModel()) {
+  constructor(x: number, y: number, promotes: number = 0, piece: PieceModel = new PieceModel()) {
     this.Id = `Square-${x}${y}`;
     this.X= x;
     this.Y= y;

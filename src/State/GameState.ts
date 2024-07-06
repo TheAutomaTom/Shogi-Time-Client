@@ -1,7 +1,7 @@
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GameMode } from "./Game/GameMode";
-import { GamePieceModel } from "./Game/Pieces/PieceModel";
+import { PieceModel } from "./Game/Pieces/PieceModel";
 import { SquareModel } from "@/State/Game/SquareModel";
 import { PieceType } from "./Game/Pieces/PieceType";
 import { defineStore } from "pinia";
@@ -17,14 +17,14 @@ export const useGameState = defineStore("GameState", () => {
                              } as BoardModel);
 
   const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
-  const PieceMoving = ref({} as GamePieceModel);
+  const PieceMoving = ref({} as PieceModel);
   const MoveOrigin = ref({} as SquareModel);
   const PotentialDestinations = ref([""] as string[]);
   const Destination = ref({} as SquareModel);
-  const PieceInHand = ref({} as GamePieceModel);
+  const PieceInHand = ref({} as PieceModel);
 
-  const CapturesP1 = ref([] as GamePieceModel[]);
-  const CapturesP2 = ref([] as GamePieceModel[]);
+  const CapturesP1 = ref([] as PieceModel[]);
+  const CapturesP2 = ref([] as PieceModel[]);
 
   const _engine = new MobilityEngine();
 
@@ -39,10 +39,11 @@ export const useGameState = defineStore("GameState", () => {
 
   const TurnStart = () => {
     _engine.Rebuild( CurrentPlayer.value, GameBoardModel.value );
+    
   };
   
-  const MoveBegin = async  (piece: GamePieceModel) => {
-    PieceInHand.value = new GamePieceModel();
+  const MoveBegin = async  (piece: PieceModel) => {
+    PieceInHand.value = new PieceModel();
     
     logPieceDetails("MoveBegin", piece);
     
@@ -83,7 +84,7 @@ export const useGameState = defineStore("GameState", () => {
             return gameOver(CurrentPlayer.value);
           }
           
-          let capturedPiece = new GamePieceModel(
+          let capturedPiece = new PieceModel(
             CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPosition}.C${CurrentPlayer.value}`, s.Piece.Icon, true);
           
             logPieceDetails("capturedPiece", capturedPiece);            
@@ -96,10 +97,10 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // Create the moved piece in that spot.
-        s.Piece = new GamePieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPosition, PieceMoving.value!.Icon );
+        s.Piece = new PieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPosition, PieceMoving.value!.Icon );
 
         // Remove the piece from the origin.
-        MoveOrigin.value.Piece = new GamePieceModel();
+        MoveOrigin.value.Piece = new PieceModel();
 
         // Test for promotion zone and if piece type can be promoted.
         if( s.PromotionZone != PieceMoving.value.Player || !_promotable.includes(PieceMoving.value.Type) )
@@ -159,7 +160,7 @@ export const useGameState = defineStore("GameState", () => {
     return CompleteMove();
   };
 
-  const DropBegin =(piece: GamePieceModel)=> {    
+  const DropBegin =(piece: PieceModel)=> {    
     logPieceDetails("DropBegin(piece)", piece);    
     Mode.value = GameMode.DropStart;
     
@@ -223,7 +224,7 @@ export const useGameState = defineStore("GameState", () => {
         logPieceDetails("PieceInHand", PieceInHand.value);
 
         // Create the dropped piece in that spot.
-        s.Piece = new GamePieceModel(
+        s.Piece = new PieceModel(
           CurrentPlayer.value, 
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPosition, 
@@ -249,8 +250,8 @@ export const useGameState = defineStore("GameState", () => {
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
     console.warn("CompleteMove()");
-    PieceMoving.value = new GamePieceModel( );
-    PieceInHand.value = new GamePieceModel( );
+    PieceMoving.value = new PieceModel( );
+    PieceInHand.value = new PieceModel( );
     PotentialDestinations.value = [""];
     Destination.value = new SquareModel(0,0);
 
@@ -270,7 +271,7 @@ export const useGameState = defineStore("GameState", () => {
     console.log(`Player ${player} wins.`);
   };
 
-  const logPieceDetails =(name: string, input: GamePieceModel) => {
+  const logPieceDetails =(name: string, input: PieceModel) => {
     console.log(`${name}...\r
       \tPlayer: ${input.Player}\r
       \tId: ${input.Id}\r

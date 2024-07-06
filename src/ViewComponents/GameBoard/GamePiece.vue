@@ -14,7 +14,7 @@
 <script setup lang="ts">
 
   import { GameMode } from '@/State/Game/GameMode';
-import { GamePieceModel } from '@/State/Game/Pieces/PieceModel';
+import { PieceModel } from '@/State/Game/Pieces/PieceModel';
   import { useGameState } from '@/State/GameState';
   import { ref, watch } from 'vue';
 
@@ -22,7 +22,7 @@ import { GamePieceModel } from '@/State/Game/Pieces/PieceModel';
   const game$ = useGameState();
   const props = defineProps({
       input: {
-      type: Object as () => GamePieceModel,
+      type: Object as () => PieceModel,
       required: true
     }
   });

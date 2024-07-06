@@ -90,22 +90,25 @@ const getNotationStyle = (xy: string): string =>{
 watch( // Update highlight
   () => game$.PieceMoving,
   () => {
+    const mapping = game$.PieceMoving.MovementMap.filter( s => {
+      s.X == props.input.X && s.Y == props.input.Y
+    });
 
-    const mobility = game$.PieceMoving.VectorSet // flatten// .filter( m =>
-      m.X == props.input.X && m.Y == props.input.Y
-    )[0];
-    
-    switch (mobility.Condition) {
-      case SquareCondition.Open:
-        return "game-square-potential-move";
-      case SquareCondition.Enemy:
-        return "game-square-potential-move";
-      default: //case SquareCondition.Ally:
-        return "";
+    if( mapping.length > 0 ){
+
       
+
+      switch ( mapping[0].Status ) {
+        case SquareCondition.Open:
+          return "game-square-potential-move";
+        case SquareCondition.Enemy:
+          return "game-square-potential-move";
+        default: //case SquareCondition.Ally:
+          return "";
+      }
     }
-  }
-);
+    
+  });
 
 watch( // Update Piece movement
   () => game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id),
@@ -120,10 +123,10 @@ watch(
     if ( game$.Mode == GameMode.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
       currentClass.value = "game-piece-promotion-option";
-    }
-    else {
+    } else {
       currentClass.value = "";
     }
+    
   }
 );
 

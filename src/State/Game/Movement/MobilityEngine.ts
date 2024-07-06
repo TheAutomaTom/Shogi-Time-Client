@@ -23,9 +23,33 @@ export class MobilityEngine {
         )
       }      
     });
+
+    // Create flat maps for each piece 
+    // so squares know where to highlight valid moves.
+    board.Squares.forEach( square => {
+      if(square.Piece.Player != 0){
+        square.Piece.MovementMap.push( ...this.FlattenMap(square) );
+      }
+    });
+    
     return board.Squares;
   };
+
+  
+  FlattenMap = (square: SquareModel): TargetSquare[] => {
+    let map = [] as TargetSquare[];
     
+    if( square.Piece.VectorSet.N != undefined){
+      square.Piece.VectorSet.N.forEach(target => {
+        map.push(target);
+      });
+    }
+
+    return map;
+  };
+
+
+  
   setPieceIsFacing = (player: number, isDefault: boolean): number =>{
     if(isDefault){
       return player == 1 ? -1 : 1;

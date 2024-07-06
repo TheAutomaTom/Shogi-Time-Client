@@ -1,15 +1,21 @@
 import { PieceType } from "./PieceType";
 import { PieceRange } from "./PieceRange";
 import { VectorSet } from "../Movement/VectorSet";
+import { TargetSquare } from "../Movement/TargetSquare";
 
-export class GamePieceModel {
+export class PieceModel {
   Player: number;
   Type: PieceType;
   StartingPosition: string;
-  IsFacingDefault: boolean;
+  
   Icon: string;
+  
+  IsFacingDefault: boolean;
+  
   Range: PieceRange;
   VectorSet: VectorSet;
+  MovementMap: TargetSquare[];
+
 
   constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     
@@ -33,6 +39,7 @@ export class GamePieceModel {
       SE: [],
       K:  [],
     }
+    this.MovementMap = [];
   };
 
   public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
@@ -259,7 +266,7 @@ export class GamePieceModel {
     };
   };
 
-  Promote = (): GamePieceModel => {
+  Promote = (): PieceModel => {
     switch (this.Type) {
       case PieceType.Bishop:
         this.Type = PieceType.BishopPro;
@@ -290,10 +297,10 @@ export class GamePieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
+    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
   };
   
-  Demote = (): GamePieceModel => {
+  Demote = (): PieceModel => {
     switch (this.Type) {
       case PieceType.BishopPro:
         this.Type = PieceType.Bishop;
@@ -324,7 +331,8 @@ export class GamePieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new GamePieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
+    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
   };
+
   
 }
