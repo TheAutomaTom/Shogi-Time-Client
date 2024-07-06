@@ -1,5 +1,5 @@
 
-export type PieceRange = {
+export type PieceRangeSet = {
   N: number;
   S: number;
   E: number;

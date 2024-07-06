@@ -44,7 +44,7 @@
 
   const handleClickPiece = async () => {
     // console.log(`GamePiece.handleClickPiece `)
-    game$.logPieceDetails("GamePiece.handleClickPiece", props.input);
+    // game$.logPieceDetails("GamePiece.handleClickPiece", props.input);
 
     if( game$.Board.CurrentPlayer == props.input.Player // It's your turn
         && (game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart || game$.Phase == GameMode.DropStart)

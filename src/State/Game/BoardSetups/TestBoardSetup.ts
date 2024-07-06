@@ -6,19 +6,31 @@ export class TestBoardSetup {
 Squares = [
 
   // Player 1: Back Row /==================
-    new SquareModel( 1, 9, 2, new PieceModel( 1, PieceType.Lance,   "Left", "KY")),
-    new SquareModel( 2, 9, 2, new PieceModel( 1, PieceType.Knight,  "Left", "KE")),
-    new SquareModel( 3, 9, 2, new PieceModel( 1, PieceType.Silver,  "Left", "GI")),
-    new SquareModel( 4, 9, 2, new PieceModel( 1, PieceType.Gold,    "Left", "KI")),
-    new SquareModel( 5, 9, 2, new PieceModel( 1, PieceType.KingVictor, "Center", "OU")),
-    new SquareModel( 6, 9, 2, new PieceModel( 1, PieceType.Gold,    "Right", "KI")),
-    new SquareModel( 7, 9, 2, new PieceModel( 1, PieceType.Silver,  "Right", "GI")),
-    new SquareModel( 8, 9, 2, new PieceModel( 1, PieceType.Knight,  "Right", "KE")),
-    new SquareModel( 9, 9, 2, new PieceModel( 1, PieceType.Lance,   "Right", "KY")),
+    // new SquareModel( 1, 9, 2, new PieceModel( 1, PieceType.Lance,   "Left", "KY")),
+    // new SquareModel( 2, 9, 2, new PieceModel( 1, PieceType.Knight,  "Left", "KE")),
+    // new SquareModel( 3, 9, 2, new PieceModel( 1, PieceType.Silver,  "Left", "GI")),
+    // new SquareModel( 4, 9, 2, new PieceModel( 1, PieceType.Gold,    "Left", "KI")),
+    // new SquareModel( 5, 9, 2, new PieceModel( 1, PieceType.KingVictor, "Center", "OU")),
+    // new SquareModel( 6, 9, 2, new PieceModel( 1, PieceType.Gold,    "Right", "KI")),
+    // new SquareModel( 7, 9, 2, new PieceModel( 1, PieceType.Silver,  "Right", "GI")),
+    // new SquareModel( 8, 9, 2, new PieceModel( 1, PieceType.Knight,  "Right", "KE")),
+    // new SquareModel( 9, 9, 2, new PieceModel( 1, PieceType.Lance,   "Right", "KY")),
+    new SquareModel( 1, 9, 2 ),
+    new SquareModel( 2, 9, 2 ),
+    new SquareModel( 3, 9, 2 ),
+    new SquareModel( 4, 9, 2 ),
+    new SquareModel( 5, 9, 2 ),
+    new SquareModel( 6, 9, 2 ),
+    new SquareModel( 7, 9, 2 ),
+    new SquareModel( 8, 9, 2 ),
+    new SquareModel( 9, 9, 2 ),
     
     // Player 1: Mid Row /==================
     new SquareModel( 1, 8, 2 ),
+    
     new SquareModel( 2, 8, 2, new PieceModel( 1, PieceType.Bishop, "Left", "KA")),
+    // new SquareModel( 2, 8, 2 ),
+
     new SquareModel( 3, 8, 2 ),
     new SquareModel( 4, 8, 2 ),
     new SquareModel( 5, 8, 2 ),
@@ -127,13 +139,19 @@ Squares = [
   
   // Player 2: Mid Row (empty) /==================
     new SquareModel( 1, 2, 1, new PieceModel( )),
-    new SquareModel( 2, 2, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
+
+    // new SquareModel( 2, 2, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
+    new SquareModel( 2, 2, 1, new PieceModel( )),
+
     new SquareModel( 3, 2, 1, new PieceModel( )),
     new SquareModel( 4, 2, 1, new PieceModel( )),
     new SquareModel( 5, 2, 1, new PieceModel( )),
     new SquareModel( 6, 2, 1, new PieceModel( )),
     new SquareModel( 7, 2, 1, new PieceModel( )),
-    new SquareModel( 8, 2, 1, new PieceModel( 2, PieceType.Bishop, "Left", "KA")),
+
+    // new SquareModel( 8, 2, 1, new PieceModel( 2, PieceType.Bishop, "Left", "KA")),
+    new SquareModel( 8, 2, 1, new PieceModel( )),
+
     new SquareModel( 9, 2, 1, new PieceModel( )),
 
   // Player 2: Back Row (empty) /==================

@@ -1,4 +1,4 @@
-import { SquareModel } from "../SquareModel";
+import { TargetSquare } from "./TargetSquare";
 
 export type VectorSet = {
 

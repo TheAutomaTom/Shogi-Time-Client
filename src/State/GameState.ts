@@ -1,12 +1,11 @@
-import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GameMode as GamePhase } from "./Game/GameMode";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { SquareModel } from "@/State/Game/SquareModel";
-import { PieceType } from "./Game/Pieces/PieceType";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
 import { MobilityEngine } from "./Game/Movement/MobilityEngine";
+import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -53,15 +52,14 @@ export const useGameState = defineStore("GameState", () => {
     Phase.value = GamePhase.MoveStart;
 
     // Bookmark the piece in focus.
+    // * This seems redundant, but it's easy to access from views.
     PieceInHand.value = piece;
-
-    logPieceDetails(`${GamePhase.MoveStart}`, PieceInHand.value);
+    
+    logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
     
     // Find the starting square based on the id of the piece it contains.
-    MoveOrigin.value = Board.Squares.find( s =>  s.Piece.Id == piece.Id )
+    MoveOrigin.value = Board.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
                         || new SquareModel(0, 0);
-    logPieceDetails("MoveOrigin.Piece", MoveOrigin.value.Piece);
-    PieceInHand.value = MoveOrigin.value.Piece;
 
   }
   
@@ -326,7 +324,9 @@ export const useGameState = defineStore("GameState", () => {
       \tIcon: ${input.Icon}\r
       \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
+      \tMovementMap: ...
       `);
+      console.dir(input.MovementMap);
   };
 
   return {

@@ -1,5 +1,5 @@
 import { PieceType } from "./PieceType";
-import { PieceRange } from "./PieceRange";
+import { PieceRangeSet } from "./PieceRange";
 import { VectorSet } from "../Movement/VectorSet";
 import { TargetSquare } from "../Movement/TargetSquare";
 
@@ -12,7 +12,7 @@ export class PieceModel {
   
   IsFacingDefault: boolean;
   
-  Range: PieceRange;
+  Range: PieceRangeSet;
   VectorSet: VectorSet;
   MovementMap: TargetSquare[];
 
@@ -54,7 +54,7 @@ export class PieceModel {
 
   public get IconPath() { return this.iconPrefix + this.Icon; }
 
-  setRange = (): PieceRange =>{
+  setRange = (): PieceRangeSet =>{
     switch (this.Type) {
       case PieceType.KingVictor: 
         return {
@@ -67,7 +67,7 @@ export class PieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.KingChallenger: 
         return {
@@ -80,7 +80,7 @@ export class PieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Rook: 
         return {
@@ -93,7 +93,7 @@ export class PieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.RookPro: 
         return {
@@ -106,7 +106,7 @@ export class PieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Bishop: 
         return {
@@ -119,7 +119,7 @@ export class PieceModel {
           SW: 8,
           NW: 8,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.BishopPro: 
         return {
@@ -132,7 +132,7 @@ export class PieceModel {
           SW: 8,
           NW: 8,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Gold: 
         return {
@@ -145,7 +145,7 @@ export class PieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Silver: 
         return {
@@ -158,7 +158,7 @@ export class PieceModel {
           SW: 1,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.SilverPro: 
         return {
@@ -171,7 +171,7 @@ export class PieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Knight: 
         return {
@@ -184,7 +184,7 @@ export class PieceModel {
           SW: 0,
           NW: 0,
           K:  1
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.KnightPro: 
         return {
@@ -197,7 +197,7 @@ export class PieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Lance: 
         return {
@@ -210,7 +210,7 @@ export class PieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.LancePro: 
         return {
@@ -223,7 +223,7 @@ export class PieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.Pawn: 
         return {
@@ -236,7 +236,7 @@ export class PieceModel {
           SW: 0,
           NW: 0,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       case PieceType.PawnPro: 
         return {
@@ -249,7 +249,7 @@ export class PieceModel {
           SW: 0,
           NW: 1,
           K:  0
-        } as PieceRange;
+        } as PieceRangeSet;
     
       default: //GamePieceType.None: 
       return {
@@ -262,7 +262,7 @@ export class PieceModel {
         SW: 0,
         NW: 0,
         K:  0
-      } as PieceRange;
+      } as PieceRangeSet;
     };
   };
 
