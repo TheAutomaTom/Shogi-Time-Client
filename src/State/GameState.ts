@@ -63,29 +63,6 @@ export const useGameState = defineStore("GameState", () => {
 
   }
   
-  /*******************************************************************************************
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
   
   const MoveAttempt = async (square: SquareModel)=>{
 
@@ -165,6 +142,29 @@ export const useGameState = defineStore("GameState", () => {
 
   };
 
+  /*******************************************************************************************
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
   // This may be called by PromotionModal
   const PromotePiece =(toProceed: boolean = true)=> {
 
@@ -336,7 +336,7 @@ export const useGameState = defineStore("GameState", () => {
     PieceInHand,
     MoveStart,
     MoveOrigin,
-    // MoveAttempt,
+    MoveAttempt,
     Destination,
     // PromotePiece,
     CapturesP1,

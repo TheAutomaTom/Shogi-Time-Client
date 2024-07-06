@@ -91,44 +91,14 @@ const isValidTarget = ref({} as TargetSquare);
 watch( // Update highlight class
   () => game$.PieceInHand,
   () => {
-    if(props.input.Id == "Square-87"){
-      console.warn("GameSquare game$.PieceInHand WATCH Triggered");
-      console.dir ("Id: " + props.input.Id);
-      console.warn("GameSquare game$.PieceInHand FIND");
-      console.log("game$.PieceInHand.MovementMap...");
-      console.dir(game$.PieceInHand.MovementMap);
-
-      console.warn("vvvvvv " + game$.PieceInHand.MovementMap.length);
-      
-      game$.PieceInHand.MovementMap.forEach(s => {
-        console.dir(s);
-        // console.log(`${s.Status}`);
-        if(s.Status == "open"){
-          console.log(`${s.X}, ${s.Y}`);
-        }
-      });
-
-      console.warn("^^^^^^");
-
-    }
-
     isValidTarget.value = game$.PieceInHand.MovementMap.find( s => s.X == props.input.X && s.Y == props.input.Y)!
                           || new TargetSquare(0,0,TargetStatus.Na);
-    if(props.input.Id == "Square-87"){
-      console.dir(isValidTarget.value);
-    }
                           
     switch (isValidTarget.value.Status) {
       case TargetStatus.Open:        
         currentClass.value = "game-square-potential-move";
-        if(props.input.Id == "Square-87"){
-          console.warn("GameSquare game$.PieceInHand isValidTarget.Status = Open!");
-          console.dir(isValidTarget.value); 
-          console.dir(isValidTarget.value.Status); 
-        }
         break;      
         case TargetStatus.Enemy:
-        console.warn("GameSquare game$.PieceInHand isValidTarget.Status = Enemy!");
         currentClass.value = "game-square-potential-move";
         break;      
       default:
@@ -157,7 +127,7 @@ const handleClickSquare = () => {
     if( game$.MoveOrigin.Id != props.input.Id ){
       switch (game$.Phase) {
         case GameMode.MoveStart:
-          // game$.MoveAttempt(props.input);
+          game$.MoveAttempt(props.input);
           break;       
           
         default: // case GameMode.DropStart:
