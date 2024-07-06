@@ -1,76 +1,97 @@
 import { DefaultNewGameLayout } from "@/State/Game/NewGameLayouts/DefaultNewGameLayout";
 import { BoardModel } from "@/State/Game/BoardModel";
-import { GameMode } from "./Game/GameMode";
+import { GameMode as GamePhase } from "./Game/GameMode";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { SquareModel } from "@/State/Game/SquareModel";
 import { PieceType } from "./Game/Pieces/PieceType";
 import { defineStore } from "pinia";
-import { ref } from "vue";
+import { reactive, ref } from "vue";
 import { MobilityEngine } from "./Game/Movement/MobilityEngine";
 
 export const useGameState = defineStore("GameState", () => {
   
-  const Mode = ref(GameMode.TurnStart);
-  const GameBoardModel = ref({  Id:"111-zzz",
-                                CurrentPlayer:1,
-                                Squares: new DefaultNewGameLayout().Squares
-                             } as BoardModel);
+  const Phase = ref(GamePhase.TurnStart);
+  const Board = reactive({  Id:"111-zzz",
+                       CurrentPlayer:1,
+                       Squares: new DefaultNewGameLayout().Squares
+                    } as BoardModel);
 
-  const CurrentPlayer = ref(GameBoardModel.value.CurrentPlayer);
-  const PieceMoving = ref({} as PieceModel);
-  const MoveOrigin = ref({} as SquareModel);
-  const PotentialDestinations = ref([""] as string[]);
-  const Destination = ref({} as SquareModel);
   const PieceInHand = ref({} as PieceModel);
+
+  const MoveOrigin = ref({} as SquareModel);
+  const Destination = ref({} as SquareModel);
 
   const CapturesP1 = ref([] as PieceModel[]);
   const CapturesP2 = ref([] as PieceModel[]);
 
   const _engine = new MobilityEngine();
 
-  const _promotable = [
-    PieceType.Rook,
-    PieceType.Bishop,
-    PieceType.Silver,
-    PieceType.Knight,
-    PieceType.Lance,
-    PieceType.Pawn
-  ];
+  // const _promotable = [
+  //   PieceType.Rook,
+  //   PieceType.Bishop,
+  //   PieceType.Silver,
+  //   PieceType.Knight,
+  //   PieceType.Lance,
+  //   PieceType.Pawn
+  // ];
 
   const TurnStart = () => {
-    _engine.Rebuild( CurrentPlayer.value, GameBoardModel.value );
+    console.log(`GameState.TurnStart()`);
+    _engine.Rebuild( Board );
     
   };
   
-  const MoveBegin = async  (piece: PieceModel) => {
+  const resetSelections = async () =>{
     PieceInHand.value = new PieceModel();
-    
-    logPieceDetails("MoveBegin", piece);
-    
-    Mode.value = GameMode.MoveStart;
-    
+
+  }
+
+  const MoveStart = async  (piece: PieceModel) => {
+    resetSelections();
+
+    Phase.value = GamePhase.MoveStart;
+
     // Bookmark the piece in focus.
-    PieceMoving.value = piece;
+    PieceInHand.value = piece;
 
+    logPieceDetails(`${GamePhase.MoveStart}`, PieceInHand.value);
+    
     // Find the starting square based on the id of the piece it contains.
-    GameBoardModel.value.Squares.forEach( square => {
-      if(square.Piece.Id == piece.Id){
-        MoveOrigin.value = square;
-      }
-    });
+    MoveOrigin.value = Board.Squares.find( s =>  s.Piece.Id == piece.Id )
+                        || new SquareModel(0, 0);
+    logPieceDetails("MoveOrigin.Piece", MoveOrigin.value.Piece);
+    PieceInHand.value = MoveOrigin.value.Piece;
 
-    // Highlight potential move squares
-    // PotentialDestinations.value = [""]; // reset prior
-    // ! const rangeOfMovement = (new MovementRule(piece.Type)).Range;
-    // ! const facing = setPieceIsFacing(piece.IsFacingDefault);
-    // ! evaluateRangeOfMovement(rangeOfMovement, facing);
+  }
   
-  };
+  /*******************************************************************************************
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
   
   const MoveAttempt = async (square: SquareModel)=>{
 
     // Find the square that was clicked...
-    GameBoardModel.value.Squares.map( s =>{
+    Board.Squares.map( s =>{
 
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){      
@@ -81,63 +102,63 @@ export const useGameState = defineStore("GameState", () => {
         if(s.Piece.Player != 0){
 
           if(s.Piece.Type == PieceType.KingChallenger || s.Piece.Type == PieceType.KingVictor){
-            return gameOver(CurrentPlayer.value);
+            return gameOver(Board.CurrentPlayer);
           }
           
           let capturedPiece = new PieceModel(
-            CurrentPlayer.value, s.Piece.Type, `${s.Piece.StartingPosition}.C${CurrentPlayer.value}`, s.Piece.Icon, true);
+            Board.CurrentPlayer, s.Piece.Type, `${s.Piece.StartingPosition}.C${Board.CurrentPlayer}`, s.Piece.Icon, true);
           
             logPieceDetails("capturedPiece", capturedPiece);            
             capturedPiece.Demote();
             logPieceDetails("capturedPiece.Demote", capturedPiece);
 
-          if(CurrentPlayer.value == 1){ CapturesP1.value.push(capturedPiece); }
-          if(CurrentPlayer.value == 2){ CapturesP2.value.push(capturedPiece); }
+          if(Board.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
+          if(Board.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
 
         }
 
         // Create the moved piece in that spot.
-        s.Piece = new PieceModel( CurrentPlayer.value, PieceMoving.value!.Type, PieceMoving.value!.StartingPosition, PieceMoving.value!.Icon );
+        s.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new PieceModel();
 
         // Test for promotion zone and if piece type can be promoted.
-        if( s.PromotionZone != PieceMoving.value.Player || !_promotable.includes(PieceMoving.value.Type) )
+        if( s.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
         { 
           return CompleteMove();
         }
 
-        if( s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)){
-          logPieceDetails(`Can promote? ${s.PromotionZone == PieceMoving.value.Player && _promotable.includes(PieceMoving.value.Type)}`, PieceMoving.value)
+        if( s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)){
+          logPieceDetails(`Can promote? ${s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)}`, PieceInHand.value)
           
           // Handle mandatory promotions...
           // Pawns and lances on the back row get promoted.
-          if( ( PieceMoving.value.Type == PieceType.Pawn 
-                || PieceMoving.value.Type == PieceType.Lance  
+          if( ( PieceInHand.value.Type == PieceType.Pawn 
+                || PieceInHand.value.Type == PieceType.Lance  
               ) && ( 
-                ( CurrentPlayer.value == 1 && Destination.value.Y == 1 )
-                || ( CurrentPlayer.value == 2 && Destination.value.Y == 9 )
+                ( Board.CurrentPlayer == 1 && Destination.value.Y == 1 )
+                || ( Board.CurrentPlayer == 2 && Destination.value.Y == 9 )
               ) )
           {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
             return PromotePiece();
           }
 
           // Knights get promoted from back 2 rows.
-          if(  PieceMoving.value.Type == PieceType.Knight
+          if(  PieceInHand.value.Type == PieceType.Knight
             && ( 
-              ( CurrentPlayer.value == 1 && Destination.value.Y <= 2 )
-              || ( CurrentPlayer.value == 2 && Destination.value.Y >= 8 )
+              ( Board.CurrentPlayer == 1 && Destination.value.Y <= 2 )
+              || ( Board.CurrentPlayer == 2 && Destination.value.Y >= 8 )
             ) )
           {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceMoving.value);
+            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
             return PromotePiece();
           }
    
-          logPieceDetails(`Possible promotion`, PieceMoving.value);
+          logPieceDetails(`Possible promotion`, PieceInHand.value);
           // PromotionModal will display, pending input to continue workflow.
-          Mode.value = GameMode.PromoteOption;
+          Phase.value = GamePhase.PromoteOption;
         
         }
       }
@@ -148,12 +169,12 @@ export const useGameState = defineStore("GameState", () => {
   // This may be called by PromotionModal
   const PromotePiece =(toProceed: boolean = true)=> {
 
-    if( toProceed && _promotable.includes(PieceMoving.value.Type)){
-      GameBoardModel.value.Squares.map( s =>{
+    if( toProceed && _promotable.includes(PieceInHand.value.Type)){
+      Board.Squares.map( s =>{
         if(s.Id == Destination.value.Id){
-          logPieceDetails("Before Promote", PieceMoving.value!);
-          s.Piece = PieceMoving.value.Promote();
-          logPieceDetails("After Promote", PieceMoving.value);
+          logPieceDetails("Before Promote", PieceInHand.value!);
+          s.Piece = PieceInHand.value.Promote();
+          logPieceDetails("After Promote", PieceInHand.value);
         }
       });
     }
@@ -162,13 +183,13 @@ export const useGameState = defineStore("GameState", () => {
 
   const DropBegin =(piece: PieceModel)=> {    
     logPieceDetails("DropBegin(piece)", piece);    
-    Mode.value = GameMode.DropStart;
+    Phase.value = GamePhase.DropStart;
     
     // Bookmark the piece in focus.
     PieceInHand.value = piece;
 
     // Find the starting square based on the id of the piece it contains.
-    // if(CurrentPlayer.value == 1){
+    // if(Board.CurrentPlayer == 1){
       // GameBoardModel.value.Squares.forEach( capture => {
       //   if(capture.Piece.Id == piece.Id){
       //     // MoveOrigin.value = capture;
@@ -181,7 +202,7 @@ export const useGameState = defineStore("GameState", () => {
       
       // const facing = setPieceIsFacing(piece.IsFacingDefault);
       
-      GameBoardModel.value.Squares.map( s =>{
+      Board..Squares.map( s =>{
         // Highlight potential move squares
         if(s.Piece.Player == 0){
 
@@ -195,14 +216,14 @@ export const useGameState = defineStore("GameState", () => {
             
           // If pawn or lance: add all but back row
           else if( (PieceInHand.value.Type == PieceType.Pawn || PieceInHand.value.Type == PieceType.Lance)
-                    && ((CurrentPlayer.value == 1 &&  s.Y != 1) || (CurrentPlayer.value == 2 && s.Y != 9))  )
+                    && ((Board.CurrentPlayer == 1 &&  s.Y != 1) || (Board.CurrentPlayer == 2 && s.Y != 9))  )
           {
             PotentialDestinations.value.push(s.Id);
           }
             
           // If knight: add all but back 2 rows
           else if( (PieceInHand.value.Type == PieceType.Knight)
-                    && ((CurrentPlayer.value == 1 &&  (s.Y > 2)) || (CurrentPlayer.value == 2 && (s.Y < 8)))  )
+                    && ((Board.CurrentPlayer == 1 &&  (s.Y > 2)) || (Board.CurrentPlayer == 2 && (s.Y < 8)))  )
           {
             PotentialDestinations.value.push(s.Id);
           }
@@ -214,7 +235,7 @@ export const useGameState = defineStore("GameState", () => {
   const DropAttempt = async (square: SquareModel) =>{
     
     // Find the square that was clicked...
-    GameBoardModel.value.Squares.map( async s =>{
+    Board..Squares.map( async s =>{
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
 
@@ -225,7 +246,7 @@ export const useGameState = defineStore("GameState", () => {
 
         // Create the dropped piece in that spot.
         s.Piece = new PieceModel(
-          CurrentPlayer.value, 
+          Board.CurrentPlayer, 
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPosition, 
           PieceInHand.value.Icon,
@@ -234,10 +255,10 @@ export const useGameState = defineStore("GameState", () => {
         logPieceDetails("s.Piece", s.Piece);
 
         // Remove the piece from the origin.
-        if(CurrentPlayer.value == 1){
+        if(Board.CurrentPlayer == 1){
           console.log(`Removing drop from CapturesP1.`);
           CapturesP1.value = CapturesP1.value.filter( p => p.Id != PieceInHand.value.Id);
-        } else if (CurrentPlayer.value == 2){
+        } else if (Board.CurrentPlayer == 2){
           console.log(`Removing drop from CapturesP2.`);
           CapturesP2.value = CapturesP2.value.filter( p => p.Id != PieceInHand.value.Id);
           
@@ -250,26 +271,51 @@ export const useGameState = defineStore("GameState", () => {
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
     console.warn("CompleteMove()");
-    PieceMoving.value = new PieceModel( );
     PieceInHand.value = new PieceModel( );
-    PotentialDestinations.value = [""];
+    PieceInHand.value = new PieceModel( );
+    // PotentialDestinations.value = [""];
     Destination.value = new SquareModel(0,0);
 
-    if(CurrentPlayer.value == 1){
-      CurrentPlayer.value = 2;
+    if(Board.CurrentPlayer == 1){
+      Board.CurrentPlayer = 2;
     } else {
-      CurrentPlayer.value = 1;
+      Board.CurrentPlayer = 1;
     }
-    Mode.value = GameMode.TurnStart;
+    Phase.value = GamePhase.TurnStart;
   };
 
   
   //== Ancillary ===========================================================
   
   const gameOver = (player: number) =>{
-    Mode.value = GameMode.GameOver;
+    Phase.value = GamePhase.GameOver;
     console.log(`Player ${player} wins.`);
   };
+
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   * 
+   */
+
 
   const logPieceDetails =(name: string, input: PieceModel) => {
     console.log(`${name}...\r
@@ -283,22 +329,20 @@ export const useGameState = defineStore("GameState", () => {
   };
 
   return {
-    GameBoardModel,
+    Board,
+    Phase, 
     TurnStart,
-    CurrentPlayer,
-    Mode,    
-    PieceMoving,
     PieceInHand,
+    MoveStart,
     MoveOrigin,
-    MoveBegin,
-    MoveAttempt,
-    PotentialDestinations,
+    // MoveAttempt,
     Destination,
-    PromotePiece,
+    // PromotePiece,
     CapturesP1,
     CapturesP2,
-    DropBegin,
-    DropAttempt
+    // DropBegin,
+    // DropAttempt
+    logPieceDetails
 
   };
 });

@@ -2,7 +2,7 @@
   
   <div class="game-board" >
     <game-square 
-      v-for="square in game$.GameBoardModel.Squares"
+      v-for="square in game$.Board.Squares"
       :input="square"
     />
   </div>

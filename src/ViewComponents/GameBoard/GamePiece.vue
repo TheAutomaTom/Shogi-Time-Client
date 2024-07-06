@@ -14,7 +14,7 @@
 <script setup lang="ts">
 
   import { GameMode } from '@/State/Game/GameMode';
-import { PieceModel } from '@/State/Game/Pieces/PieceModel';
+  import { PieceModel } from '@/State/Game/Pieces/PieceModel';
   import { useGameState } from '@/State/GameState';
   import { ref, watch } from 'vue';
 
@@ -27,13 +27,13 @@ import { PieceModel } from '@/State/Game/Pieces/PieceModel';
     }
   });
 
-  const currentClass = ref(game$.PieceMoving!.Id == props.input.Id ? "game-piece-move-start" : "");
+  const currentClass = ref("");
 
   //=== Events =====================================================  
   watch(
-    () => game$.PieceMoving,
+    () => game$.PieceInHand,
     () => {
-      if (game$.PieceMoving.Id == props.input.Id) {
+      if (game$.PieceInHand.Id == props.input.Id) {
         currentClass.value = "game-piece-move-start";
       }
       else {
@@ -43,12 +43,15 @@ import { PieceModel } from '@/State/Game/Pieces/PieceModel';
   );
 
   const handleClickPiece = async () => {
-    if( game$.CurrentPlayer == props.input.Player 
-        && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart || game$.Mode == GameMode.DropStart)
-        && (game$.PieceMoving.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
+    // console.log(`GamePiece.handleClickPiece `)
+    game$.logPieceDetails("GamePiece.handleClickPiece", props.input);
+
+    if( game$.Board.CurrentPlayer == props.input.Player // It's your turn
+        && (game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart || game$.Phase == GameMode.DropStart)
       ){
-        game$.MoveBegin(props.input);
+        game$.MoveStart(props.input);
     }
+    // TODO: Deselect piece when clicked a second time
   };
 
   

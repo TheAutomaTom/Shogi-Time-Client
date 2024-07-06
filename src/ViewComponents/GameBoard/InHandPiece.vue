@@ -40,12 +40,12 @@ import { ref, watch } from 'vue';
                 `);    
 
     console.log(`${ game$.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
-    console.log(`${game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveBegin`);
-    console.log(`${game$.PieceMoving.Id != props.input.Id}: game$.PieceMoving.Id != props.input.Id`);
+    console.log(`${game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart`);
+    console.log(`${game$.PieceInHand.Id != props.input.Id}: game$.PieceInHand.Id != props.input.Id`);
     
     if( game$.CurrentPlayer == props.input.Player
         && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart || game$.Mode == GameMode.DropStart)
-        && (game$.PieceMoving.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
+        && (game$.PieceInHand.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
   ){
       console.log(`\r\nInHandPiece calls game$.DropBegin(${props.input})`);
       game$.DropBegin(props.input);

@@ -45,7 +45,8 @@ import type { SquareModel } from "@/State/Game/SquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GameMode } from '@/State/Game/GameMode';
-import { TargetStatus as SquareCondition } from '@/State/Game/Movement/TargetStatus';
+import { TargetStatus } from '@/State/Game/Movement/TargetStatus';
+import { TargetSquare } from '@/State/Game/Movement/TargetSquare';
 
 //=== Setup ======================================================
 const game$ = useGameState();
@@ -55,7 +56,8 @@ const props = defineProps({
     required: true
   }
 });
-const currentClass = ref(game$.PotentialDestinations.includes( props.input.Id) ? "game-square-potential-move" : "");
+
+const currentClass = ref("");
 
 const setGridPosition = () => {
   return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
@@ -75,75 +77,66 @@ const getNotationStyle = (xy: string): string =>{
 
 
 //=== Events =====================================================
-// watch( // Update highlight
-//   () => game$.PotentialDestinations,
-//   () => {
 
-//     if(game$.PotentialDestinations.includes(props.input.Id)){
-//       currentClass.value = "game-square-potential-move";
-//     }
-//     else {
-//       currentClass.value = "";
-//     }
+// watch( // Update Piece movement
+//   () => game$.Board.Squares.filter(s => s.Id == props.input.Id),
+//   () => {
+//     props.input.Piece = (game$.Board.Squares.filter(s => s.Id == props.input.Id))[0].Piece
 //   }
 // );
-watch( // Update highlight
-  () => game$.PieceMoving,
+
+
+const isValidTarget = ref({} as TargetSquare);
+
+watch( // Update highlight class
+  () => game$.PieceInHand.MovementMap,
   () => {
-    const mapping = game$.PieceMoving.MovementMap.filter( s => {
-      s.X == props.input.X && s.Y == props.input.Y
-    });
-
-    if( mapping.length > 0 ){
-
-      
-
-      switch ( mapping[0].Status ) {
-        case SquareCondition.Open:
-          return "game-square-potential-move";
-        case SquareCondition.Enemy:
-          return "game-square-potential-move";
-        default: //case SquareCondition.Ally:
-          return "";
-      }
+    isValidTarget.value = game$.PieceInHand.MovementMap.filter( s => s.Id == props.input.Id)[0] 
+                          || new TargetSquare(0,0,TargetStatus.Na);
+    switch (isValidTarget.value.Status) {
+      case TargetStatus.Open:
+        currentClass.value = "game-square-potential-move";
+        break;      
+      case TargetStatus.Enemy:
+        currentClass.value = "game-square-potential-move";
+        break;      
+      default:
+        currentClass.value = "";
+        break;
     }
-    
-  });
-
-watch( // Update Piece movement
-  () => game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id),
-  () => {
-    props.input.Piece = (game$.GameBoardModel.Squares.filter(s => s.Id == props.input.Id))[0].Piece
   }
 );
 
 watch(
   () => game$.Destination,
   () => {
-    if ( game$.Mode == GameMode.PromoteOption && game$.Destination.Id == props.input.Id
+    if ( game$.Phase == GameMode.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
       currentClass.value = "game-piece-promotion-option";
     } else {
       currentClass.value = "";
-    }
-    
+    }    
   }
 );
 
 const handleClickSquare = () => {  
-  if( game$.Mode == GameMode.MoveStart
-      && game$.MoveOrigin.Id != props.input.Id
-      && game$.PotentialDestinations.includes( props.input.Id)
-    ){    
-        game$.MoveAttempt(props.input);
-    }
 
-  if( game$.Mode == GameMode.DropStart
-      && game$.MoveOrigin.Id != props.input.Id
-      && game$.PotentialDestinations.includes( props.input.Id)
-    ){    
-        game$.DropAttempt(props.input);
+  if( isValidTarget.value.Status != TargetStatus.Na ){
+    
+    if( game$.MoveOrigin.Id != props.input.Id ){
+      switch (game$.Phase) {
+        case GameMode.MoveStart:
+          // game$.MoveAttempt(props.input);
+          break;       
+          
+        default: // case GameMode.DropStart:
+          // game$.DropAttempt(props.input);
+          break;
+      }
     }
+    
+  }
+
 };
 
 
