@@ -13,7 +13,8 @@ export const useGameState = defineStore("GameState", () => {
   const Phase = ref(GamePhase.TurnStart);
   const Board = reactive({  Id:"111-zzz",
                        CurrentPlayer:1,
-                       Squares: new DefaultNewGameLayout().Squares
+                      //  Squares: new DefaultNewGameLayout().Squares
+                       Squares: new TestBoardSetup().Squares
                     } as BoardModel);
 
   const PieceInHand = ref({} as PieceModel);

@@ -2,7 +2,7 @@ import { SquareModel } from "@/State/Game/SquareModel";
 import { PieceType } from "../Pieces/PieceType";
 import { PieceModel } from "../Pieces/PieceModel";
 
-export class DefaultNewGameLayout {
+export class NewBoardSetup {
 Squares = [
 
   // Player 1: Back Row /==================
