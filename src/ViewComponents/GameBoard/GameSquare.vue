@@ -44,7 +44,7 @@ import { ref, watch } from 'vue';
 import type { SquareModel } from "@/State/Game/SquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
-import { GameMode } from '@/State/Game/GameMode';
+import { GamePhase } from '@/State/Game/GamePhase';
 import { TargetStatus } from '@/State/Game/Movement/TargetStatus';
 import { TargetSquare } from '@/State/Game/Movement/TargetSquare';
 
@@ -114,7 +114,7 @@ watch( // Update highlight class
 watch(
   () => game$.Destination,
   () => {
-    if ( game$.Phase == GameMode.PromoteOption && game$.Destination.Id == props.input.Id
+    if ( game$.Phase == GamePhase.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
       currentClass.value = "game-piece-promotion-option";
     } else {
@@ -129,11 +129,11 @@ const handleClickSquare = () => {
     
     if( game$.MoveOrigin.Id != props.input.Id ){
       switch (game$.Phase) {
-        case GameMode.MoveStart:
+        case GamePhase.MoveStart:
           game$.MoveAttempt(props.input);
           break;       
           
-        default: // case GameMode.DropStart:
+        default: // case GamePhase.DropStart:
           // game$.DropAttempt(props.input);
           break;
       }

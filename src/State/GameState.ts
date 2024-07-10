@@ -1,5 +1,5 @@
 import { BoardModel } from "@/State/Game/BoardModel";
-import { GameMode as GamePhase } from "./Game/GameMode";
+import { GamePhase } from "./Game/GamePhase";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { SquareModel } from "@/State/Game/SquareModel";
 import { defineStore } from "pinia";
@@ -8,7 +8,7 @@ import { MobilityEngine } from "./Game/Movement/MobilityEngine";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { PieceType } from "./Game/Pieces/PieceType";
-import GamePiece from "@/ViewComponents/GameBoard/GamePiece.vue";
+import { TargetSquare } from "./Game/Movement/TargetSquare";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -20,6 +20,7 @@ export const useGameState = defineStore("GameState", () => {
                     } as BoardModel);
 
   const PieceInHand = ref({} as PieceModel);
+  // const ValidMovement = ref([] as TargetSquare[]);
 
   const MoveOrigin = ref({} as SquareModel);
   const Destination = ref({} as SquareModel);
@@ -102,6 +103,8 @@ export const useGameState = defineStore("GameState", () => {
         MoveOrigin.value.Piece = new PieceModel();
         // Clear the MovementMap causes squares to highlight.
         PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault);
+
+        Phase.value = GamePhase.MoveEnd;
 
         // Test for promotion zone and if piece type can be promoted.
         if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )

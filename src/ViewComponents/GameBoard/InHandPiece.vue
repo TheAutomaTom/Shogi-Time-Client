@@ -14,7 +14,7 @@
 </template>
 
 <script setup lang="ts">
-import { GameMode } from '@/State/Game/GameMode';
+import { GamePhase } from '@/State/Game/GamePhase';
 import { PieceModel } from '@/State/Game/Pieces/PieceModel';
 import { useGameState } from '@/State/GameState';
 import { ref, watch } from 'vue';
@@ -40,11 +40,11 @@ import { ref, watch } from 'vue';
                 `);    
 
     console.log(`${ game$.Board.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
-    console.log(`${game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart`);
+    console.log(`${game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart}: game$.Mode == GamePhase.TurnStart || game$.Mode == GamePhase.MoveStart`);
     console.log(`${game$.PieceInHand.Id != props.input.Id}: game$.PieceInHand.Id != props.input.Id`);
     
     if( game$.Board.CurrentPlayer == props.input.Player
-        && (game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart || game$.Phase == GameMode.DropStart)
+        && (game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart || game$.Phase == GamePhase.DropStart)
         && (game$.PieceInHand.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
   ){
       console.log(`\r\nInHandPiece calls game$.DropBegin(${props.input})`);
@@ -67,9 +67,9 @@ import { ref, watch } from 'vue';
   };
 
 watch(
-  () => game$.PieceInHand,
+  () => (game$.PieceInHand, game$.Phase),
   () => {
-    if ( game$.PieceInHand.Id == props.input.Id) {
+    if ( game$.PieceInHand.Id == props.input.Id && game$.Phase == GamePhase.MoveEnd) {
       currentClass.value.push("current-player-in-hand-button-active");
 
     } else if (currentClass.value.includes("current-player-in-hand-button-active")) {

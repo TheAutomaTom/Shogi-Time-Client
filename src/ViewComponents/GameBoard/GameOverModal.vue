@@ -14,7 +14,7 @@
 </div>
 </template>
 <script setup lang="ts">
-import { GameMode } from '@/State/Game/GameMode';
+import { GamePhase } from '@/State/Game/GamePhase';
 import { useGameState } from '@/State/GameState';
 import { ref, watch } from 'vue';
 
@@ -25,7 +25,7 @@ const toShow = ref(false);
 watch( // Update highlight
   () => game$.Mode,
   () => {
-    if(game$.Mode == GameMode.GameOver){
+    if(game$.Mode == GamePhase.GameOver){
       toShow.value = true;
     }
     else {

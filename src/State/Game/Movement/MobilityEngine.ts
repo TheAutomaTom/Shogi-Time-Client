@@ -7,7 +7,7 @@ import { TargetSquare } from "./TargetSquare";
 
 export class MobilityEngine {
   
-  logEnabled = true;
+  logEnabled = false;
 
   Rebuild = ( board: BoardModel ): SquareModel[] =>{
     if(this.logEnabled){ console.error(`MobilityEngine.Rebuild()`); }
@@ -97,7 +97,7 @@ export class MobilityEngine {
         case 0:
           const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
           if(debug){console.log(`2A. evaluateVector: ${targetX},${targetY}: ${TargetStatus.Open}`);}
-          console.dir(result);
+          // console.dir(result);
           return result;
 
         case board.CurrentPlayer:

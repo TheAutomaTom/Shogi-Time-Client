@@ -4,9 +4,9 @@
     <promotion-modal></promotion-modal>
 
     <div class="game-header">
-      <span>Player: {{ game$.CurrentPlayer }}</span>
+      <span>Player: {{ game$.Board.CurrentPlayer }}</span>
       <span>&nbsp;/&nbsp;</span>
-      <span>Mode: {{ game$.Mode }}</span>
+      <span>Mode: {{ game$.Phase }}</span>
       <button style="margin:10px;font-size: xx-small;">Build GameModel</button>
     </div>
 

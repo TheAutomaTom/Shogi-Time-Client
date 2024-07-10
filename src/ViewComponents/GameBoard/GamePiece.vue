@@ -13,7 +13,7 @@
 <!--  -->
 <script setup lang="ts">
 
-  import { GameMode } from '@/State/Game/GameMode';
+  import { GamePhase } from '@/State/Game/GamePhase';
   import { PieceModel } from '@/State/Game/Pieces/PieceModel';
   import { useGameState } from '@/State/GameState';
   import { ref, watch } from 'vue';
@@ -47,7 +47,7 @@
     // game$.logPieceDetails("GamePiece.handleClickPiece", props.input);
 
     if( game$.Board.CurrentPlayer == props.input.Player // It's your turn
-        && (game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart || game$.Phase == GameMode.DropStart)
+        && (game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart || game$.Phase == GamePhase.DropStart)
       ){
         game$.MoveStart(props.input);
     }
