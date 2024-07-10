@@ -8,6 +8,7 @@ import { MobilityEngine } from "./Game/Movement/MobilityEngine";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { PieceType } from "./Game/Pieces/PieceType";
+import GamePiece from "@/ViewComponents/GameBoard/GamePiece.vue";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -99,6 +100,8 @@ export const useGameState = defineStore("GameState", () => {
 
         // Remove the piece from the origin.
         MoveOrigin.value.Piece = new PieceModel();
+        // Clear the MovementMap causes squares to highlight.
+        PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault);
 
         // Test for promotion zone and if piece type can be promoted.
         if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
@@ -155,9 +158,6 @@ export const useGameState = defineStore("GameState", () => {
    * 
    * 
    * 
-   * 
-   * 
-   * 
     // ...and check if it's in the movement rules.
     if(s.Id == square.Id && PieceInHand.value.MovementMap.includes( )){
       
@@ -188,56 +188,45 @@ export const useGameState = defineStore("GameState", () => {
         // // Remove the piece from the origin.
         // MoveOrigin.value.Piece = new PieceModel();
 
-        // Test for promotion zone and if piece type can be promoted.
-        if( s.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
-        { 
-          return CompleteMove();
-        }
+        // // Test for promotion zone and if piece type can be promoted.
+        // if( s.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
+        // { 
+        //   return CompleteMove();
+        // }
 
-        if( s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)){
-          logPieceDetails(`Can promote? ${s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)}`, PieceInHand.value)
+        // if( s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)){
+        //   logPieceDetails(`Can promote? ${s.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)}`, PieceInHand.value)
           
-          // Handle mandatory promotions...
-          // Pawns and lances on the back row get promoted.
-          if( ( PieceInHand.value.Type == PieceType.Pawn 
-                || PieceInHand.value.Type == PieceType.Lance  
-              ) && ( 
-                ( Board.CurrentPlayer == 1 && Destination.value.Y == 1 )
-                || ( Board.CurrentPlayer == 2 && Destination.value.Y == 9 )
-              ) )
-          {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
-            return PromotePiece();
-          }
+        //   // Handle mandatory promotions...
+        //   // Pawns and lances on the back row get promoted.
+        //   if( ( PieceInHand.value.Type == PieceType.Pawn 
+        //         || PieceInHand.value.Type == PieceType.Lance  
+        //       ) && ( 
+        //         ( Board.CurrentPlayer == 1 && Destination.value.Y == 1 )
+        //         || ( Board.CurrentPlayer == 2 && Destination.value.Y == 9 )
+        //       ) )
+        //   {
+        //     logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
+        //     return PromotePiece();
+        //   }
 
-          // Knights get promoted from back 2 rows.
-          if(  PieceInHand.value.Type == PieceType.Knight
-            && ( 
-              ( Board.CurrentPlayer == 1 && Destination.value.Y <= 2 )
-              || ( Board.CurrentPlayer == 2 && Destination.value.Y >= 8 )
-            ) )
-          {
-            logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
-            return PromotePiece();
-          }
+        //   // Knights get promoted from back 2 rows.
+        //   if(  PieceInHand.value.Type == PieceType.Knight
+        //     && ( 
+        //       ( Board.CurrentPlayer == 1 && Destination.value.Y <= 2 )
+        //       || ( Board.CurrentPlayer == 2 && Destination.value.Y >= 8 )
+        //     ) )
+        //   {
+        //     logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
+        //     return PromotePiece();
+        //   }
    
-          logPieceDetails(`Possible promotion`, PieceInHand.value);
-          // PromotionModal will display, pending input to continue workflow.
-          Phase.value = GamePhase.PromoteOption;
+        //   logPieceDetails(`Possible promotion`, PieceInHand.value);
+        //   // PromotionModal will display, pending input to continue workflow.
+        //   Phase.value = GamePhase.PromoteOption;
         
         }
       }
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
    * 
    * 
    * 
@@ -336,62 +325,39 @@ export const useGameState = defineStore("GameState", () => {
   
   //== Ancillary ===========================================================
   
-
-
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
-   * 
    * 
    * 
    * 
    */
 
-    // This may be called by PromotionModal
-    const PromotePiece =(toProceed: boolean = true)=> {
+  // This may be called by PromotionModal
+  const PromotePiece =(toProceed: boolean = true)=> {
 
-      if( toProceed && _promotable.includes(PieceInHand.value.Type)){
-        Board.Squares.map( s =>{
-          if(s.Id == Destination.value.Id){
-            logPieceDetails("Before Promote", PieceInHand.value!);
-            s.Piece = PieceInHand.value.Promote();
-            logPieceDetails("After Promote", PieceInHand.value);
-          }
-        });
-      }
-      return CompleteMove();
-    };
+    if( toProceed && _promotable.includes(PieceInHand.value.Type)){
+      Board.Squares.map( s =>{
+        if(s.Id == Destination.value.Id){
+          logPieceDetails("Before Promote", PieceInHand.value!);
+          s.Piece = PieceInHand.value.Promote();
+          logPieceDetails("After Promote", PieceInHand.value);
+        }
+      });
+    }
+    return CompleteMove();
+  };
 
-    // Note: CompleteMove could be called locally or by PromoteModal
-    const CompleteMove =()=> {
-      console.warn("CompleteMove()");
-      PieceInHand.value = new PieceModel( );
-      PieceInHand.value = new PieceModel( );
-      // PotentialDestinations.value = [""];
-      Destination.value = new SquareModel(0,0);
-  
-      if(Board.CurrentPlayer == 1){
-        Board.CurrentPlayer = 2;
-      } else {
-        Board.CurrentPlayer = 1;
-      }
-      Phase.value = GamePhase.TurnStart;
-    };
+  // Note: CompleteMove could be called locally or by PromoteModal
+  const CompleteMove =()=> {
+    console.warn("CompleteMove()");
+    PieceInHand.value = new PieceModel( );
+    Destination.value = new SquareModel(0,0);
+
+    if(Board.CurrentPlayer == 1){
+      Board.CurrentPlayer = 2;
+    } else {
+      Board.CurrentPlayer = 1;
+    }
+    Phase.value = GamePhase.TurnStart;
+  };
     
   const gameOver = (player: number) =>{
     Phase.value = GamePhase.GameOver;

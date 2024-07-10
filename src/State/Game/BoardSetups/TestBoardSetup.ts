@@ -93,16 +93,16 @@ Squares = [
     new SquareModel( 8, 4 ),
     new SquareModel( 9, 4 ),
 
-  // // Player 2: Pawn Row /==================
-  // new GameSquareModel( 1, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "9", "FU")),
-  // new GameSquareModel( 2, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "8", "FU")),
-  // new GameSquareModel( 3, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "7", "FU")),
-  // new GameSquareModel( 4, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "6", "FU")),
-  // new GameSquareModel( 5, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "5", "FU")),
-  // new GameSquareModel( 6, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "4", "FU")),
-  // new GameSquareModel( 7, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "3", "FU")),
-  // new GameSquareModel( 8, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "2", "FU")),
-  // new GameSquareModel( 9, 3, 1, new PieceModel( 2, GamePieceType.Pawn, "1", "FU")),
+  // Player 2: Pawn Row /==================
+  new SquareModel( 1, 3, 1, new PieceModel( 2, PieceType.Pawn, "9", "FU")),
+  new SquareModel( 2, 3, 1, new PieceModel( 2, PieceType.Pawn, "8", "FU")),
+  new SquareModel( 3, 3, 1, new PieceModel( 2, PieceType.Pawn, "7", "FU")),
+  new SquareModel( 4, 3, 1, new PieceModel( 2, PieceType.Pawn, "6", "FU")),
+  new SquareModel( 5, 3, 1, new PieceModel( 2, PieceType.Pawn, "5", "FU")),
+  new SquareModel( 6, 3, 1, new PieceModel( 2, PieceType.Pawn, "4", "FU")),
+  new SquareModel( 7, 3, 1, new PieceModel( 2, PieceType.Pawn, "3", "FU")),
+  new SquareModel( 8, 3, 1, new PieceModel( 2, PieceType.Pawn, "2", "FU")),
+  new SquareModel( 9, 3, 1, new PieceModel( 2, PieceType.Pawn, "1", "FU")),
   
   // // Player 2: Mid Row /==================
   //   new GameSquareModel( 1, 2, 1, new PieceModel( )),
@@ -127,15 +127,15 @@ Squares = [
   //   new GameSquareModel( 9, 1, 1, new PieceModel( 2, GamePieceType.Lance,  "Left", "KY")),
 
   // Player 2: Pawn Row (empty) /==================
-  new SquareModel( 1, 3, 1 ),
-  new SquareModel( 2, 3, 1 ),
-  new SquareModel( 3, 3, 1 ),
-  new SquareModel( 4, 3, 1 ),
-  new SquareModel( 5, 3, 1 ),
-  new SquareModel( 6, 3, 1 ),
-  new SquareModel( 7, 3, 1 ),
-  new SquareModel( 8, 3, 1 ),
-  new SquareModel( 9, 3, 1 ),
+  // new SquareModel( 1, 3, 1 ),
+  // new SquareModel( 2, 3, 1 ),
+  // new SquareModel( 3, 3, 1 ),
+  // new SquareModel( 4, 3, 1 ),
+  // new SquareModel( 5, 3, 1 ),
+  // new SquareModel( 6, 3, 1 ),
+  // new SquareModel( 7, 3, 1 ),
+  // new SquareModel( 8, 3, 1 ),
+  // new SquareModel( 9, 3, 1 ),
   
   // Player 2: Mid Row (empty) /==================
     new SquareModel( 1, 2, 1, new PieceModel( )),

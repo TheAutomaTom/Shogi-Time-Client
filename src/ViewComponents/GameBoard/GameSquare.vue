@@ -59,6 +59,8 @@ const props = defineProps({
 
 const currentClass = ref("");
 
+
+// TODO: Move to mounted()...
 const setGridPosition = () => {
   return `grid-row:${props.input.Y}; grid-column:${props.input.X};`
 };
@@ -91,16 +93,17 @@ const isValidTarget = ref({} as TargetSquare);
 watch( // Update highlight class
   () => game$.PieceInHand,
   () => {
-    isValidTarget.value = game$.PieceInHand.MovementMap.find( s => s.X == props.input.X && s.Y == props.input.Y)!
-                          || new TargetSquare(0,0,TargetStatus.Na);
-                          
+    isValidTarget.value = 
+      game$.PieceInHand.MovementMap.find( s => s.X == props.input.X && s.Y == props.input.Y)!
+      || new TargetSquare(0,0,TargetStatus.Na);
+
     switch (isValidTarget.value.Status) {
-      case TargetStatus.Open:        
+      case TargetStatus.Open:
         currentClass.value = "game-square-potential-move";
-        break;      
+        break;
         case TargetStatus.Enemy:
         currentClass.value = "game-square-potential-move";
-        break;      
+        break;
       default:
         currentClass.value = "";
         break;

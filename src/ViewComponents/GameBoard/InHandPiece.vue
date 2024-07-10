@@ -1,6 +1,6 @@
 <template>
   <button
-    :disabled="game$.CurrentPlayer != input.Player"
+    :disabled="game$.Board.CurrentPlayer != input.Player"
     class="in-hand-button"
     :class="currentClass"
     @click="handleClickPieceInHand()"
@@ -14,15 +14,15 @@
 </template>
 
 <script setup lang="ts">
-import { GamePieceModel } from "@/State/Game/GamePieceModel";
 import { GameMode } from '@/State/Game/GameMode';
+import { PieceModel } from '@/State/Game/Pieces/PieceModel';
 import { useGameState } from '@/State/GameState';
 import { ref, watch } from 'vue';
 
   const game$ = useGameState();
   const props = defineProps({
     input: {
-      type: Object as () => GamePieceModel,
+      type: Object as () => PieceModel,
       required: true
     }
   });
@@ -34,21 +34,35 @@ import { ref, watch } from 'vue';
     console.log(`props.input...\r
                 \tPlayer: ${props.input.Player}\r
                 \tId: ${props.input.Id}\r
-                \tStartingPos: ${props.input.StartingPos}\r
+                \tStartingPos: ${props.input.StartingPosition}\r
                 \tIcon: ${props.input.IconPath}\r
                 \tType: ${props.input.Type}\r
                 `);    
 
-    console.log(`${ game$.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
-    console.log(`${game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart`);
+    console.log(`${ game$.Board.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
+    console.log(`${game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart}: game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart`);
     console.log(`${game$.PieceInHand.Id != props.input.Id}: game$.PieceInHand.Id != props.input.Id`);
     
-    if( game$.CurrentPlayer == props.input.Player
-        && (game$.Mode == GameMode.TurnStart || game$.Mode == GameMode.MoveStart || game$.Mode == GameMode.DropStart)
+    if( game$.Board.CurrentPlayer == props.input.Player
+        && (game$.Phase == GameMode.TurnStart || game$.Phase == GameMode.MoveStart || game$.Phase == GameMode.DropStart)
         && (game$.PieceInHand.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
   ){
       console.log(`\r\nInHandPiece calls game$.DropBegin(${props.input})`);
-      game$.DropBegin(props.input);
+      /*
+      *
+      *
+      *
+      *
+      *
+      // game$.DropBegin(props.input);
+      *
+      *
+      *
+      *
+      *
+      *
+      *
+      */
     }
   };
 
