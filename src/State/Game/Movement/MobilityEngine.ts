@@ -48,6 +48,30 @@ export class MobilityEngine {
   };
 
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+    
+    // Make a list of columns that pawns can be placed on for each player.
+    let openFilesP1 = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
+    const hasPawnsP1 = board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn);
+    let openFilesP2 = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];    
+    const hasPawnsP2 = board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
+    if(hasPawnsP1.length + hasPawnsP2.length > 0){
+      board.Squares.forEach(s => {
+        if( s.Piece.Type == PieceType.Pawn ){
+          if( s.Piece.Player == 1) { 
+            console.log(`openFilesP1...filter BEFORE ${s.X}`);
+            console.dir(openFilesP1);
+            openFilesP1 = openFilesP1.filter(x => x != s.X); 
+            console.log(`openFilesP1...filter AFTER ${s.X}`);
+            console.dir(openFilesP1);
+          }
+          if( s.Piece.Player == 2) { 
+            // console.log(`openFilesP2...filter ${s.X}`);
+            openFilesP1 = openFilesP2.filter(x => x != s.X); 
+          }
+        }
+      });
+    }
+    
     board.CapturesP1.forEach(capture => {
       capture.MovementMap = [];
       board.Squares.forEach(s => {
@@ -59,10 +83,26 @@ export class MobilityEngine {
             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
           }
         
-          // If pawn or lance: add all but last back row
-          else if( (capture.Type == PieceType.Pawn || capture.Type == PieceType.Lance)
-                    && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+          // If lance: add all but last back row
+          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If pawn: add all but last back row and other columns with existing pawns
+          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            
+            console.log(`\topenFilesP1...1`);
+            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+              console.warn(`\r\nrebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              console.log(`\topenFilesP1...2`);
+              console.dir(openFilesP1);
+              capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+            }
+
+            if(capture.Player == 2 && openFilesP2.includes(s.X)){
+              capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+            }
+
           }
 
           // If knight: add all but back 2 rows
