@@ -26,9 +26,9 @@ export const useGameState = defineStore("GameState", () => {
   const Origin = ref({} as SquareModel);
   const Destination = ref({} as SquareModel);
 
-  const PriorPieceInHand = ref({} as PieceModel);
-  const PriorOrigin = ref({} as SquareModel);
-  const PriorDestination = ref({} as SquareModel);
+  // const PriorPieceInHand = ref({} as PieceModel);
+  // const PriorOrigin = ref({} as SquareModel);
+  // const PriorTarget = ref({} as SquareModel);
 
   const CapturesP1 = ref([] as PieceModel[]);
   const CapturesP2 = ref([] as PieceModel[]);
@@ -47,6 +47,7 @@ export const useGameState = defineStore("GameState", () => {
   const TurnStart = () => {    
     if(logGamePhase)console.log(`GameState.TurnStart()`);
     Phase.value = GamePhase.TurnStart;
+    resetSelections();
     _engine.RebuildSquares( Board );
     
   };
@@ -60,13 +61,12 @@ export const useGameState = defineStore("GameState", () => {
   // CurrentPlayer selects one of their own piece on the board.
   const MoveStart =   (piece: PieceModel) => {
     resetSelections();
-
-    Phase.value = GamePhase.MoveStart;    
+    Phase.value = GamePhase.MoveStart;
     PieceInHand.value = piece;
     Origin.value = Board.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
                         || new SquareModel(0, 0);
         
-    if(logPieceSelect) if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
+    if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
 
   };
   
@@ -74,13 +74,12 @@ export const useGameState = defineStore("GameState", () => {
   const MoveAttempt =  (square: SquareModel)=>{
 
     // Check if target is in the current selection's movement rules.
-    const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);
-    if (!target) {
-      return;
-    }
+    const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);    
+    if (!target) return;
+   
+   
 
-    Destination.value = new SquareModel(square.X, square.Y, square.PromotionZone, square.Piece);
-
+    // If so, find out how the target relates to the origin.
     switch (target.Status) {
 
       case TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
@@ -138,10 +137,11 @@ export const useGameState = defineStore("GameState", () => {
   };
 
   const MoveEnd =(square: SquareModel)=> {
-  Phase.value = GamePhase.MoveEnd;
+    Destination.value = new SquareModel(square.X, square.Y, square.PromotionZone, square.Piece);
+    Phase.value = GamePhase.MoveEnd;
           
-  // Test for promotion zone and if piece type can be promoted.
-  if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
+    // Test for promotion zone and if piece type can be promoted.
+    if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
     { 
       return CompleteMove();
     }
@@ -379,19 +379,25 @@ export const useGameState = defineStore("GameState", () => {
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
     console.warn("CompleteMove()");
-    
-    PriorPieceInHand.value = PieceInHand.value;
-    PriorOrigin.value = Origin.value;
-    PriorDestination.value = Destination.value;
-    
-    PieceInHand.value = new PieceModel( );
-    Origin.value = new SquareModel(0,0);
-    Destination.value = new SquareModel(0,0);
+    resetSelections();
 
     _engine.RebuildSquares( Board );
 
     switchCurrentPlayer();
     Phase.value = GamePhase.TurnStart;
+  };
+
+  
+  
+  const resetSelections = () =>{
+    // PriorPieceInHand.value = PieceInHand.value;
+    // PriorOrigin.value = Origin.value;
+    // PriorTarget.value = Destination.value;
+    
+    PieceInHand.value = new PieceModel( );
+    Origin.value = new SquareModel(0,0);
+    Destination.value = new SquareModel(0,0);
+
   };
 
   const switchCurrentPlayer =()=> {
@@ -415,9 +421,9 @@ export const useGameState = defineStore("GameState", () => {
       \tIcon: ${input.Icon}\r
       \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
-      \tMovementMap: ...
+      \tMovementMap: ${input.MovementMap.length}
       `);
-      console.dir(input.MovementMap);
+      if(input.MovementMap.length > 0) console.dir(input.MovementMap);
   };
 
   return {
@@ -434,9 +440,9 @@ export const useGameState = defineStore("GameState", () => {
     CapturesP2,
     // DropBegin,
     // DropAttempt,
-    PriorPieceInHand,
-    PriorOrigin,
-    PriorDestination
+    // PriorPieceInHand,
+    // PriorOrigin,
+    // PriorTarget
 
   };
 });
