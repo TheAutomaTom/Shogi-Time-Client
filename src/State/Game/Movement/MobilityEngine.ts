@@ -7,10 +7,10 @@ import { TargetSquare } from "./TargetSquare";
 
 export class MobilityEngine {
   
-  logEnabled = false;
+  logEnabled = true;
 
-  Rebuild = ( board: BoardModel ): SquareModel[] =>{
-    if(this.logEnabled){ console.error(`MobilityEngine.Rebuild()`); }
+  RebuildSquares = ( board: BoardModel ): SquareModel[] =>{
+    if(this.logEnabled){ console.error(`MobilityEngine.RebuildSquares()`); }
 
     // First iterations establishes all possible move range and tracks obstacles.
     board.Squares.forEach( square => {

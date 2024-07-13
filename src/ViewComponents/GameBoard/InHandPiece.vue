@@ -29,7 +29,7 @@ import { ref, watch } from 'vue';
 
   const currentClass = ref([""]);
 
-  const handleClickPieceInHand = async () => {
+  const handleClickPieceInHand = () => {
     console.log("\r\nInHandPiece.handleClickPieceInHand();");
     console.log(`props.input...\r
                 \tPlayer: ${props.input.Player}\r

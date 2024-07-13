@@ -42,7 +42,7 @@
     }
   );
 
-  const handleClickPiece = async () => {
+  const handleClickPiece = () => {
     // console.log(`GamePiece.handleClickPiece `)
     // game$.logPieceDetails("GamePiece.handleClickPiece", props.input);
 

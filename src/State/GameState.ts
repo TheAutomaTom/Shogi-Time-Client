@@ -8,13 +8,14 @@ import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
+import { TargetSquare } from "./Game/Movement/TargetSquare";
 
 export const useGameState = defineStore("GameState", () => {
   
   const logPieceSelect = true;
   const logGamePhase = false;
 
-  const Phase = ref(GamePhase.TurnStart);
+  const Phase = ref(GamePhase.LoadingBoard);
   const Board = reactive({  Id:"111-zzz",
                        CurrentPlayer:1,
                       //  Squares: new DefaultNewGameLayout().Squares
@@ -45,22 +46,23 @@ export const useGameState = defineStore("GameState", () => {
 
   const TurnStart = () => {    
     if(logGamePhase)console.log(`GameState.TurnStart()`);
-    _engine.Rebuild( Board );
+    Phase.value = GamePhase.TurnStart;
+    _engine.RebuildSquares( Board );
     
   };
   
-  const resetSelections = async () =>{
+  const resetSelections = () =>{
     PieceInHand.value = new PieceModel();
     Origin.value = new SquareModel(0, 0);
 
   };
   
   // CurrentPlayer selects one of their own piece on the board.
-  const MoveStart = async  (piece: PieceModel) => {
+  const MoveStart =   (piece: PieceModel) => {
     resetSelections();
 
     Phase.value = GamePhase.MoveStart;    
-    PieceInHand.value = piece;    
+    PieceInHand.value = piece;
     Origin.value = Board.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
                         || new SquareModel(0, 0);
         
@@ -69,7 +71,7 @@ export const useGameState = defineStore("GameState", () => {
   };
   
   
-  const MoveAttempt = async (square: SquareModel)=>{
+  const MoveAttempt =  (square: SquareModel)=>{
 
     // Check if target is in the current selection's movement rules.
     const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);
@@ -212,7 +214,7 @@ export const useGameState = defineStore("GameState", () => {
         // s.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
 
         // // Remove the piece from the origin.
-        // MoveOrigin.value.Piece = new PieceModel();
+        // Origin.value.Piece = new PieceModel();
 
         // // Test for promotion zone and if piece type can be promoted.
         // if( s.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
@@ -270,7 +272,7 @@ export const useGameState = defineStore("GameState", () => {
     // if(Board.CurrentPlayer == 1){
       // GameBoardModel.value.Squares.forEach( capture => {
       //   if(capture.Piece.Id == piece.Id){
-      //     // MoveOrigin.value = capture;
+      //     // Origin.value = capture;
 
       //   }
       // });
@@ -310,10 +312,10 @@ export const useGameState = defineStore("GameState", () => {
       });
   };
 
-  const DropAttempt = async (square: SquareModel) =>{
+  const DropAttempt =  (square: SquareModel) =>{
     
     // Find the square that was clicked...
-    Board..Squares.map( async s =>{
+    Board..Squares.map(  s =>{
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
 
@@ -386,7 +388,7 @@ export const useGameState = defineStore("GameState", () => {
     Origin.value = new SquareModel(0,0);
     Destination.value = new SquareModel(0,0);
 
-    _engine.Rebuild( Board );
+    _engine.RebuildSquares( Board );
 
     switchCurrentPlayer();
     Phase.value = GamePhase.TurnStart;
@@ -424,7 +426,7 @@ export const useGameState = defineStore("GameState", () => {
     TurnStart,
     PieceInHand,
     MoveStart,
-    MoveOrigin: Origin,
+    Origin,
     MoveAttempt,
     Destination,
     PromotePiece,

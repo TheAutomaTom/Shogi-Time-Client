@@ -127,7 +127,7 @@ const handleClickSquare = () => {
 
   if( isValidTarget.value.Status != TargetStatus.Na ){
     
-    if( game$.MoveOrigin.Id != props.input.Id ){
+    if( game$.Origin.Id != props.input.Id ){
       switch (game$.Phase) {
         case GamePhase.MoveStart:
           game$.MoveAttempt(props.input);
