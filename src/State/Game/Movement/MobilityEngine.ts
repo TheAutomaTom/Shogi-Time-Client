@@ -132,7 +132,7 @@ export class MobilityEngine {
           let y = originY + i * facing 
           
           const s = this.evaluateVector( board, x, y, isLogSubject);
-          if(s.Status != TargetStatus.Open && s.Status != TargetStatus.Na && s.Status != TargetStatus.OutOfRange){
+          if(s.Status != TargetStatus.OutOfRange){
             mobility.N.push(s);
           }
         }
@@ -145,8 +145,8 @@ export class MobilityEngine {
         for (let i = 1; i <= rangeSet.S; i++) {
           let x = originX;
           let y = originY - i * facing;
-          const s = this.evaluateVector( board, x, y, isLogSubject);        
-          if(s.Status != TargetStatus.Open || TargetStatus.Na){
+          const s = this.evaluateVector( board, x, y, isLogSubject);      
+          if(s.Status != TargetStatus.OutOfRange){
             mobility.S.push(s);
           }
         }
@@ -160,7 +160,7 @@ export class MobilityEngine {
             let x = originX - i * facing;
             let y = originY;
             const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.Open || TargetStatus.Na){
+            if(s.Status != TargetStatus.OutOfRange){
               mobility.E.push(s);
             }
         }
@@ -174,7 +174,7 @@ export class MobilityEngine {
             let x = originX + i * facing;
             let y = originY;
             const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.Open || TargetStatus.Na){
+            if(s.Status != TargetStatus.OutOfRange){
               mobility.W.push(s);
             }
         }
@@ -188,7 +188,7 @@ export class MobilityEngine {
           let x = originX + i * facing;
           let y = originY + i * facing;
           const s = this.evaluateVector( board, x, y, isLogSubject);
-          if(s.Status != TargetStatus.Open || TargetStatus.Na){
+          if(s.Status != TargetStatus.OutOfRange){
             mobility.NW.push(s);
           }
         }
@@ -202,7 +202,7 @@ export class MobilityEngine {
             let x = originX - i * facing;
             let y = originY + i * facing;
             const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.Open || TargetStatus.Na){
+            if(s.Status != TargetStatus.OutOfRange){
               mobility.NE.push(s);
             }
         }
@@ -216,7 +216,7 @@ export class MobilityEngine {
             let x = originX - i * facing;
             let y = originY - i * facing; 
             const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.Open || TargetStatus.Na){
+            if(s.Status != TargetStatus.OutOfRange){
               mobility.SE.push(s);
             }
         }
@@ -230,7 +230,7 @@ export class MobilityEngine {
           let x = originX + i * facing;
           let y = originY - i * facing; 
           const s = this.evaluateVector( board, x, y, isLogSubject);
-          if(s.Status != TargetStatus.Open || TargetStatus.Na){
+          if(s.Status != TargetStatus.OutOfRange){
             mobility.SW.push(s);
           }
         }
@@ -247,8 +247,8 @@ export class MobilityEngine {
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
           board.Squares.forEach( square => {
             if(square.X == targetX && square.Y == targetY){
-              const s = this.evaluateVector( board, targetX, targetY );              
-              if(s.Status != TargetStatus.Open || TargetStatus.Na){
+              const s = this.evaluateVector( board, targetX, targetY );
+              if(s.Status != TargetStatus.OutOfRange){
                 mobility.N.push(s);
               }
             }
@@ -261,8 +261,8 @@ export class MobilityEngine {
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
           board.Squares.forEach( square => {
             if(square.X == targetX && square.Y == targetY){
-              const s = this.evaluateVector( board, targetX, targetY );              
-              if(s.Status != TargetStatus.Open || TargetStatus.Na){
+              const s = this.evaluateVector( board, targetX, targetY );
+              if(s.Status != TargetStatus.OutOfRange){
                 mobility.N.push(s);
               }
             }
