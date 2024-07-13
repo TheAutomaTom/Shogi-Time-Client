@@ -68,6 +68,9 @@
     
   }
   .game-piece-move-start{
-    background-color: green;
+    // background-color: green;
+    box-sizing: border-box;
+    border: 1px dashed yellow;
+    
   }
 </style>

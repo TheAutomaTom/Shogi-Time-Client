@@ -26,10 +26,6 @@ export const useGameState = defineStore("GameState", () => {
   const Origin = ref({} as SquareModel);
   const Destination = ref({} as SquareModel);
 
-  // const PriorPieceInHand = ref({} as PieceModel);
-  // const PriorOrigin = ref({} as SquareModel);
-  // const PriorTarget = ref({} as SquareModel);
-
   const CapturesP1 = ref([] as PieceModel[]);
   const CapturesP2 = ref([] as PieceModel[]);
 
@@ -44,7 +40,7 @@ export const useGameState = defineStore("GameState", () => {
     PieceType.Pawn
   ];
 
-  const TurnStart = () => {    
+  const TurnStart = () => {
     if(logGamePhase)console.log(`GameState.TurnStart()`);
     Phase.value = GamePhase.TurnStart;
     resetSelections();
@@ -56,7 +52,18 @@ export const useGameState = defineStore("GameState", () => {
   const MoveStart =   (piece: PieceModel) => {
     resetSelections();
     Phase.value = GamePhase.MoveStart;
-    PieceInHand.value = piece;
+    
+    if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} piece`, piece);
+
+    PieceInHand.value = new PieceModel(
+      piece.Player,
+      piece.Type,
+      piece.StartingPosition,
+      piece.Icon,
+      piece.IsFacingDefault,
+      piece.MovementMap
+    );
+    
     Origin.value = Board.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
                         || new SquareModel(0, 0);
         
@@ -69,8 +76,7 @@ export const useGameState = defineStore("GameState", () => {
 
     // Check if target is in the current selection's movement rules.
     const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);    
-    if (!target) return;
-   
+    if (!target) return;   
    
 
     // If so, find out how the target relates to the origin.
@@ -124,9 +130,6 @@ export const useGameState = defineStore("GameState", () => {
       default:
         break;
     }
-
-
-    
     
   };
 
@@ -345,7 +348,6 @@ export const useGameState = defineStore("GameState", () => {
 
 
   
-  //== Ancillary ===========================================================
   
    * 
    * 
@@ -390,7 +392,7 @@ export const useGameState = defineStore("GameState", () => {
     
     PieceInHand.value = new PieceModel( );
     Origin.value = new SquareModel(0,0);
-    Destination.value = new SquareModel(0,0);
+    // Destination.value = new SquareModel(0,0);
 
   };
 

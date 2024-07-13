@@ -91,7 +91,7 @@ const getNotationStyle = (xy: string): string =>{
 const isValidTarget = ref({} as TargetSquare);
 
 watch( // Update highlight class
-  () => game$.PieceInHand,
+  () => game$.PieceInHand.MovementMap,
   () => {
     isValidTarget.value = 
       game$.PieceInHand.MovementMap.find( s => s.X == props.input.X && s.Y == props.input.Y)!
@@ -100,14 +100,17 @@ watch( // Update highlight class
     switch (isValidTarget.value.Status) {
       case TargetStatus.Open:
         currentClass.value = "game-square-potential-move";
+        // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
-        case TargetStatus.Enemy:
+      case TargetStatus.Enemy:
         currentClass.value = "game-square-potential-move";
+        // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
       default:
         currentClass.value = "";
+        // console.log(`${props.input.Id}: "" (watch MovementMap)`);
         break;
-    }
+      }
   }
 );
 
@@ -117,13 +120,15 @@ watch(
     if ( game$.Phase == GamePhase.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
       currentClass.value = "game-piece-promotion-option";
+      console.log(`${props.input.Id}: ${currentClass.value}`);
     } else {
       currentClass.value = "";
+      console.log(`${props.input.Id}: "" (watch Destination)`);
     }    
   }
 );
 
-const handleClickSquare = () => {  
+const handleClickSquare = () => {
 
   if( isValidTarget.value.Status != TargetStatus.Na ){
     

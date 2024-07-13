@@ -7,7 +7,7 @@ import { TargetSquare } from "./TargetSquare";
 
 export class MobilityEngine {
   
-  logSubject = {enabled: true, x:8, y:8};
+  logSubject = {enabled: false, x:8, y:8};
 
   RebuildSquares = ( board: BoardModel ): SquareModel[] =>{
     if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
@@ -30,49 +30,25 @@ export class MobilityEngine {
     //   so squares know where to highlight valid moves.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
+        square.Piece.MovementMap = [];
         square.Piece.MovementMap.push( ...this.FlattenMap(square) );
       }
     });
-    
+
     return board.Squares;
   };
 
   
   FlattenMap = (square: SquareModel): TargetSquare[] => {
-    let map = [] as TargetSquare[];
-    
-    square.Piece.VectorSet.N.forEach(target => {
-      map.push(target);
-    });    
-  
-    square.Piece.VectorSet.S.forEach(target => {
-      map.push(target);
-    });
-  
-    square.Piece.VectorSet.E.forEach(target => {
-      map.push(target);
-    });
-    
-    square.Piece.VectorSet.W.forEach(target => {
-      map.push(target);
-    });
-    
-    square.Piece.VectorSet.NE.forEach(target => {
-      map.push(target);
-    });
-    
-    square.Piece.VectorSet.NW.forEach(target => {
-      map.push(target);
-    });
-    
-    square.Piece.VectorSet.SE.forEach(target => {
-      map.push(target);
-    });
-    
-    square.Piece.VectorSet.SW.forEach(target => {
-      map.push(target);
-    });
-    
+    let map = [] as TargetSquare[];    
+    square.Piece.VectorSet.N.forEach(target  => { map.push(target); });
+    square.Piece.VectorSet.S.forEach(target  => { map.push(target); });
+    square.Piece.VectorSet.E.forEach(target  => { map.push(target); });
+    square.Piece.VectorSet.W.forEach(target  => { map.push(target); });
+    square.Piece.VectorSet.NE.forEach(target => { map.push(target); });
+    square.Piece.VectorSet.NW.forEach(target => { map.push(target); });
+    square.Piece.VectorSet.SE.forEach(target => { map.push(target); });
+    square.Piece.VectorSet.SW.forEach(target => { map.push(target); });
     return map;
   };
   
@@ -117,161 +93,161 @@ export class MobilityEngine {
     board: BoardModel, originX: number, originY: number, rangeSet: PieceRangeSet, facing: number
   ): VectorSet => {
     
-      let mobility = {} as VectorSet;
-      const isLogSubject = this.logSubject.enabled && originX == this.logSubject.x && originY == this.logSubject.y;
+    let mobility = {} as VectorSet;
+    const isLogSubject = this.logSubject.enabled && originX == this.logSubject.x && originY == this.logSubject.y;
 
 
-      // Process North ===============================================
-      mobility.N=[];
-      if(rangeSet.N > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range N  ${rangeSet.N}`); }
+    // Process North ===============================================
+    mobility.N=[];
+    if(rangeSet.N > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range N  ${rangeSet.N}`); }
 
-        // Iterate each coordinate along one vector (ex: north)...
-        for (let i = 1; i <= rangeSet.N; i++) {
-          let x = originX;
-          let y = originY + i * facing 
-          
+      // Iterate each coordinate along one vector (ex: north)...
+      for (let i = 1; i <= rangeSet.N; i++) {
+        let x = originX;
+        let y = originY + i * facing 
+        
+        const s = this.evaluateVector( board, x, y, isLogSubject);
+        if(s.Status != TargetStatus.OutOfRange){
+          mobility.N.push(s);
+        }
+      }
+    }
+    
+    // Process South ===============================================
+    mobility.S=[];
+    if(rangeSet.S > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range S  ${rangeSet.S}`); }
+      for (let i = 1; i <= rangeSet.S; i++) {
+        let x = originX;
+        let y = originY - i * facing;
+        const s = this.evaluateVector( board, x, y, isLogSubject);      
+        if(s.Status != TargetStatus.OutOfRange){
+          mobility.S.push(s);
+        }
+      }
+    }
+
+    // Process East ================================================
+    mobility.E=[];
+    if(rangeSet.E > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range E  ${rangeSet.E}`); }
+    for (let i = 1; i <= rangeSet.E; i++) {    
+          let x = originX - i * facing;
+          let y = originY;
           const s = this.evaluateVector( board, x, y, isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
-            mobility.N.push(s);
+            mobility.E.push(s);
           }
-        }
       }
+    }
       
-      // Process South ===============================================
-      mobility.S=[];
-      if(rangeSet.S > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range S  ${rangeSet.S}`); }
-        for (let i = 1; i <= rangeSet.S; i++) {
-          let x = originX;
-          let y = originY - i * facing;
-          const s = this.evaluateVector( board, x, y, isLogSubject);      
-          if(s.Status != TargetStatus.OutOfRange){
-            mobility.S.push(s);
-          }
-        }
-      }
-
-      // Process East ================================================
-      mobility.E=[];
-      if(rangeSet.E > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range E  ${rangeSet.E}`); }
-      for (let i = 1; i <= rangeSet.E; i++) {    
-            let x = originX - i * facing;
-            let y = originY;
-            const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.E.push(s);
-            }
-        }
-      }
-        
-      // Process West ================================================
-      mobility.W=[];
-      if(rangeSet.W > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range W  ${rangeSet.W}`); }
-        for (let i = 1; i <= rangeSet.W; i++) { 
-            let x = originX + i * facing;
-            let y = originY;
-            const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.W.push(s);
-            }
-        }
-      }
-        
-      // Process North-West ==========================================
-      mobility.NW=[];
-      if(rangeSet.NW > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range NW ${rangeSet.NW}`); }
-      for (let i = 1; i <= rangeSet.NW; i++) {  
+    // Process West ================================================
+    mobility.W=[];
+    if(rangeSet.W > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range W  ${rangeSet.W}`); }
+      for (let i = 1; i <= rangeSet.W; i++) { 
           let x = originX + i * facing;
+          let y = originY;
+          const s = this.evaluateVector( board, x, y, isLogSubject);
+          if(s.Status != TargetStatus.OutOfRange){
+            mobility.W.push(s);
+          }
+      }
+    }
+      
+    // Process North-West ==========================================
+    mobility.NW=[];
+    if(rangeSet.NW > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range NW ${rangeSet.NW}`); }
+    for (let i = 1; i <= rangeSet.NW; i++) {  
+        let x = originX + i * facing;
+        let y = originY + i * facing;
+        const s = this.evaluateVector( board, x, y, isLogSubject);
+        if(s.Status != TargetStatus.OutOfRange){
+          mobility.NW.push(s);
+        }
+      }
+    }
+      
+    // Process North-East ==========================================
+    mobility.NE=[];
+    if(rangeSet.NE > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range NE ${rangeSet.NE}`); }
+      for (let i = 1; i <= rangeSet.NE; i++) {    
+          let x = originX - i * facing;
           let y = originY + i * facing;
           const s = this.evaluateVector( board, x, y, isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
-            mobility.NW.push(s);
+            mobility.NE.push(s);
           }
-        }
       }
+    }
         
-      // Process North-East ==========================================
-      mobility.NE=[];
-      if(rangeSet.NE > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range NE ${rangeSet.NE}`); }
-        for (let i = 1; i <= rangeSet.NE; i++) {    
-            let x = originX - i * facing;
-            let y = originY + i * facing;
-            const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.NE.push(s);
-            }
-        }
-      }
-          
-      // Process South-East =========================================
-      mobility.SE=[];
-      if(rangeSet.SE > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range SE ${rangeSet.SE}`); }
-        for (let i = 1; i <= rangeSet.SE; i++) {   
-            let x = originX - i * facing;
-            let y = originY - i * facing; 
-            const s = this.evaluateVector( board, x, y, isLogSubject);
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.SE.push(s);
-            }
-        }
-      }
-        
-      // Process South-West ==========================================
-      mobility.SW=[];
-      if(rangeSet.SW > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range SW ${rangeSet.SW}`); }
-        for (let i = 1; i <= rangeSet.SW; i++) {  
-          let x = originX + i * facing;
+    // Process South-East =========================================
+    mobility.SE=[];
+    if(rangeSet.SE > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range SE ${rangeSet.SE}`); }
+      for (let i = 1; i <= rangeSet.SE; i++) {   
+          let x = originX - i * facing;
           let y = originY - i * facing; 
           const s = this.evaluateVector( board, x, y, isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
-            mobility.SW.push(s);
+            mobility.SE.push(s);
           }
-        }
       }
-          
-      // Process Knight ==============================================
-      mobility.K=[];
-      if(rangeSet.K > 0){
-        if(isLogSubject){ console.log(`${originX},${originY}: Range K  ${rangeSet.K}`); }
-        
-          let targetX = originX + 1 * facing;
-          let targetY = originY + 2 * facing;
-
-        if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-          board.Squares.forEach( square => {
-            if(square.X == targetX && square.Y == targetY){
-              const s = this.evaluateVector( board, targetX, targetY );
-              if(s.Status != TargetStatus.OutOfRange){
-                mobility.N.push(s);
-              }
-            }
-          });
-        }
-
-        targetX = originX + -1 * facing;
-        targetY = originY + 2 * facing;
-
-        if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-          board.Squares.forEach( square => {
-            if(square.X == targetX && square.Y == targetY){
-              const s = this.evaluateVector( board, targetX, targetY );
-              if(s.Status != TargetStatus.OutOfRange){
-                mobility.N.push(s);
-              }
-            }
-          });
-        }
-      }
+    }
       
-      return mobility;
-    };
-  }
+    // Process South-West ==========================================
+    mobility.SW=[];
+    if(rangeSet.SW > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range SW ${rangeSet.SW}`); }
+      for (let i = 1; i <= rangeSet.SW; i++) {  
+        let x = originX + i * facing;
+        let y = originY - i * facing; 
+        const s = this.evaluateVector( board, x, y, isLogSubject);
+        if(s.Status != TargetStatus.OutOfRange){
+          mobility.SW.push(s);
+        }
+      }
+    }
+        
+    // Process Knight ==============================================
+    mobility.K=[];
+    if(rangeSet.K > 0){
+      if(isLogSubject){ console.log(`${originX},${originY}: Range K  ${rangeSet.K}`); }
+      
+        let targetX = originX + 1 * facing;
+        let targetY = originY + 2 * facing;
+
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
+        board.Squares.forEach( square => {
+          if(square.X == targetX && square.Y == targetY){
+            const s = this.evaluateVector( board, targetX, targetY );
+            if(s.Status != TargetStatus.OutOfRange){
+              mobility.N.push(s);
+            }
+          }
+        });
+      }
+
+      targetX = originX + -1 * facing;
+      targetY = originY + 2 * facing;
+
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
+        board.Squares.forEach( square => {
+          if(square.X == targetX && square.Y == targetY){
+            const s = this.evaluateVector( board, targetX, targetY );
+            if(s.Status != TargetStatus.OutOfRange){
+              mobility.N.push(s);
+            }
+          }
+        });
+      }
+    }
+    
+    return mobility;
+  };
+}
 
 

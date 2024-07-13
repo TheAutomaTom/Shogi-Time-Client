@@ -16,8 +16,7 @@ export class PieceModel {
   VectorSet: VectorSet;
   MovementMap: TargetSquare[];
 
-
-  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
+  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true, movementMap: TargetSquare[] = []) {
     
     this.Type = type;
     this.StartingPosition = startingPos;
@@ -27,6 +26,9 @@ export class PieceModel {
 
     this.IsFacingDefault = isFacingDefault;
     this.Range = this.setRange();
+    
+    this.MovementMap = [];
+    movementMap.forEach(ts => { this.MovementMap.push(ts); });
 
     this.VectorSet = {
       N:  [],
@@ -39,7 +41,8 @@ export class PieceModel {
       SE: [],
       K:  [],
     }
-    this.MovementMap = [];
+
+
   };
 
   public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
