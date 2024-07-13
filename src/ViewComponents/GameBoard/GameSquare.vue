@@ -120,10 +120,10 @@ watch(
     if ( game$.Phase == GamePhase.PromoteOption && game$.Destination.Id == props.input.Id
     ) {
       currentClass.value = "game-piece-promotion-option";
-      console.log(`${props.input.Id}: ${currentClass.value}`);
+      // console.log(`${props.input.Id}: ${currentClass.value}`);
     } else {
       currentClass.value = "";
-      console.log(`${props.input.Id}: "" (watch Destination)`);
+      // console.log(`${props.input.Id}: "" (watch Destination)`);
     }    
   }
 );
@@ -184,7 +184,8 @@ const handleClickSquare = () => {
   }
 
   .game-square-potential-move{
-    background-color: #431706;
+    // background-color: #431706;
+    background-color: #ccc927;
   }
   .game-piece-promotion-option{
     background-color: lightseagreen;

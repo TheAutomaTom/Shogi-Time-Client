@@ -7,10 +7,13 @@ import { TargetSquare } from "./TargetSquare";
 
 export class MobilityEngine {
   
-  logSubject = {enabled: false, x:8, y:8};
+  logSubject = {enabled: false, x:7, y:3};
 
   RebuildSquares = ( board: BoardModel ): SquareModel[] =>{
-    if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
+    if(this.logSubject.enabled){ 
+      console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); 
+      console.log(`CurrentPlayer: ${board.CurrentPlayer}`);
+    }
 
     // First iteration builds vector arrays evaluating each pieces' 
     //   complete movement range and determines targets' relation to origin.
@@ -78,6 +81,7 @@ export class MobilityEngine {
 
         case board.CurrentPlayer:
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Ally}`);}
+          if(isLogSubject)if(s.X == 7 && s.Y == 3) console.warn(`${s.X}${s.Y}: ${TargetStatus.Ally}`);
           return new TargetSquare(s.X, s.Y, TargetStatus.Ally );
       
         default: 
