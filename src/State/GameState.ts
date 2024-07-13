@@ -7,7 +7,7 @@ import { SquareModel } from "@/State/Game/SquareModel";
 import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -15,14 +15,14 @@ export const useGameState = defineStore("GameState", () => {
   const logGamePhase = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
-  const Board = reactive( new BoardModel(
-                                "Test-123", 
-                                1,
-                                // new NewBoardSetup().Squares,
-                                new TestBoardSetup().Squares,
-                                [],
-                                []
-                        ));
+  const Board = ref( 
+    new BoardModel( "Test-123", 
+                    1,
+                    // new NewBoardSetup().Squares,
+                    new TestBoardSetup().Squares,
+                    [],
+                    []
+                  ));
 
   const PieceInHand = ref({} as PieceModel);
   const Origin = ref({} as SquareModel);
@@ -43,7 +43,7 @@ export const useGameState = defineStore("GameState", () => {
     if(logGamePhase)console.log(`GameState.TurnStart()`);
     Phase.value = GamePhase.TurnStart;
     resetSelections();
-    _engine.RebuildSquares( Board );
+    _engine.rebuildSquares( Board.value );
     
   };
   
@@ -63,7 +63,7 @@ export const useGameState = defineStore("GameState", () => {
       piece.MovementMap
     );
     
-    Origin.value = Board.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
+    Origin.value = Board.value.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
                         || new SquareModel(0, 0);
         
     if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
@@ -92,7 +92,7 @@ export const useGameState = defineStore("GameState", () => {
 
       case TargetStatus.Open:
         // Create the moved piece in that spot.
-        square.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
+        square.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
         
         // Remove the piece from the origin.
         Origin.value.Piece = new PieceModel();
@@ -107,20 +107,20 @@ export const useGameState = defineStore("GameState", () => {
       case TargetStatus.Enemy: // Kit it! 
 
         if( square.Piece.Type == PieceType.KingChallenger || square.Piece.Type == PieceType.KingVictor ){
-          return gameOver(Board.CurrentPlayer);
+          return gameOver(Board.value.CurrentPlayer);
         }
 
-        let capturedPiece = new PieceModel( Board.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.C${Board.CurrentPlayer}`, square.Piece.Icon, true );
+        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.C${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
-        // if(Board.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
-        // if(Board.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
-        if(Board.CurrentPlayer == 1){ Board.CapturesP1.push(capturedPiece); }
-        if(Board.CurrentPlayer == 2){ Board.CapturesP2.push(capturedPiece); }
+        // if(Board.value.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
+        // if(Board.value.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
+        if(Board.value.CurrentPlayer == 1){ Board.value.CapturesP1.push(capturedPiece); }
+        if(Board.value.CurrentPlayer == 2){ Board.value.CapturesP2.push(capturedPiece); }
 
         // Create the moved piece in that spot.
-        square.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
+        square.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
 
         // Remove the moved piece from its origin.
         Origin.value.Piece = new PieceModel();
@@ -155,8 +155,8 @@ export const useGameState = defineStore("GameState", () => {
       if( ( PieceInHand.value.Type == PieceType.Pawn 
             || PieceInHand.value.Type == PieceType.Lance  
           ) && ( 
-            ( Board.CurrentPlayer == 1 && Destination.value.Y == 1 )
-            || ( Board.CurrentPlayer == 2 && Destination.value.Y == 9 )
+            ( Board.value.CurrentPlayer == 1 && Destination.value.Y == 1 )
+            || ( Board.value.CurrentPlayer == 2 && Destination.value.Y == 9 )
           ) )
       {
         if(logPieceSelect) logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
@@ -166,8 +166,8 @@ export const useGameState = defineStore("GameState", () => {
       // Second, knights get promoted from back 2 rows.
       if(  PieceInHand.value.Type == PieceType.Knight
         && ( 
-          ( Board.CurrentPlayer == 1 && Destination.value.Y <= 2 )
-          || ( Board.CurrentPlayer == 2 && Destination.value.Y >= 8 )
+          ( Board.value.CurrentPlayer == 1 && Destination.value.Y <= 2 )
+          || ( Board.value.CurrentPlayer == 2 && Destination.value.Y >= 8 )
         ) )
       {
         if(logPieceSelect) logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
@@ -181,6 +181,7 @@ export const useGameState = defineStore("GameState", () => {
     }
     
   };
+
 
   /*******************************************************************************************
    * 
@@ -196,23 +197,23 @@ export const useGameState = defineStore("GameState", () => {
         if(s.Piece.Player != 0){
 
           if(s.Piece.Type == PieceType.KingChallenger || s.Piece.Type == PieceType.KingVictor){
-            return gameOver(Board.CurrentPlayer);
+            return gameOver(Board.value.CurrentPlayer);
           }
           
           // let capturedPiece = new PieceModel(
-          //   Board.CurrentPlayer, s.Piece.Type, `${s.Piece.StartingPosition}.C${Board.CurrentPlayer}`, s.Piece.Icon, true);
+          //   Board.value.CurrentPlayer, s.Piece.Type, `${s.Piece.StartingPosition}.C${Board.value.CurrentPlayer}`, s.Piece.Icon, true);
           
           //   if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
           //   capturedPiece.Demote();
           //   if(logPieceSelect) logPieceDetails("capturedPiece.Demote", capturedPiece);
 
-          // if(Board.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
-          // if(Board.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
+          // if(Board.value.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
+          // if(Board.value.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
 
         }
 
         // // Create the moved piece in that spot.
-        // s.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
+        // s.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
 
         // // Remove the piece from the origin.
         // Origin.value.Piece = new PieceModel();
@@ -231,8 +232,8 @@ export const useGameState = defineStore("GameState", () => {
         //   if( ( PieceInHand.value.Type == PieceType.Pawn 
         //         || PieceInHand.value.Type == PieceType.Lance  
         //       ) && ( 
-        //         ( Board.CurrentPlayer == 1 && Destination.value.Y == 1 )
-        //         || ( Board.CurrentPlayer == 2 && Destination.value.Y == 9 )
+        //         ( Board.value.CurrentPlayer == 1 && Destination.value.Y == 1 )
+        //         || ( Board.value.CurrentPlayer == 2 && Destination.value.Y == 9 )
         //       ) )
         //   {
         //     if(logPieceSelect) logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
@@ -242,8 +243,8 @@ export const useGameState = defineStore("GameState", () => {
         //   // Knights get promoted from back 2 rows.
         //   if(  PieceInHand.value.Type == PieceType.Knight
         //     && ( 
-        //       ( Board.CurrentPlayer == 1 && Destination.value.Y <= 2 )
-        //       || ( Board.CurrentPlayer == 2 && Destination.value.Y >= 8 )
+        //       ( Board.value.CurrentPlayer == 1 && Destination.value.Y <= 2 )
+        //       || ( Board.value.CurrentPlayer == 2 && Destination.value.Y >= 8 )
         //     ) )
         //   {
         //     if(logPieceSelect) logPieceDetails(`Mandatory promotion on row ${Destination.value.Y}`, PieceInHand.value);
@@ -262,61 +263,10 @@ export const useGameState = defineStore("GameState", () => {
    * 
 
 
-  const DropBegin =(piece: PieceModel)=> {    
-    if(logPieceSelect) logPieceDetails("DropBegin(piece)", piece);    
-    Phase.value = GamePhase.DropStart;
-    
-    // Bookmark the piece in focus.
-    PieceInHand.value = piece;
-
-    // Find the starting square based on the id of the piece it contains.
-    // if(Board.CurrentPlayer == 1){
-      // GameBoardModel.value.Squares.forEach( capture => {
-      //   if(capture.Piece.Id == piece.Id){
-      //     // Origin.value = capture;
-
-      //   }
-      // });
-
-      // Highlight potential move squares
-      PotentialTargets.value = [""]; // reset prior
-      
-      // const facing = setPieceIsFacing(piece.IsFacingDefault);
-      
-      Board..Squares.map( s =>{
-        // Highlight potential move squares
-        if(s.Piece.Player == 0){
-
-          // If not pawn, lance, or night: add whole board
-          if( PieceInHand.value.Type != PieceType.Pawn 
-              && PieceInHand.value.Type != PieceType.Lance 
-              && PieceInHand.value.Type != PieceType.Knight){
-              
-              PotentialTargets.value.push(s.Id);
-            }
-            
-          // If pawn or lance: add all but back row
-          else if( (PieceInHand.value.Type == PieceType.Pawn || PieceInHand.value.Type == PieceType.Lance)
-                    && ((Board.CurrentPlayer == 1 &&  s.Y != 1) || (Board.CurrentPlayer == 2 && s.Y != 9))  )
-          {
-            PotentialTargets.value.push(s.Id);
-          }
-            
-          // If knight: add all but back 2 rows
-          else if( (PieceInHand.value.Type == PieceType.Knight)
-                    && ((Board.CurrentPlayer == 1 &&  (s.Y > 2)) || (Board.CurrentPlayer == 2 && (s.Y < 8)))  )
-          {
-            PotentialTargets.value.push(s.Id);
-          }
-          
-        }
-      });
-  };
-
   const DropAttempt =  (square: SquareModel) =>{
     
     // Find the square that was clicked...
-    Board..Squares.map(  s =>{
+    Board.value..Squares.map(  s =>{
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PotentialTargets.value.includes(square.Id)){
 
@@ -327,7 +277,7 @@ export const useGameState = defineStore("GameState", () => {
 
         // Create the dropped piece in that spot.
         s.Piece = new PieceModel(
-          Board.CurrentPlayer, 
+          Board.value.CurrentPlayer, 
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPosition, 
           PieceInHand.value.Icon,
@@ -336,10 +286,10 @@ export const useGameState = defineStore("GameState", () => {
         if(logPieceSelect) logPieceDetails("s.Piece", s.Piece);
 
         // Remove the piece from the origin.
-        if(Board.CurrentPlayer == 1){
+        if(Board.value.CurrentPlayer == 1){
           console.log(`Removing drop from CapturesP1.`);
           CapturesP1.value = CapturesP1.value.filter( p => p.Id != PieceInHand.value.Id);
-        } else if (Board.CurrentPlayer == 2){
+        } else if (Board.value.CurrentPlayer == 2){
           console.log(`Removing drop from CapturesP2.`);
           CapturesP2.value = CapturesP2.value.filter( p => p.Id != PieceInHand.value.Id);
           
@@ -364,7 +314,7 @@ export const useGameState = defineStore("GameState", () => {
 
     if( toPromote && _promotable.includes(PieceInHand.value.Type)){
       if(logPieceSelect) console.log("PromotePiece() called 2");
-      Board.Squares.map( s =>{
+      Board.value.Squares.map( s =>{
         // Use Destination to find which piece to promote.
         if(s.Id == Destination.value.Id){
           if(logPieceSelect) logPieceDetails("Before Promote", PieceInHand.value!);
@@ -381,7 +331,7 @@ export const useGameState = defineStore("GameState", () => {
     console.warn("CompleteMove() Start");
     resetSelections();
     switchCurrentPlayer();
-    _engine.RebuildSquares( Board );
+    Board.value = _engine.RebuildBoard( Board.value );
     Phase.value = GamePhase.TurnStart;
     console.warn("CompleteMove() End");
   };
@@ -400,12 +350,12 @@ export const useGameState = defineStore("GameState", () => {
   };
 
   const switchCurrentPlayer =()=> {
-    if(Board.CurrentPlayer == 1){
-      Board.CurrentPlayer = 2;
+    if(Board.value.CurrentPlayer == 1){
+      Board.value.CurrentPlayer = 2;
     } else {
-      Board.CurrentPlayer = 1;
+      Board.value.CurrentPlayer = 1;
     }
-    console.error(`Board.CurrentPlayer: ${Board.CurrentPlayer}`);
+    console.error(`Board.value.CurrentPlayer: ${Board.value.CurrentPlayer}`);
   };
     
   const gameOver = (player: number) =>{

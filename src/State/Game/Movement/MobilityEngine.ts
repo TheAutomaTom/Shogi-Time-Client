@@ -4,22 +4,28 @@ import { PieceRangeSet } from "../Pieces/PieceRange";
 import { TargetStatus } from "./TargetStatus";
 import { VectorSet } from "./VectorSet";
 import { TargetSquare } from "./TargetSquare";
+import { PieceType } from "../Pieces/PieceType";
 
 export class MobilityEngine {
   
   logSubject = {enabled: false, x:7, y:3};
 
-  RebuildSquares = ( board: BoardModel ): SquareModel[] =>{
+  RebuildBoard = ( board: BoardModel ): BoardModel =>{
+    this.rebuildSquares(board);
+    board = this.rebuildDrops(board);
+    return board;
+  };
+
+  rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
     if(this.logSubject.enabled){ 
       console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); 
-      console.log(`CurrentPlayer: ${board.CurrentPlayer}`);
     }
 
     // First iteration builds vector arrays evaluating each pieces' 
     //   complete movement range and determines targets' relation to origin.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
-        square.Piece.VectorSet = this.evaluateVectors(          
+        square.Piece.VectorSet = this.evaluateVectors(
           board, 
           square.X, 
           square.Y,
@@ -41,10 +47,39 @@ export class MobilityEngine {
     return board.Squares;
   };
 
-  //  CalculateDrops  = ( board: BoardModel ): TargetSquare[] =>{
+  rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+    board.CapturesP1.forEach(capture => {
+      capture.MovementMap = [];
+      board.Squares.forEach(s => {
 
+        // If not pawn, lance, or night: add whole board
+        if(s.Piece.Player == 0){
+        
+          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
+            capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If pawn or lance: add all but last back row
+          else if( (capture.Type == PieceType.Pawn || capture.Type == PieceType.Lance)
+                    && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+          }
 
-  // };
+          // If knight: add all but back 2 rows
+          else if( (capture.Type == PieceType.Knight)
+            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
+          {
+            capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
+          }
+        
+        }
+      });
+
+    });
+
+    return board;
+
+  };
 
   
   FlattenMap = (square: SquareModel): TargetSquare[] => {
