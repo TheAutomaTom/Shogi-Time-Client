@@ -66,7 +66,7 @@ export class MobilityEngine {
           }
           if( s.Piece.Player == 2) { 
             // console.log(`openFilesP2...filter ${s.X}`);
-            openFilesP1 = openFilesP2.filter(x => x != s.X); 
+            openFilesP2 = openFilesP2.filter(x => x != s.X); 
           }
         }
       });
@@ -76,9 +76,9 @@ export class MobilityEngine {
       capture.MovementMap = [];
       board.Squares.forEach(s => {
 
-        // If not pawn, lance, or night: add whole board
         if(s.Piece.Player == 0){
-        
+          
+          // If not pawn, lance, or night: add whole board
           if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
           }

@@ -12,6 +12,10 @@
       :class="getNotationStyle('y')"
     >{{ getNotationText('y') }}</div>
 
+<!--  -->
+    <div class="board-notation board-notation-left">{{ input.X }}{{ input.Y }}</div>
+<!--  -->
+
     <div 
       class="board-notation"
       :class="getNotationStyle('x')"
@@ -110,7 +114,7 @@ watch( // Update highlight class
         currentClass.value = "";
         // console.log(`${props.input.Id}: "" (watch MovementMap)`);
         break;
-      }
+    }
   }
 );
 
@@ -142,10 +146,8 @@ const handleClickSquare = () => {
           // game$.DropAttempt(props.input);
           break;
       }
-    }
-    
+    }    
   }
-
 };
 
 
@@ -174,13 +176,17 @@ const handleClickSquare = () => {
 
   }
   .board-notation-top{
-    top:0;
+    top:2px;
     right:50%;
   }
-  .board-notation-right{    
+  .board-notation-right{
     top:50%;
-    right:0;
-    
+    right:2px;    
+  }
+  .board-notation-left{
+    left:0;
+    bottom:0;
+    color: white;   
   }
 
   .game-square-potential-move{
