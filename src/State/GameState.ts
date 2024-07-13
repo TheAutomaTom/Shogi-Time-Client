@@ -52,12 +52,6 @@ export const useGameState = defineStore("GameState", () => {
     
   };
   
-  const resetSelections = () =>{
-    PieceInHand.value = new PieceModel();
-    Origin.value = new SquareModel(0, 0);
-
-  };
-  
   // CurrentPlayer selects one of their own piece on the board.
   const MoveStart =   (piece: PieceModel) => {
     resetSelections();
@@ -191,7 +185,7 @@ export const useGameState = defineStore("GameState", () => {
       
       Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);
 
-        // If a piece exists at destination, kill it!
+        // If a piece exists at Destination, kill it!
         if(s.Piece.Player != 0){
 
           if(s.Piece.Type == PieceType.KingChallenger || s.Piece.Type == PieceType.KingVictor){
@@ -278,7 +272,7 @@ export const useGameState = defineStore("GameState", () => {
       // });
 
       // Highlight potential move squares
-      PotentialDestinations.value = [""]; // reset prior
+      PotentialTargets.value = [""]; // reset prior
       
       // const facing = setPieceIsFacing(piece.IsFacingDefault);
       
@@ -291,21 +285,21 @@ export const useGameState = defineStore("GameState", () => {
               && PieceInHand.value.Type != PieceType.Lance 
               && PieceInHand.value.Type != PieceType.Knight){
               
-              PotentialDestinations.value.push(s.Id);
+              PotentialTargets.value.push(s.Id);
             }
             
           // If pawn or lance: add all but back row
           else if( (PieceInHand.value.Type == PieceType.Pawn || PieceInHand.value.Type == PieceType.Lance)
                     && ((Board.CurrentPlayer == 1 &&  s.Y != 1) || (Board.CurrentPlayer == 2 && s.Y != 9))  )
           {
-            PotentialDestinations.value.push(s.Id);
+            PotentialTargets.value.push(s.Id);
           }
             
           // If knight: add all but back 2 rows
           else if( (PieceInHand.value.Type == PieceType.Knight)
                     && ((Board.CurrentPlayer == 1 &&  (s.Y > 2)) || (Board.CurrentPlayer == 2 && (s.Y < 8)))  )
           {
-            PotentialDestinations.value.push(s.Id);
+            PotentialTargets.value.push(s.Id);
           }
           
         }
@@ -317,7 +311,7 @@ export const useGameState = defineStore("GameState", () => {
     // Find the square that was clicked...
     Board..Squares.map(  s =>{
       // ...and check if it's in the movement rules.
-      if(s.Id == square.Id && PotentialDestinations.value.includes(square.Id)){
+      if(s.Id == square.Id && PotentialTargets.value.includes(square.Id)){
 
         Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);        
         console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);

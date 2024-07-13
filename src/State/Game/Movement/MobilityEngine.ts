@@ -7,12 +7,13 @@ import { TargetSquare } from "./TargetSquare";
 
 export class MobilityEngine {
   
-  logEnabled = true;
+  logSubject = {enabled: true, x:8, y:8};
 
   RebuildSquares = ( board: BoardModel ): SquareModel[] =>{
-    if(this.logEnabled){ console.error(`MobilityEngine.RebuildSquares()`); }
+    if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
 
-    // First iterations establishes all possible move range and tracks obstacles.
+    // First iteration builds vector arrays evaluating each pieces' 
+    //   complete movement range and determines targets' relation to origin.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
         square.Piece.VectorSet = this.evaluateVectors(          
@@ -26,7 +27,7 @@ export class MobilityEngine {
     });
 
     // Create flat maps for each piece 
-    // so squares know where to highlight valid moves.
+    //   so squares know where to highlight valid moves.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
         square.Piece.MovementMap.push( ...this.FlattenMap(square) );
@@ -83,7 +84,7 @@ export class MobilityEngine {
   };
 
   evaluateVector = ( 
-    board: BoardModel, targetX: number, targetY: number, debug: boolean = false
+    board: BoardModel, targetX: number, targetY: number, isLogSubject: boolean = false
   ): TargetSquare =>{
 
     if(targetX >= 1 && targetX <= 9 && targetY >= 1 && targetY <= 9){
@@ -96,18 +97,15 @@ export class MobilityEngine {
       switch (s?.Piece.Player) {
         case 0:
           const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
-          if(debug){console.log(`2A. evaluateVector: ${targetX},${targetY}: ${TargetStatus.Open}`);}
-          // console.dir(result);
+          if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Open}`);}
           return result;
 
         case board.CurrentPlayer:
-          if(this.logEnabled){ console.log(`${targetX}, ${targetY}: Ally`); }
-          if(debug){console.log(`2C. evaluateVector: ${targetX},${targetY}: ${TargetStatus.Ally}`);}
+          if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Ally}`);}
           return new TargetSquare(s.X, s.Y, TargetStatus.Ally );
       
         default: 
-          if(this.logEnabled){ console.log(`${targetX}, ${targetY}: Enemy`); }
-          if(debug){console.log(`2B. evaluateVector: ${targetX},${targetY}: ${TargetStatus.Enemy}`);}
+          if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Enemy}`);}
           return new TargetSquare(s.X, s.Y, TargetStatus.Enemy );
       }
 
@@ -120,19 +118,21 @@ export class MobilityEngine {
   ): VectorSet => {
     
       let mobility = {} as VectorSet;
+      const isLogSubject = this.logSubject.enabled && originX == this.logSubject.x && originY == this.logSubject.y;
+
 
       // Process North ===============================================
       mobility.N=[];
       if(rangeSet.N > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range N  ${rangeSet.N}`); }
 
-        // Iterate each coordinate along one path (ex: north)...
+        // Iterate each coordinate along one vector (ex: north)...
         for (let i = 1; i <= rangeSet.N; i++) {
-
           let x = originX;
           let y = originY + i * facing 
           
-          const s = this.evaluateVector( board, x, y );
-          if(s.Status != TargetStatus.Open || TargetStatus.Na){
+          const s = this.evaluateVector( board, x, y, isLogSubject);
+          if(s.Status != TargetStatus.Open && s.Status != TargetStatus.Na && s.Status != TargetStatus.OutOfRange){
             mobility.N.push(s);
           }
         }
@@ -141,11 +141,11 @@ export class MobilityEngine {
       // Process South ===============================================
       mobility.S=[];
       if(rangeSet.S > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range S  ${rangeSet.S}`); }
         for (let i = 1; i <= rangeSet.S; i++) {
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.S}`); }
           let x = originX;
           let y = originY - i * facing;
-          const s = this.evaluateVector( board, x, y );        
+          const s = this.evaluateVector( board, x, y, isLogSubject);        
           if(s.Status != TargetStatus.Open || TargetStatus.Na){
             mobility.S.push(s);
           }
@@ -155,11 +155,11 @@ export class MobilityEngine {
       // Process East ================================================
       mobility.E=[];
       if(rangeSet.E > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range E  ${rangeSet.E}`); }
       for (let i = 1; i <= rangeSet.E; i++) {    
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.E}`); }
             let x = originX - i * facing;
             let y = originY;
-            const s = this.evaluateVector( board, x, y );
+            const s = this.evaluateVector( board, x, y, isLogSubject);
             if(s.Status != TargetStatus.Open || TargetStatus.Na){
               mobility.E.push(s);
             }
@@ -169,11 +169,11 @@ export class MobilityEngine {
       // Process West ================================================
       mobility.W=[];
       if(rangeSet.W > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range W  ${rangeSet.W}`); }
         for (let i = 1; i <= rangeSet.W; i++) { 
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.W}`); }
             let x = originX + i * facing;
             let y = originY;
-            const s = this.evaluateVector( board, x, y );
+            const s = this.evaluateVector( board, x, y, isLogSubject);
             if(s.Status != TargetStatus.Open || TargetStatus.Na){
               mobility.W.push(s);
             }
@@ -183,11 +183,11 @@ export class MobilityEngine {
       // Process North-West ==========================================
       mobility.NW=[];
       if(rangeSet.NW > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range NW ${rangeSet.NW}`); }
       for (let i = 1; i <= rangeSet.NW; i++) {  
-        if(this.logEnabled){ console.warn(`Range ${rangeSet.NW}`); }
           let x = originX + i * facing;
           let y = originY + i * facing;
-          const s = this.evaluateVector( board, x, y );
+          const s = this.evaluateVector( board, x, y, isLogSubject);
           if(s.Status != TargetStatus.Open || TargetStatus.Na){
             mobility.NW.push(s);
           }
@@ -197,11 +197,11 @@ export class MobilityEngine {
       // Process North-East ==========================================
       mobility.NE=[];
       if(rangeSet.NE > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range NE ${rangeSet.NE}`); }
         for (let i = 1; i <= rangeSet.NE; i++) {    
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.NE}`); }
             let x = originX - i * facing;
             let y = originY + i * facing;
-            const s = this.evaluateVector( board, x, y );
+            const s = this.evaluateVector( board, x, y, isLogSubject);
             if(s.Status != TargetStatus.Open || TargetStatus.Na){
               mobility.NE.push(s);
             }
@@ -211,11 +211,11 @@ export class MobilityEngine {
       // Process South-East =========================================
       mobility.SE=[];
       if(rangeSet.SE > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range SE ${rangeSet.SE}`); }
         for (let i = 1; i <= rangeSet.SE; i++) {   
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.SE}`); }
             let x = originX - i * facing;
             let y = originY - i * facing; 
-            const s = this.evaluateVector( board, x, y );
+            const s = this.evaluateVector( board, x, y, isLogSubject);
             if(s.Status != TargetStatus.Open || TargetStatus.Na){
               mobility.SE.push(s);
             }
@@ -225,21 +225,21 @@ export class MobilityEngine {
       // Process South-West ==========================================
       mobility.SW=[];
       if(rangeSet.SW > 0){
+        if(isLogSubject){ console.log(`${originX},${originY}: Range SW ${rangeSet.SW}`); }
         for (let i = 1; i <= rangeSet.SW; i++) {  
-          if(this.logEnabled){ console.warn(`Range ${rangeSet.SW}`); }
-            let x = originX + i * facing;
-            let y = originY - i * facing; 
-            const s = this.evaluateVector( board, x, y );
-            if(s.Status != TargetStatus.Open || TargetStatus.Na){
-              mobility.SW.push(s);
-            }
+          let x = originX + i * facing;
+          let y = originY - i * facing; 
+          const s = this.evaluateVector( board, x, y, isLogSubject);
+          if(s.Status != TargetStatus.Open || TargetStatus.Na){
+            mobility.SW.push(s);
+          }
         }
       }
           
       // Process Knight ==============================================
       mobility.K=[];
       if(rangeSet.K > 0){
-        if(this.logEnabled){ console.warn(`Range ${rangeSet.K}`); }
+        if(isLogSubject){ console.log(`${originX},${originY}: Range K  ${rangeSet.K}`); }
         
           let targetX = originX + 1 * facing;
           let targetY = originY + 2 * facing;
