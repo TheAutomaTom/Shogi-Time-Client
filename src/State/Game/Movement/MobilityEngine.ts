@@ -41,6 +41,11 @@ export class MobilityEngine {
     return board.Squares;
   };
 
+  //  CalculateDrops  = ( board: BoardModel ): TargetSquare[] =>{
+
+
+  // };
+
   
   FlattenMap = (square: SquareModel): TargetSquare[] => {
     let map = [] as TargetSquare[];    

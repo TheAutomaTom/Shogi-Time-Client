@@ -8,7 +8,8 @@ import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { defineStore } from "pinia";
 import { reactive, ref } from "vue";
-import { TargetSquare } from "./Game/Movement/TargetSquare";
+import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
+import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -16,18 +17,18 @@ export const useGameState = defineStore("GameState", () => {
   const logGamePhase = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
-  const Board = reactive({  Id:"111-zzz",
-                       CurrentPlayer:1,
-                      //  Squares: new DefaultNewGameLayout().Squares
-                       Squares: new TestBoardSetup().Squares
-                    } as BoardModel);
+  const Board = reactive( new BoardModel(
+                                "Test-123", 
+                                1,
+                                // new NewBoardSetup().Squares,
+                                new TestBoardSetup().Squares,
+                                [],
+                                []
+                        ));
 
   const PieceInHand = ref({} as PieceModel);
   const Origin = ref({} as SquareModel);
   const Destination = ref({} as SquareModel);
-
-  const CapturesP1 = ref([] as PieceModel[]);
-  const CapturesP2 = ref([] as PieceModel[]);
 
   const _engine = new MobilityEngine();
 
@@ -115,8 +116,10 @@ export const useGameState = defineStore("GameState", () => {
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
-        if(Board.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
-        if(Board.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
+        // if(Board.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
+        // if(Board.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
+        if(Board.CurrentPlayer == 1){ Board.CapturesP1.push(capturedPiece); }
+        if(Board.CurrentPlayer == 2){ Board.CapturesP2.push(capturedPiece); }
 
         // Create the moved piece in that spot.
         square.Piece = new PieceModel( Board.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
@@ -435,8 +438,6 @@ export const useGameState = defineStore("GameState", () => {
     MoveAttempt,
     Destination,
     PromotePiece,
-    CapturesP1,
-    CapturesP2,
     // DropBegin,
     // DropAttempt,
     // PriorPieceInHand,

@@ -12,7 +12,7 @@
 
     <div class="captures-p2">
       <in-hand-piece
-        v-for="piece in game$.CapturesP2"
+        v-for="piece in game$.Board.CapturesP2"
         :input="piece"
       ></in-hand-piece>
     </div>
@@ -21,7 +21,7 @@
 
     <div class="captures-p1">
       <in-hand-piece
-        v-for="piece in game$.CapturesP1"
+        v-for="piece in game$.Board.CapturesP1"
         :input="piece"
       ></in-hand-piece>
     </div>
