@@ -30,39 +30,25 @@ import { ref, watch } from 'vue';
   const currentClass = ref([""]);
 
   const handleClickPieceInHand = () => {
-    console.log("\r\nInHandPiece.handleClickPieceInHand();");
-    console.log(`props.input...\r
-                \tPlayer: ${props.input.Player}\r
-                \tId: ${props.input.Id}\r
-                \tStartingPos: ${props.input.StartingPosition}\r
-                \tIcon: ${props.input.IconPath}\r
-                \tType: ${props.input.Type}\r
-                `);    
+    // console.log("\r\nInHandPiece.handleClickPieceInHand();");
+    // console.log(`props.input...\r
+    //             \tPlayer: ${props.input.Player}\r
+    //             \tId: ${props.input.Id}\r
+    //             \tStartingPos: ${props.input.StartingPosition}\r
+    //             \tIcon: ${props.input.IconPath}\r
+    //             \tType: ${props.input.Type}\r
+    //             `);    
 
-    console.log(`${ game$.Board.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
-    console.log(`${game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart}: game$.Mode == GamePhase.TurnStart || game$.Mode == GamePhase.MoveStart`);
-    console.log(`${game$.PieceInHand.Id != props.input.Id}: game$.PieceInHand.Id != props.input.Id`);
+    // console.log(`${ game$.Board.CurrentPlayer == props.input.Player}: game$.CurrentPlayer == props.input.Player`);
+    // console.log(`${game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart}: game$.Mode == GamePhase.TurnStart || game$.Mode == GamePhase.MoveStart`);
+    // console.log(`${game$.PieceInHand.Id != props.input.Id}: game$.PieceInHand.Id != props.input.Id`);
     
     if( game$.Board.CurrentPlayer == props.input.Player
         && (game$.Phase == GamePhase.TurnStart || game$.Phase == GamePhase.MoveStart || game$.Phase == GamePhase.DropStart)
         && (game$.PieceInHand.Id != props.input.Id || game$.PieceInHand.Id != props.input.Id)
-  ){
-      console.log(`\r\nInHandPiece calls game$.DropBegin(${props.input})`);
-      /*
-      *
-      *
-      *
-      *
-      *
-      // game$.DropBegin(props.input);
-      *
-      *
-      *
-      *
-      *
-      *
-      *
-      */
+    ){
+      console.log(`\r\nInHandPiece calls game$.DropStart(${props.input})`);
+      game$.DropStart(props.input);
     }
   };
 
