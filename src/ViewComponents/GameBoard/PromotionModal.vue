@@ -22,9 +22,9 @@ const game$ = useGameState();
 const toShow = ref(false);
 
 watch( // Update highlight
-  () => game$.Mode,
+  () => game$.Phase,
   () => {
-    if(game$.Mode == GamePhase.PromoteOption){
+    if(game$.Phase == GamePhase.PromoteOption){
       toShow.value = true;
     }
     else {

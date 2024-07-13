@@ -18,7 +18,6 @@ const game$ = useGameState();
 import { onMounted } from "vue";
 
 onMounted(() => {
-  console.log(`GameBoard.onMounted()`);
   game$.TurnStart();
 });
 
