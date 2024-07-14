@@ -1,14 +1,14 @@
 import { BoardModel } from "../BoardModel";
-import { SquareModel } from "../SquareModel";
 import { PieceRangeSet } from "../Pieces/PieceRange";
+import { PieceType } from "../Pieces/PieceType";
+import { SquareModel } from "../SquareModel";
+import { TargetSquare } from "./TargetSquare";
 import { TargetStatus } from "./TargetStatus";
 import { VectorSet } from "./VectorSet";
-import { TargetSquare } from "./TargetSquare";
-import { PieceType } from "../Pieces/PieceType";
 
 export class MobilityEngine {
   
-  logSubject = {enabled: false, x:7, y:3};
+  logSubject = {enabled: false, x:8, y:6};
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
     this.rebuildSquares(board);
@@ -17,9 +17,7 @@ export class MobilityEngine {
   };
 
   rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
-    if(this.logSubject.enabled){ 
-      console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); 
-    }
+    if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
 
     // First iteration builds vector arrays evaluating each pieces' 
     //   complete movement range and determines targets' relation to origin.
@@ -39,7 +37,7 @@ export class MobilityEngine {
     //   so squares know where to highlight valid moves.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
-        square.Piece.MovementMap = [];
+        square.Piece.MovementMap = [];        
         square.Piece.MovementMap.push( ...this.FlattenMap(square) );
       }
     });
@@ -120,18 +118,17 @@ export class MobilityEngine {
     return board;
 
   };
-
   
   FlattenMap = (square: SquareModel): TargetSquare[] => {
     let map = [] as TargetSquare[];    
-    square.Piece.VectorSet.N.forEach(target  => { map.push(target); });
-    square.Piece.VectorSet.S.forEach(target  => { map.push(target); });
-    square.Piece.VectorSet.E.forEach(target  => { map.push(target); });
-    square.Piece.VectorSet.W.forEach(target  => { map.push(target); });
-    square.Piece.VectorSet.NE.forEach(target => { map.push(target); });
-    square.Piece.VectorSet.NW.forEach(target => { map.push(target); });
-    square.Piece.VectorSet.SE.forEach(target => { map.push(target); });
-    square.Piece.VectorSet.SW.forEach(target => { map.push(target); });
+    square.Piece.VectorSet.N.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.E.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.W.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.NE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     return map;
   };
   
@@ -143,21 +140,30 @@ export class MobilityEngine {
   };
 
   evaluateVector = ( 
-    board: BoardModel, targetX: number, targetY: number, isLogSubject: boolean = false
+    board: BoardModel, targetX: number, targetY: number, isBlocked: Boolean, isLogSubject: boolean = false
   ): TargetSquare =>{
 
     if(targetX >= 1 && targetX <= 9 && targetY >= 1 && targetY <= 9){
           
       // Find the target square
       const s = board.Squares.find( s => s.X == targetX && s.Y == targetY );
-
       if(s == undefined) return new TargetSquare(11, 11, TargetStatus.Na );
+      console.log("isBlocked " + isBlocked);
 
       switch (s?.Piece.Player) {
-        case 0:
-          const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
-          if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Open}`);}
-          return result;
+        
+        case 0: // This is an open square.
+          if(isBlocked){
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
+            if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked}`);}
+            console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked}`);
+            return result;
+
+          } else {
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
+            if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Open}`);}
+            return result;
+          }
 
         case board.CurrentPlayer:
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Ally}`);}
@@ -180,6 +186,7 @@ export class MobilityEngine {
     let mobility = {} as VectorSet;
     const isLogSubject = this.logSubject.enabled && originX == this.logSubject.x && originY == this.logSubject.y;
 
+    let isBlocked = false;
 
     // Process North ===============================================
     mobility.N=[];
@@ -191,12 +198,21 @@ export class MobilityEngine {
         let x = originX;
         let y = originY + i * facing 
         
-        const s = this.evaluateVector( board, x, y, isLogSubject);
+        const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+
+        if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
+          // if(isLogSubject){ console.error(`${originX},${originY}: isBlocked = ${isBlocked}`); }
+          console.error(`${originX},${originY}: isBlocked = ${isBlocked}`); 
+          isBlocked = true;
+        }
+
         if(s.Status != TargetStatus.OutOfRange){
           mobility.N.push(s);
         }
+
       }
     }
+    isBlocked = false;
     
     // Process South ===============================================
     mobility.S=[];
@@ -205,12 +221,16 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.S; i++) {
         let x = originX;
         let y = originY - i * facing;
-        const s = this.evaluateVector( board, x, y, isLogSubject);      
+        const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);     
+        if(s.Status == TargetStatus.Blocked){
+          isBlocked = true;
+        } 
         if(s.Status != TargetStatus.OutOfRange){
           mobility.S.push(s);
         }
       }
     }
+    isBlocked = false;
 
     // Process East ================================================
     mobility.E=[];
@@ -219,12 +239,16 @@ export class MobilityEngine {
     for (let i = 1; i <= rangeSet.E; i++) {    
           let x = originX - i * facing;
           let y = originY;
-          const s = this.evaluateVector( board, x, y, isLogSubject);
+          const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+          if(s.Status == TargetStatus.Blocked){
+            isBlocked = true;
+          }
           if(s.Status != TargetStatus.OutOfRange){
             mobility.E.push(s);
           }
       }
     }
+    isBlocked = false;
       
     // Process West ================================================
     mobility.W=[];
@@ -233,12 +257,16 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.W; i++) { 
           let x = originX + i * facing;
           let y = originY;
-          const s = this.evaluateVector( board, x, y, isLogSubject);
+          const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+          if(s.Status == TargetStatus.Blocked){
+            isBlocked = true;
+          }
           if(s.Status != TargetStatus.OutOfRange){
             mobility.W.push(s);
           }
       }
     }
+    isBlocked = false;
       
     // Process North-West ==========================================
     mobility.NW=[];
@@ -247,12 +275,16 @@ export class MobilityEngine {
     for (let i = 1; i <= rangeSet.NW; i++) {  
         let x = originX + i * facing;
         let y = originY + i * facing;
-        const s = this.evaluateVector( board, x, y, isLogSubject);
+        const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+        if(s.Status == TargetStatus.Blocked){
+          isBlocked = true;
+        }
         if(s.Status != TargetStatus.OutOfRange){
           mobility.NW.push(s);
         }
       }
     }
+    isBlocked = false;
       
     // Process North-East ==========================================
     mobility.NE=[];
@@ -261,12 +293,16 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.NE; i++) {    
           let x = originX - i * facing;
           let y = originY + i * facing;
-          const s = this.evaluateVector( board, x, y, isLogSubject);
+          const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+          if(s.Status == TargetStatus.Blocked){
+            isBlocked = true;
+          }
           if(s.Status != TargetStatus.OutOfRange){
             mobility.NE.push(s);
           }
       }
     }
+    isBlocked = false;
         
     // Process South-East =========================================
     mobility.SE=[];
@@ -275,12 +311,16 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.SE; i++) {   
           let x = originX - i * facing;
           let y = originY - i * facing; 
-          const s = this.evaluateVector( board, x, y, isLogSubject);
+          const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+          if(s.Status == TargetStatus.Blocked){
+            isBlocked = true;
+          }
           if(s.Status != TargetStatus.OutOfRange){
             mobility.SE.push(s);
           }
       }
     }
+    isBlocked = false;
       
     // Process South-West ==========================================
     mobility.SW=[];
@@ -289,12 +329,16 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.SW; i++) {  
         let x = originX + i * facing;
         let y = originY - i * facing; 
-        const s = this.evaluateVector( board, x, y, isLogSubject);
+        const s = this.evaluateVector( board, x, y, isLogSubject, isBlocked);
+        if(s.Status == TargetStatus.Blocked){
+          isBlocked = true;
+        }
         if(s.Status != TargetStatus.OutOfRange){
           mobility.SW.push(s);
         }
       }
     }
+    isBlocked = false;
         
     // Process Knight ==============================================
     mobility.K=[];
@@ -307,9 +351,9 @@ export class MobilityEngine {
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( square => {
           if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( board, targetX, targetY );
+            const s = this.evaluateVector( board, targetX, targetY, isBlocked );
             if(s.Status != TargetStatus.OutOfRange){
-              mobility.N.push(s);
+              mobility.K.push(s);
             }
           }
         });
@@ -321,9 +365,9 @@ export class MobilityEngine {
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( square => {
           if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( board, targetX, targetY );
+            const s = this.evaluateVector( board, targetX, targetY, isBlocked );
             if(s.Status != TargetStatus.OutOfRange){
-              mobility.N.push(s);
+              mobility.K.push(s);
             }
           }
         });

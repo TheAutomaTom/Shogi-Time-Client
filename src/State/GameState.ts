@@ -84,7 +84,7 @@ export const useGameState = defineStore("GameState", () => {
 
 
 
-      case TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
+      case TargetStatus.Blocked ||TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
         // Do nothing
         return;
         
@@ -134,8 +134,9 @@ export const useGameState = defineStore("GameState", () => {
     
       default:
         break;
-    }
-    
+
+
+    }    
   };
 
   const MoveEnd =(square: SquareModel)=> {
