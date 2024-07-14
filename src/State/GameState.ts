@@ -8,6 +8,7 @@ import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 
 export const useGameState = defineStore("GameState", () => {
   

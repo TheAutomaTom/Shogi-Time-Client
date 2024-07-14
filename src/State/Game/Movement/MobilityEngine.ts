@@ -8,7 +8,7 @@ import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
   
-  logSubject = {enabled: true, x:8, y:6};
+  logSubject = {enabled: true, x:8, y:9};
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
     this.rebuildSquares(board);
@@ -49,9 +49,7 @@ export class MobilityEngine {
     let map = [] as TargetSquare[];
     
     const toAddN = square.Piece.VectorSet.N.filter(t => t.Status != TargetStatus.Blocked)
-    // console.log("toAddN " + toAddN.length);
     toAddN.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    // console.dir(toAddN);
 
     square.Piece.VectorSet.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.E.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
@@ -60,6 +58,7 @@ export class MobilityEngine {
     square.Piece.VectorSet.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.K.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     return map;
   };
 
@@ -423,7 +422,7 @@ export class MobilityEngine {
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( square => {
           if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( board, targetX, targetY, isBlocked );
+            const s = this.evaluateVector( board, targetX, targetY, false, isLogSubject );
             if(s.Status != TargetStatus.OutOfRange){
               mobility.K.push(s);
             }
@@ -431,13 +430,13 @@ export class MobilityEngine {
         });
       }
 
-      targetX = originX + -1 * facing;
+      targetX = originX - 1 * facing;
       targetY = originY + 2 * facing;
 
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         board.Squares.forEach( square => {
           if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( board, targetX, targetY, isBlocked );
+            const s = this.evaluateVector( board, targetX, targetY, false, isLogSubject );
             if(s.Status != TargetStatus.OutOfRange){
               mobility.K.push(s);
             }
