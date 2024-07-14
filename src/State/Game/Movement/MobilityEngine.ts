@@ -8,7 +8,7 @@ import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
   
-  logSubject = {enabled: true, x:8, y:9};
+  logSubject = {enabled: false, x:8, y:9};
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
     this.rebuildSquares(board);
@@ -206,8 +206,7 @@ export class MobilityEngine {
         case 0: // This is an open square.
           if(isBlocked){
             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
-            if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked)`);}
-            console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked}`);
+            if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked)`);}            
             return result;
             
           } else {
@@ -225,7 +224,6 @@ export class MobilityEngine {
           if(isBlocked){
             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked enemy)`);}
-            console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked}`);
             return result;
             
           } else {
