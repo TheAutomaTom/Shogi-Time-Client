@@ -143,7 +143,7 @@ const handleClickSquare = () => {
           break;       
           
         default: // case GamePhase.DropStart:
-          // game$.DropAttempt(props.input);
+          game$.DropAttempt(props.input);
           break;
       }
     }    

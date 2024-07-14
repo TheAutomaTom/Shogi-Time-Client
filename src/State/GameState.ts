@@ -196,17 +196,16 @@ export const useGameState = defineStore("GameState", () => {
     );
     
   };
-
-/*
+  
   const DropAttempt =  (square: SquareModel) =>{
     
     // Find the square that was clicked...
-    Board.value..Squares.map(  s =>{
+    Board.value.Squares.map(  s =>{
       // ...and check if it's in the movement rules.
-      if(s.Id == square.Id && PotentialTargets.value.includes(square.Id)){
+      if(s.Id == square.Id && PieceInHand.value.MovementMap.some(ts => ts.Id == s.Id)){
 
-        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);        
-        console.log(`Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
+        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);     
+        console.log(`DropAttempt Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
         
         if(logPieceSelect) logPieceDetails("PieceInHand", PieceInHand.value);
 
@@ -223,10 +222,10 @@ export const useGameState = defineStore("GameState", () => {
         // Remove the piece from the origin.
         if(Board.value.CurrentPlayer == 1){
           console.log(`Removing drop from CapturesP1.`);
-          CapturesP1.value = CapturesP1.value.filter( p => p.Id != PieceInHand.value.Id);
+          Board.value.CapturesP1 = Board.value.CapturesP1.filter( p => p.Id != PieceInHand.value.Id);
         } else if (Board.value.CurrentPlayer == 2){
           console.log(`Removing drop from CapturesP2.`);
-          CapturesP2.value = CapturesP2.value.filter( p => p.Id != PieceInHand.value.Id);
+          Board.value.CapturesP2 = Board.value.CapturesP2.filter( p => p.Id != PieceInHand.value.Id);
           
         }
         CompleteMove();
@@ -234,7 +233,7 @@ export const useGameState = defineStore("GameState", () => {
     });
   }
     
-   */
+  
 
   // This may be called by PromotionModal
   const PromotePiece =(toPromote: boolean = true)=> {
@@ -315,7 +314,7 @@ export const useGameState = defineStore("GameState", () => {
     Destination,
     PromotePiece,
     DropStart,
-    // DropAttempt,
+    DropAttempt,
     // PriorPieceInHand,
     // PriorOrigin,
     // PriorTarget
