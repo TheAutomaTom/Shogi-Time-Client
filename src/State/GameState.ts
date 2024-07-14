@@ -11,7 +11,7 @@ import { ref } from "vue";
 
 export const useGameState = defineStore("GameState", () => {
   
-  const logPieceSelect = true;
+  const logPieceSelect = false;
   const logGamePhase = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
@@ -43,7 +43,7 @@ export const useGameState = defineStore("GameState", () => {
     if(logGamePhase)console.log(`GameState.TurnStart()`);
     Phase.value = GamePhase.TurnStart;
     resetSelections();
-    _engine.rebuildSquares( Board.value );
+    const _ = _engine.rebuildSquares( Board.value );
     
   };
   
