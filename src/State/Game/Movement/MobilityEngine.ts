@@ -262,11 +262,7 @@ export class MobilityEngine {
         let y = originY + i * facing 
         
         const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-        
-        if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-          if(isLogSubject){ console.error(`${originX},${originY}: N isBlocked = ${isBlocked}`); }
-          isBlocked = true;
-        }
+        isBlocked = this.isBlocked(s.Status, "N", isLogSubject);
 
         if(s.Status != TargetStatus.OutOfRange){
           mobility.N.push(s);
@@ -283,11 +279,8 @@ export class MobilityEngine {
       for (let i = 1; i <= rangeSet.S; i++) {
         let x = originX;
         let y = originY - i * facing;
-        const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);    
-        if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-          if(isLogSubject){ console.error(`${originX},${originY}: S isBlocked = ${isBlocked}`); }
-          isBlocked = true;
-        }
+        const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
+        isBlocked = this.isBlocked(s.Status, "S", isLogSubject);
         if(s.Status != TargetStatus.OutOfRange){
           mobility.S.push(s);
         }
@@ -303,10 +296,7 @@ export class MobilityEngine {
           let x = originX - i * facing;
           let y = originY;
           const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-          if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-            if(isLogSubject){ console.error(`${originX},${originY}: E isBlocked = ${isBlocked}`); }
-            isBlocked = true;
-          }
+          isBlocked = this.isBlocked(s.Status, "E", isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
             mobility.E.push(s);
           }
@@ -322,10 +312,7 @@ export class MobilityEngine {
           let x = originX + i * facing;
           let y = originY;
           const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-          if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-            if(isLogSubject){ console.error(`${originX},${originY}: W isBlocked = ${isBlocked}`); }
-            isBlocked = true;
-          }
+          isBlocked = this.isBlocked(s.Status, "W", isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
             mobility.W.push(s);
           }
@@ -341,10 +328,7 @@ export class MobilityEngine {
         let x = originX + i * facing;
         let y = originY + i * facing;
         const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-        if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-          if(isLogSubject){ console.error(`${originX},${originY}: NW isBlocked = ${isBlocked}`); }
-          isBlocked = true;
-        }
+        isBlocked = this.isBlocked(s.Status, "NW", isLogSubject);
         if(s.Status != TargetStatus.OutOfRange){
           mobility.NW.push(s);
         }
@@ -360,10 +344,7 @@ export class MobilityEngine {
           let x = originX - i * facing;
           let y = originY + i * facing;
           const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-          if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-            if(isLogSubject){ console.error(`${originX},${originY}: NE isBlocked = ${isBlocked}`); }
-            isBlocked = true;
-          }
+          isBlocked = this.isBlocked(s.Status, "NE", isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
             mobility.NE.push(s);
           }
@@ -379,10 +360,7 @@ export class MobilityEngine {
           let x = originX - i * facing;
           let y = originY - i * facing; 
           const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-          if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-            if(isLogSubject){ console.error(`${originX},${originY}: SE isBlocked = ${isBlocked}`); }
-            isBlocked = true;
-          }
+          isBlocked = this.isBlocked(s.Status, "SE", isLogSubject);
           if(s.Status != TargetStatus.OutOfRange){
             mobility.SE.push(s);
           }
@@ -398,10 +376,7 @@ export class MobilityEngine {
         let x = originX + i * facing;
         let y = originY - i * facing; 
         const s = this.evaluateVector( board, x, y, isBlocked, isLogSubject);
-        if( s.Status == TargetStatus.Blocked || s.Status == TargetStatus.Ally || s.Status == TargetStatus.Enemy ){
-          if(isLogSubject){ console.error(`${originX},${originY}: SW isBlocked = ${isBlocked}`); }
-          isBlocked = true;
-        }
+        isBlocked = this.isBlocked(s.Status, "SW", isLogSubject);
         if(s.Status != TargetStatus.OutOfRange){
           mobility.SW.push(s);
         }
@@ -445,6 +420,17 @@ export class MobilityEngine {
     
     return mobility;
   };
+  
+
+  isBlocked = (status: TargetStatus, vector: string = "", isLogSubject = false): boolean =>{
+    if( status == TargetStatus.Blocked || status == TargetStatus.Ally || status == TargetStatus.Enemy || status == TargetStatus.Check ){
+      if(isLogSubject) console.log(`Vector ${vector} blocked: ${status}`);
+      return true; 
+    }
+    return false;
+  };
+
+
 }
 
 
