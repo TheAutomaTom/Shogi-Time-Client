@@ -1,14 +1,14 @@
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
 import { MobilityEngine } from "./Game/Movement/MobilityEngine";
+import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { PieceType } from "./Game/Pieces/PieceType";
 import { SquareModel } from "@/State/Game/SquareModel";
 import { TargetStatus } from "./Game/Movement/TargetStatus";
-import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
+import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -20,7 +20,8 @@ export const useGameState = defineStore("GameState", () => {
     new BoardModel( "Test-123", 
                     1,
                     // new NewBoardSetup().Squares,
-                    new TestBoardSetup().Squares,
+                    // new TestBoardSetup().Squares,
+                    new TestCheckBoardSetup().Squares,
                     [],
                     []
                   ));
@@ -41,7 +42,7 @@ export const useGameState = defineStore("GameState", () => {
   ];
 
   const TurnStart = () => {
-    if(logGamePhase)console.log(`GameState.TurnStart()`);
+    if(logGamePhase) logPhase(GamePhase.TurnStart, "TurnStart begins");
     Phase.value = GamePhase.TurnStart;
     resetSelections();
     const _ = _engine.rebuildSquares( Board.value );
@@ -52,7 +53,8 @@ export const useGameState = defineStore("GameState", () => {
   const MoveStart = (piece: PieceModel) => {
     resetSelections();
     Phase.value = GamePhase.MoveStart;
-    
+
+    if(logGamePhase) logPhase(GamePhase.MoveStart, "MoveStart begins");    
     if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} piece`, piece);
 
     PieceInHand.value = new PieceModel(
@@ -65,7 +67,7 @@ export const useGameState = defineStore("GameState", () => {
     );
     
     Origin.value = Board.value.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
-                        || new SquareModel(0, 0);
+                   || new SquareModel(0, 0);
         
     if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
 
@@ -76,7 +78,10 @@ export const useGameState = defineStore("GameState", () => {
 
     // Check if target is in the current selection's movement rules.
     const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);    
-    if (!target) return;   
+    if (!target) return;
+
+
+    console.log(`MoveAttempt square.Piece.Type: ${square.Piece.Type}`);
    
 
 
@@ -100,15 +105,16 @@ export const useGameState = defineStore("GameState", () => {
         // Clear the MovementMap causes squares to highlight.
         PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault);
 
-        MoveEnd(square);
-        return;
-        
+        return MoveEnd(square);
+
 
 
       case TargetStatus.Enemy: // Kit it! 
 
-        if( square.Piece.Type == PieceType.KingChallenger || square.Piece.Type == PieceType.KingVictor ){
-          return gameOver(Board.value.CurrentPlayer);
+        if( square.Piece.Type == PieceType.KingVictor ){
+          console.log(`MoveAttempt: ${TargetStatus.Enemy} = ${PieceType.KingVictor}... call gameOver()`);
+          gameOver(Board.value.CurrentPlayer);
+          break;
         }
 
         // let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
@@ -130,8 +136,7 @@ export const useGameState = defineStore("GameState", () => {
         // Clear the MovementMap that causes squares to highlight.
         PieceInHand.value = new PieceModel( PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault );
 
-        MoveEnd(square);
-        break;
+        return MoveEnd(square);
     
       default:
         break;
@@ -140,9 +145,13 @@ export const useGameState = defineStore("GameState", () => {
     }    
   };
 
+
+
   const MoveEnd =(square: SquareModel)=> {
+    
     Destination.value = new SquareModel( square.X, square.Y, square.PromotionZone, square.Piece );
     Phase.value = GamePhase.MoveEnd;
+    if(logGamePhase) logPhase(GamePhase.MoveEnd, "MoveEnd begins");
           
     // Test for promotion zone and if piece type can be promoted.
     if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
@@ -178,8 +187,10 @@ export const useGameState = defineStore("GameState", () => {
       }
 
       if(logPieceSelect) logPieceDetails(`Possible promotion`, PieceInHand.value);
+
       // PromotionModal will display, pending input to continue workflow.
-      Phase.value = GamePhase.PromoteOption;
+      if(logGamePhase) logPhase(GamePhase.PromoteOption, "MoveEnd last return");
+      return Phase.value = GamePhase.PromoteOption;
     
     }
     
@@ -261,7 +272,7 @@ export const useGameState = defineStore("GameState", () => {
     switchCurrentPlayer();
     Board.value = _engine.RebuildBoard( Board.value );
     Phase.value = GamePhase.TurnStart;
-    console.warn("CompleteMove() End");
+    if(logGamePhase) logPhase(GamePhase.TurnStart, "CompleteMove ends");
   };
 
   
@@ -285,12 +296,18 @@ export const useGameState = defineStore("GameState", () => {
     }
     console.error(`Board.value.CurrentPlayer: ${Board.value.CurrentPlayer}`);
   };
-    
+
   const gameOver = (player: number) =>{
-    Phase.value = GamePhase.GameOver;
-    console.log(`Player ${player} wins.`);
+    console.log(`${GamePhase.GameOver}: Player ${player} wins.`);
+    if(logGamePhase) logPhase(GamePhase.GameOver, "gameOver ends");
+    return Phase.value = GamePhase.GameOver;
+    
   };
 
+  const logPhase = (phase: GamePhase, caller: string = "") =>{
+    console.log(`\r\n\r\nGame Phase: ${phase} (${caller})`);
+  };
+  
   const logPieceDetails =(name: string, input: PieceModel) => {
     console.log(`${name}...\r
       \tPlayer: ${input.Player}\r
@@ -302,7 +319,7 @@ export const useGameState = defineStore("GameState", () => {
       \tMovementMap: ${input.MovementMap.length}
       `);
       if(input.MovementMap.length > 0) console.dir(input.MovementMap);
-  };
+  };  
 
   return {
     Board,

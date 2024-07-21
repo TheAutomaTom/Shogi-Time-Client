@@ -2,6 +2,7 @@
   <div>
 
     <promotion-modal></promotion-modal>
+    <game-over-modal></game-over-modal>
 
     <div class="game-header">
       <span>Player: {{ game$.Board.CurrentPlayer }}</span>
@@ -34,6 +35,7 @@
 import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
 import InHandPiece from "@/ViewComponents/GameBoard/InHandPiece.vue";
 import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
+import GameOverModal from "@/ViewComponents/GameBoard/GameOverModal.vue";
 import { useGameState } from "@/State/GameState";
 
 const game$ = useGameState();

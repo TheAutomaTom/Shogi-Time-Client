@@ -4,7 +4,7 @@
   class="promotion-window"
 >
   <div class="modal-info">
-    Player {{ game$.CurrentPlayer }} wins🤘
+    Player {{ game$.Board.CurrentPlayer }} wins🤘
   </div>
 <!-- <div class="modal-choice">
     <button class="modal-choice-button" @click="game$.PromotePiece(true)">Yes</button>
@@ -23,9 +23,10 @@ const game$ = useGameState();
 const toShow = ref(false);
 
 watch( // Update highlight
-  () => game$.Mode,
+  () => game$.Phase,
   () => {
-    if(game$.Mode == GamePhase.GameOver){
+    if(game$.Phase == GamePhase.GameOver){
+      console.error(`game-over-modal toShow.value = ${toShow.value}`);
       toShow.value = true;
     }
     else {
