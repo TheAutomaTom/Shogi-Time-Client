@@ -205,13 +205,13 @@ export class MobilityEngine {
         
         case 0: // This is an open square.
           if(isBlocked){
-            const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked)`);}            
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
             return result;
             
           } else {
-            const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Open} (!isBlocked)`);}
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
             return result;
           }
 
@@ -222,13 +222,13 @@ export class MobilityEngine {
         default: 
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Enemy}`);}
           if(isBlocked){
-            const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked enemy)`);}
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
             return result;
             
           } else {
-            const result = new TargetSquare(s.X, s.Y, TargetStatus.Enemy );  
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Open} (!isBlocked enemy)`);}
+            const result = new TargetSquare(s.X, s.Y, TargetStatus.Enemy );  
             return result;
           }
 
