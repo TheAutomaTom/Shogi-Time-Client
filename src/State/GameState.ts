@@ -14,6 +14,7 @@ export const useGameState = defineStore("GameState", () => {
   
   const logPieceSelect = false;
   const logGamePhase = false;
+  const logMethodCalled = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
   const Board = ref( 
@@ -111,8 +112,8 @@ export const useGameState = defineStore("GameState", () => {
 
       case TargetStatus.Enemy: // Kit it! 
 
-        if( square.Piece.Type == PieceType.KingVictor ){
-          console.log(`MoveAttempt: ${TargetStatus.Enemy} = ${PieceType.KingVictor}... call gameOver()`);
+        if( square.Piece.Type == PieceType.King ){
+          console.log(`MoveAttempt: ${TargetStatus.Enemy} = ${PieceType.King}... call gameOver()`);
           gameOver(Board.value.CurrentPlayer);
           break;
         }
@@ -267,7 +268,6 @@ export const useGameState = defineStore("GameState", () => {
 
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
-    console.warn("CompleteMove() Start");
     resetSelections();
     switchCurrentPlayer();
     Board.value = _engine.RebuildBoard( Board.value );
@@ -308,6 +308,11 @@ export const useGameState = defineStore("GameState", () => {
     console.log(`\r\n\r\nGame Phase: ${phase} (${caller})`);
   };
   
+  const logMethod = (method: string, step: string = "") =>{
+    const s = step != "" ? `: ${step}` : '';
+    console.log(`${method}${s}`);
+  };
+
   const logPieceDetails =(name: string, input: PieceModel) => {
     console.log(`${name}...\r
       \tPlayer: ${input.Player}\r

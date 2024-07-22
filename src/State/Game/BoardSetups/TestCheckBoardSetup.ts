@@ -160,8 +160,8 @@ Squares = [
 
     new SquareModel( 5, 2, 1, new PieceModel( )),
     
-    new SquareModel( 6, 2, 1, new PieceModel( )),
-    new SquareModel( 6, 2, 1, new PieceModel( 2, PieceType.KingVictor, "Center", "GY")),
+    // new SquareModel( 6, 2, 1, new PieceModel( )),
+    new SquareModel( 6, 2, 1, new PieceModel( 2, PieceType.King, "Center", "GY")),
 
     new SquareModel( 7, 2, 1, new PieceModel( )),
 

@@ -59,7 +59,7 @@ export class PieceModel {
 
   setRange = (): PieceRangeSet =>{
     switch (this.Type) {
-      case PieceType.KingVictor: 
+      case PieceType.King: 
         return {
           N:  1,
           S:  1,

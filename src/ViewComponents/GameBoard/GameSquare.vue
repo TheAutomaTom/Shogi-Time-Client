@@ -13,7 +13,7 @@
     >{{ getNotationText('y') }}</div>
 
 <!--  -->
-    <div class="board-notation board-notation-left">{{ input.X }}{{ input.Y }}</div>
+    <div class="board-notation board-notation-left">{{ input.X }}{{ input.Y }} {{ input.Piece.Type != "None" ? input.Piece.Type : "" }}</div>
 <!--  -->
 
     <div 

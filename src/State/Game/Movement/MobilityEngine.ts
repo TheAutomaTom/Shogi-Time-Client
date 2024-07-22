@@ -223,7 +223,7 @@ export class MobilityEngine {
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Enemy}`);}
 
           // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
-          const isCheck = s.Piece.Type == PieceType.KingVictor;
+          const isCheck = s.Piece.Type == PieceType.King;
 
           if(isBlocked){
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked enemy)`);}
