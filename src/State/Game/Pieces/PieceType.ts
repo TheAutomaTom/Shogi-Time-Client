@@ -2,7 +2,7 @@
 export enum PieceType {
   None = "None",
   KingVictor = "KingVictor",
-  KingChallenger = "KingChallenger",
+  // KingChallenger = "KingChallenger",
   Rook = "Rook",
   RookPro = "RookPro",
   Bishop = "Bishop",

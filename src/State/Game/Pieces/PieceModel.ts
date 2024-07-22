@@ -72,18 +72,18 @@ export class PieceModel {
           K:  0
         } as PieceRangeSet;
     
-      case PieceType.KingChallenger: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 1,
-          SW: 1,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
+      // case PieceType.KingChallenger: 
+      //   return {
+      //     N:  1,
+      //     S:  1,
+      //     E:  1,
+      //     W:  1,
+      //     NE: 1,
+      //     SE: 1,
+      //     SW: 1,
+      //     NW: 1,
+      //     K:  0
+      //   } as PieceRangeSet;
     
       case PieceType.Rook: 
         return {

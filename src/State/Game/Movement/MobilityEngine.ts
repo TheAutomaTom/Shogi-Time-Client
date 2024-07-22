@@ -203,7 +203,7 @@ export class MobilityEngine {
 
       switch (s?.Piece.Player) {
         
-        case 0: // This is an open square.
+        case 0: // Open squares
           if(isBlocked){
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked)`);}            
             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
@@ -219,8 +219,12 @@ export class MobilityEngine {
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Ally}`);}
           return new TargetSquare(s.X, s.Y, TargetStatus.Ally );
       
-        default: 
+        default: // Enemy
           if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Enemy}`);}
+
+          // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
+          const isCheck = s.Piece.Type == PieceType.KingVictor;
+
           if(isBlocked){
             if(isLogSubject){console.log(`\t${targetX},${targetY}: ${TargetStatus.Blocked} (isBlocked enemy)`);}
             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
