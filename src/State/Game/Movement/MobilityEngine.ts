@@ -68,39 +68,12 @@ export class MobilityEngine {
     return map;
   };
 
-  // Make a list of files (columns) without existing pawns, per player.
-  findOpenFiles = ( player: number, board: BoardModel ): number[] => {
-
-    // Check to see if pawns are captured (otherwise there is no point in this process)
-    const hasPawns = player == 1 
-    ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
-    : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
-
-    // All possible files (columns) to be filtered out.
-    let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
-
-    // Filter out files that already contain a player's unpromoted pawn.
-    if(hasPawns.length > 0){
-      board.Squares.forEach(s => {
-        if( s.Piece.Type == PieceType.Pawn ){
-          if( s.Piece.Player == player) { 
-            // console.log(`openFilesP1...filter BEFORE ${s.X}`);
-            // console.dir(openFilesP1);
-            openFiles = openFiles.filter(x => x != s.X); 
-            // console.log(`openFilesP1...filter AFTER ${s.X}`);
-            // console.dir(openFilesP1);
-          }
-        }
-      });
-    }    
-    return openFiles;
-  };
 
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
     
     // Make a list of columns that pawns can be placed on for each player.
     let openFilesP1 = this.findOpenFiles(1, board);
-    let openFilesP2 = this.findOpenFiles(1, board);
+    let openFilesP2 = this.findOpenFiles(2, board);
         
     // Loop through captured pieces (player 1)
     board.CapturesP1.forEach(capture => {
@@ -204,6 +177,35 @@ export class MobilityEngine {
     }
     return player == 1 ? 1 : -1;
   };
+  
+  // Make a list of files (columns) without existing pawns, per player.
+  findOpenFiles = ( player: number, board: BoardModel ): number[] => {
+
+    // Check to see if pawns are captured (otherwise there is no point in this process)
+    const hasPawns = player == 1 
+    ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
+    : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
+
+    // All possible files (columns) to be filtered out.
+    let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
+
+    // Filter out files that already contain a player's unpromoted pawn.
+    if(hasPawns.length > 0){
+      board.Squares.forEach(s => {
+        if( s.Piece.Type == PieceType.Pawn ){
+          if( s.Piece.Player == player) { 
+            // console.log(`openFilesP1...filter BEFORE ${s.X}`);
+            // console.dir(openFilesP1);
+            openFiles = openFiles.filter(x => x != s.X); 
+            // console.log(`openFilesP1...filter AFTER ${s.X}`);
+            // console.dir(openFilesP1);
+          }
+        }
+      });
+    }    
+    return openFiles;
+  };
+  
 
   evaluateVector = ( 
     piece: PieceModel, board: BoardModel, targetX: number, targetY: number, isBlocked: Boolean, isLogSubject: boolean = false
