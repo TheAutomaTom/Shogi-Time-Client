@@ -271,19 +271,13 @@ export const useGameState = defineStore("GameState", () => {
 
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
-    console.log("before...IsCheck.value");
-    console.dir(Checks.value);
-
     resetSelections();
     switchCurrentPlayer();
     Board.value = _engine.RebuildBoard( Board.value );
-    
-
     const checks = detectCheckCondition(Board.value.Squares);
-    console.log("during...checks");
-    console.dir(checks);
     
     if(checks.length > 0){
+      if(logGamePhase) { console.warn("Checks..."); console.dir(Checks.value); }
       checks.forEach(s =>
       Checks.value.push(
         new SquareModel(
@@ -304,10 +298,6 @@ export const useGameState = defineStore("GameState", () => {
       Checks.value = [];
     }
     
-
-    console.log("after...");
-    console.dir(Checks.value);
-
     Phase.value = GamePhase.TurnStart;
     if(logGamePhase) logPhase(GamePhase.TurnStart, "CompleteMove ends");
   };
