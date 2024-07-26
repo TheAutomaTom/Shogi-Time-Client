@@ -25,6 +25,8 @@
     
 ## Game lifecycle
 
+- LoadingBoard
+
 - TurnStart
   Marks the first opportunity the new current player may begin making selections.
 
@@ -39,7 +41,5 @@
   Transition concluding a MoveStart or DropStart phase.
 
 - PromoteOption
-
-- CheckCondition
 
 - GameOver

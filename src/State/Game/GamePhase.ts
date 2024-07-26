@@ -4,11 +4,10 @@ export enum GamePhase {
   TurnStart = "turn-start",
   
   MoveStart = "move-start",
-  MoveAttempt = "move-attempt",
+  DropStart = "drop-start",
   MoveEnd = "move-end",
   PromoteOption = "promote-option",
 
-  DropStart = "drop-start",
   
   GameOver = "game-over"
 
