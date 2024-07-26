@@ -9,6 +9,7 @@ import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 import { defineStore } from "pinia";
 import { ref } from "vue";
+import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -21,8 +22,8 @@ export const useGameState = defineStore("GameState", () => {
     new BoardModel( "Test-123", 
                     1,
                     // new NewBoardSetup().Squares,
-                    // new TestBoardSetup().Squares,
-                    new TestCheckBoardSetup().Squares,
+                    new TestBoardSetup().Squares,
+                    // new TestCheckBoardSetup().Squares,
                     [],
                     []
                   ));
