@@ -7,8 +7,19 @@
     <div class="game-header">
       <span>Player: {{ game$.Board.CurrentPlayer }}</span>
       <span>&nbsp;/&nbsp;</span>
-      <span>Mode: {{ game$.Phase }}</span>
-      <button style="margin:10px;font-size: xx-small;">Build GameModel</button>
+      <span
+        :style="game$.Phase == GamePhase.GameOver ? 'color:yellow' : ''"
+      >Game Phase: {{ game$.Phase }}</span>
+      <span>&nbsp;/&nbsp;</span>
+<!-- 
+      <span
+        :style="game$.Board.InCheck.X != 0 ? 'color:yellow' : ''"
+      >Is Check: {{ game$.Board.InCheck.X != 0 }}</span> 
+-->
+    <span
+      :style="game$.Checks.length > 0 ? 'color:yellow' : ''"
+    >Is Check: {{ game$.Checks.length != 0 }}</span>
+
     </div>
 
     <div class="captures-p2">
@@ -37,6 +48,7 @@ import InHandPiece from "@/ViewComponents/GameBoard/InHandPiece.vue";
 import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
 import GameOverModal from "@/ViewComponents/GameBoard/GameOverModal.vue";
 import { useGameState } from "@/State/GameState";
+import { GamePhase } from "@/State/Game/GamePhase";
 
 const game$ = useGameState();
 

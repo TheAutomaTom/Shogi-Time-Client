@@ -8,21 +8,15 @@ import { TargetStatus } from "./TargetStatus";
 import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
-  logSubject = {enabled: true, x:7, y:3, id:"Player1"};
+  logSubject = {enabled: false, x:7, y:3};
   
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
     this.rebuildSquares(board);
     board = this.rebuildDrops(board);
-    board = this.detectCheckCondition(board);
     return board;
   };
-  
-  detectCheckCondition(board: BoardModel): BoardModel {
-    
 
-    return board;
-  }
   
 
   rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
@@ -48,7 +42,7 @@ export class MobilityEngine {
       if(square.Piece.Player != 0){
         square.Piece.MovementMap = [];        
         square.Piece.MovementMap.push( ...this.FlattenMap(square) );
-      }
+      }      
     });
 
     return board.Squares;
@@ -64,9 +58,11 @@ export class MobilityEngine {
     square.Piece.VectorSet.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.K.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.VectorSet.K.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });    
     return map;
   };
+
+
 
 
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
@@ -205,7 +201,7 @@ export class MobilityEngine {
     }    
     return openFiles;
   };
-  
+
 
   evaluateVector = ( 
     piece: PieceModel, board: BoardModel, targetX: number, targetY: number, isBlocked: Boolean, isLogSubject: boolean = false

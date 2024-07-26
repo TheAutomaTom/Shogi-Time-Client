@@ -22,11 +22,13 @@ export const useGameState = defineStore("GameState", () => {
     new BoardModel( "Test-123", 
                     1,
                     // new NewBoardSetup().Squares,
-                    new TestBoardSetup().Squares,
-                    // new TestCheckBoardSetup().Squares,
+                    // new TestBoardSetup().Squares,
+                    new TestCheckBoardSetup().Squares,
+                    [],
                     [],
                     []
                   ));
+  const Checks = ref( [] as SquareModel[] );
 
   const PieceInHand = ref({} as PieceModel);
   const Origin = ref({} as SquareModel);
@@ -269,13 +271,78 @@ export const useGameState = defineStore("GameState", () => {
 
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
+    console.log("before...IsCheck.value");
+    console.dir(Checks.value);
+
     resetSelections();
     switchCurrentPlayer();
     Board.value = _engine.RebuildBoard( Board.value );
+    
+
+    const checks = detectCheckCondition(Board.value.Squares);
+    console.log("during...checks");
+    console.dir(checks);
+    
+    if(checks.length > 0){
+      checks.forEach(s =>
+      Checks.value.push(
+        new SquareModel(
+          s.X, 
+          s.Y, 
+          s.PromotionZone,
+          new PieceModel(
+            s.Piece.Player,
+            s.Piece.Type,
+            s.Piece.StartingPosition,
+            s.Piece.Icon,
+            s.Piece.IsFacingDefault,
+            s.Piece.MovementMap
+          )
+        ))
+      );
+    } else {
+      Checks.value = [];
+    }
+    
+
+    console.log("after...");
+    console.dir(Checks.value);
+
     Phase.value = GamePhase.TurnStart;
     if(logGamePhase) logPhase(GamePhase.TurnStart, "CompleteMove ends");
   };
+  
+  const detectCheckCondition = (squares: SquareModel[]): SquareModel[] => {
 
+    let checks = [] as SquareModel[];
+
+    squares.forEach(s => {
+      if(s.Piece.Player != 0){
+        var inCheck = s.Piece.MovementMap.some(p => p.Status == TargetStatus.Check);
+        if(inCheck){
+
+          checks.push(
+            new SquareModel(
+              s.X, 
+              s.Y, 
+              s.PromotionZone,
+              new PieceModel(
+                s.Piece.Player,
+                s.Piece.Type,
+                s.Piece.StartingPosition,
+                s.Piece.Icon,
+                s.Piece.IsFacingDefault,
+                s.Piece.MovementMap
+              )
+            ));
+
+          console.error(`inCheck from ${s.Id}'s ${s.Piece.Id} (${s.X}, ${s.Y})`);
+        }
+      }
+    });
+
+    return checks;
+  }
   
   
   const resetSelections = () =>{
@@ -329,6 +396,7 @@ export const useGameState = defineStore("GameState", () => {
 
   return {
     Board,
+    Checks,
     Phase, 
     TurnStart,
     PieceInHand,
