@@ -9,9 +9,7 @@ export enum GamePhase {
   PromoteOption = "promote-option",
 
   DropStart = "drop-start",
-  DropEnd = "drop-end",
   
-  CheckCondition = "check-condition",
   GameOver = "game-over"
 
 }

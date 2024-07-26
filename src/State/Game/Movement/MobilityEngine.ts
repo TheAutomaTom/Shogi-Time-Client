@@ -7,14 +7,21 @@ import { TargetStatus } from "./TargetStatus";
 import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
-  
   logSubject = {enabled: false, x:8, y:9};
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
     this.rebuildSquares(board);
     board = this.rebuildDrops(board);
+    board = this.detectCheckCondition(board);
     return board;
   };
+  
+  detectCheckCondition(board: BoardModel): BoardModel {
+    
+
+    return board;
+  }
+  
 
   rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
     if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
@@ -62,6 +69,7 @@ export class MobilityEngine {
     return map;
   };
 
+
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
     
     // Make a list of columns that pawns can be placed on for each player.
@@ -71,6 +79,7 @@ export class MobilityEngine {
     let openFilesP2 = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];    
     const hasPawnsP2 = board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
     
+    // Filter out files that already contain a player's unpromoted pawn.
     if(hasPawnsP1.length + hasPawnsP2.length > 0){
       board.Squares.forEach(s => {
         if( s.Piece.Type == PieceType.Pawn ){
@@ -89,6 +98,7 @@ export class MobilityEngine {
       });
     }
     
+    // Loop through captured pieces (player 1)
     board.CapturesP1.forEach(capture => {
       capture.MovementMap = [];
       board.Squares.forEach(s => {
@@ -134,6 +144,7 @@ export class MobilityEngine {
 
     });
     
+    // Loop through captured pieces (player 2)
     board.CapturesP2.forEach(capture => {
       capture.MovementMap = [];
       board.Squares.forEach(s => {
