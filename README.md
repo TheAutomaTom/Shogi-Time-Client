@@ -25,21 +25,29 @@
     
 ## Game lifecycle
 
-- LoadingBoard
+- `LoadingBoard`
+  Sends and receives information from server.
 
-- TurnStart
-  Marks the first opportunity the new current player may begin making selections.
+- `TurnStart`
+  Marks the first opportunity the new current player may begin making selections from either pieces on the board or their captures.
 
-- MoveStart
-  The current player has selected a piece on the board.  Selecting another one of their pieces on the board maintains this phase.  Selecting a piece form their captures triggers a DropStart phase.
-  Selection assigns the MoveOrigin square, which is watched for board highlight class updates.
+- `MoveStart`
+  The current player has selected one of their pieces on the board.  Selecting another one of their pieces on the board maintains this phase, shifting the focus to the newly selected piece.  Selecting a piece from their captures enters a DropStart phase.  This selection assigns the MoveOrigin square, which is watched for square highlight class updates.
+  Selecting a piece form their captures triggers a DropStart phase.  
 
-- DropStart
+- `DropStart`
   The current player has selected a piece from their captures.  Selecting another one of their captured pieces maintains this phase.  Selecting a piece form the board triggers a MoveStart phase.
 
-- MoveEnd
-  Transition concluding a MoveStart or DropStart phase.
+- `MoveEnd`
+  Transition concluding a MoveStart or DropStart phase.  Creates a new piece in the assigned destination, removes piece at origin, evaluates Promotion condition (possibly triggering PromotionModal).  Calls CompleteMove if PromotionModal is not triggered.
 
-- PromoteOption
+- `PromoteOption`
+  Occurs when a piece is moved into an applicable PromotionZone.  Drops are not eligible for promotion on initial placement.  Mandatory promotions do not trigger this modal.  Calls CompleteMove on close.
 
-- GameOver
+- `GameOver`
+  ...
+
+## Turn workflow notes
+
+
+- CompleteMove

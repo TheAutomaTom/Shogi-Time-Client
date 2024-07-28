@@ -28,7 +28,7 @@ export const useGameState = defineStore("GameState", () => {
                     [],
                     []
                   ));
-  const Checks = ref( [] as SquareModel[] );
+  // const Checks = ref( [] as SquareModel[] );
 
   const PieceInHand = ref({} as PieceModel);
   const Origin = ref({} as SquareModel);
@@ -46,7 +46,7 @@ export const useGameState = defineStore("GameState", () => {
   ];
 
   const TurnStart = () => {
-    if(logGamePhase) logPhase(GamePhase.TurnStart, "TurnStart begins");
+    if(logGamePhase) logPhase("TurnStart begins");
     Phase.value = GamePhase.TurnStart;
     resetSelections();
     const _ = _engine.rebuildSquares( Board.value );
@@ -58,7 +58,7 @@ export const useGameState = defineStore("GameState", () => {
     resetSelections();
     Phase.value = GamePhase.MoveStart;
 
-    if(logGamePhase) logPhase(GamePhase.MoveStart, "MoveStart begins");    
+    if(logGamePhase) logPhase("MoveStart begins");    
     if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} piece`, piece);
 
     PieceInHand.value = new PieceModel(
@@ -155,7 +155,7 @@ export const useGameState = defineStore("GameState", () => {
     
     Destination.value = new SquareModel( square.X, square.Y, square.PromotionZone, square.Piece );
     Phase.value = GamePhase.MoveEnd;
-    if(logGamePhase) logPhase(GamePhase.MoveEnd, "MoveEnd begins");
+    if(logGamePhase) logPhase("MoveEnd begins");
           
     // Test for promotion zone and if piece type can be promoted.
     if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
@@ -193,7 +193,7 @@ export const useGameState = defineStore("GameState", () => {
       if(logPieceSelect) logPieceDetails(`Possible promotion`, PieceInHand.value);
 
       // PromotionModal will display, pending input to continue workflow.
-      if(logGamePhase) logPhase(GamePhase.PromoteOption, "MoveEnd last return");
+      if(logGamePhase) logPhase("MoveEnd last return");
       return Phase.value = GamePhase.PromoteOption;
     
     }
@@ -255,6 +255,8 @@ export const useGameState = defineStore("GameState", () => {
   const PromotePiece =(toPromote: boolean = true)=> {
     if(logPieceSelect) console.log("PromotePiece() called 1");
 
+    if(logGamePhase) logPhase("PromoteOption start");
+
     if( toPromote && _promotable.includes(PieceInHand.value.Type)){
       if(logPieceSelect) console.log("PromotePiece() called 2");
       Board.value.Squares.map( s =>{
@@ -266,73 +268,22 @@ export const useGameState = defineStore("GameState", () => {
         }
       });
     }
+    if(logGamePhase) logPhase("PromoteOption ends");
     return CompleteMove();
   };
 
   // Note: CompleteMove could be called locally or by PromoteModal
   const CompleteMove =()=> {
+    if(logGamePhase) logPhase("CompleteMove begin");
     resetSelections();
     switchCurrentPlayer();
     Board.value = _engine.RebuildBoard( Board.value );
-    const checks = detectCheckCondition(Board.value.Squares);
     
-    if(checks.length > 0){
-      if(logGamePhase) { console.warn("Checks..."); console.dir(Checks.value); }
-      checks.forEach(s =>
-      Checks.value.push(
-        new SquareModel(
-          s.X, 
-          s.Y, 
-          s.PromotionZone,
-          new PieceModel(
-            s.Piece.Player,
-            s.Piece.Type,
-            s.Piece.StartingPosition,
-            s.Piece.Icon,
-            s.Piece.IsFacingDefault,
-            s.Piece.MovementMap
-          )
-        ))
-      );
-    } else {
-      Checks.value = [];
-    }
-    
+    // This will need to send data to server and await a response.
     Phase.value = GamePhase.TurnStart;
-    if(logGamePhase) logPhase(GamePhase.TurnStart, "CompleteMove ends");
+    if(logGamePhase) logPhase("CompleteMove ends");
   };
-  
-  const detectCheckCondition = (squares: SquareModel[]): SquareModel[] => {
-
-    let checks = [] as SquareModel[];
-
-    squares.forEach(s => {
-      if(s.Piece.Player != 0){
-        var inCheck = s.Piece.MovementMap.some(p => p.Status == TargetStatus.Check);
-        if(inCheck){
-
-          checks.push(
-            new SquareModel(
-              s.X, 
-              s.Y, 
-              s.PromotionZone,
-              new PieceModel(
-                s.Piece.Player,
-                s.Piece.Type,
-                s.Piece.StartingPosition,
-                s.Piece.Icon,
-                s.Piece.IsFacingDefault,
-                s.Piece.MovementMap
-              )
-            ));
-
-          console.error(`inCheck from ${s.Id}'s ${s.Piece.Id} (${s.X}, ${s.Y})`);
-        }
-      }
-    });
-
-    return checks;
-  }
+ 
   
   
   const resetSelections = () =>{
@@ -357,13 +308,13 @@ export const useGameState = defineStore("GameState", () => {
 
   const gameOver = (player: number) =>{
     console.log(`${GamePhase.GameOver}: Player ${player} wins.`);
-    if(logGamePhase) logPhase(GamePhase.GameOver, "gameOver ends");
+    if(logGamePhase) logPhase("gameOver ends");
     return Phase.value = GamePhase.GameOver;
     
   };
 
-  const logPhase = (phase: GamePhase, caller: string = "") =>{
-    console.log(`\r\n\r\nGame Phase: ${phase} (${caller})`);
+  const logPhase = (caller: string = "") =>{
+    console.log(`\r\n\r\nGame Phase: ${Phase.value} (${caller})`);
   };
   
   const logMethod = (method: string, step: string = "") =>{
@@ -386,7 +337,7 @@ export const useGameState = defineStore("GameState", () => {
 
   return {
     Board,
-    Checks,
+    // Checks,
     Phase, 
     TurnStart,
     PieceInHand,

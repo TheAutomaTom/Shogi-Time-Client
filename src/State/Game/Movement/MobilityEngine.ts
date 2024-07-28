@@ -9,18 +9,50 @@ import { VectorSet } from "./VectorSet";
 
 export class MobilityEngine {
   logSubject = {enabled: false, x:7, y:3};
-  
+  logPhase = true;
 
   RebuildBoard = ( board: BoardModel ): BoardModel =>{
+    if(this.logPhase) console.log("\r\nRebuildBoard ... ");
     this.rebuildSquares(board);
     board = this.rebuildDrops(board);
+    
+    const checks = this.detectCheckCondition(board.Squares);
+    
+    if(checks.length > 0){
+      if(this.logPhase) console.log(`\r\nRebuildBoard/ checks.length = ${checks.length} ... `);
+      
+      if(this.logPhase){ 
+        console.warn("Checks..."); 
+        console.dir(board.Checks); 
+      }
+
+      checks.forEach(s =>
+        board.Checks.push(
+        new SquareModel(
+          s.X, 
+          s.Y, 
+          s.PromotionZone,
+          new PieceModel(
+            s.Piece.Player,
+            s.Piece.Type,
+            s.Piece.StartingPosition,
+            s.Piece.Icon,
+            s.Piece.IsFacingDefault,
+            s.Piece.MovementMap
+          )
+        ))
+      );
+      board.Checks = checks;
+      board = this.HandleChecks( board );
+    } else {
+      board.Checks = [];
+    }
     return board;
   };
 
-  
-
   rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
     if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
+    if(this.logPhase) console.log("\r\nrebuildSquares... ");
 
     // First iteration builds vector arrays evaluating each pieces' 
     //   complete movement range and determines targets' relation to origin.
@@ -41,14 +73,14 @@ export class MobilityEngine {
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
         square.Piece.MovementMap = [];        
-        square.Piece.MovementMap.push( ...this.FlattenMap(square) );
+        square.Piece.MovementMap.push( ...this.flattenMap(square) );
       }      
     });
 
     return board.Squares;
   };
   
-  FlattenMap = (square: SquareModel): TargetSquare[] => {
+  flattenMap = (square: SquareModel): TargetSquare[] => {
     let map = [] as TargetSquare[];
     square.Piece.VectorSet.N.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
     square.Piece.VectorSet.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
@@ -66,6 +98,7 @@ export class MobilityEngine {
 
 
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+    if(this.logPhase) console.log("\r\nrebuildDrops... ");
     
     // Make a list of columns that pawns can be placed on for each player.
     let openFilesP1 = this.findOpenFiles(1, board);
@@ -456,7 +489,69 @@ export class MobilityEngine {
     return false;
   };
 
+  //===================================================================================================================
+ 
+  detectCheckCondition (squares: SquareModel[]): SquareModel[] {
+    if(this.logPhase) console.log("\r\ndetectCheckCondition... ");
+
+    let checks = [] as SquareModel[];
+
+    squares.forEach(s => {
+      if(s.Piece.Player != 0){
+        var inCheck = s.Piece.MovementMap.some(p => p.Status == TargetStatus.Check);
+        if(inCheck){
+
+          checks.push(
+            new SquareModel(
+              s.X, 
+              s.Y, 
+              s.PromotionZone,
+              new PieceModel(
+                s.Piece.Player,
+                s.Piece.Type,
+                s.Piece.StartingPosition,
+                s.Piece.Icon,
+                s.Piece.IsFacingDefault,
+                s.Piece.MovementMap
+              )
+            ));
+
+          console.error(`inCheck from ${s.Id}'s ${s.Piece.Id} (${s.X}, ${s.Y})`);
+        }
+      }
+    });
+
+    return checks;
+  }
+
+  
+  HandleChecks = ( board: BoardModel ): BoardModel =>{
+    if(this.logPhase) console.log(`\r\nHandleChecks ... `);
+    
+    if(board.Checks.length == 0){ 
+      return board;
+    }
+
+    const defender = board.Checks[0]?.Piece?.Player;
+    if(defender != 0){
+      const target = board.Squares.filter(s => 
+        s.Piece.Player == defender 
+        && s.Piece.Type == PieceType.King
+      )[0];
+
+      
+
+    }
+
+    board.Checks.forEach( attackVector => {
+      target.Piece.MovementMap.filter( escapeVector => {
+        escapeVector.Id != attackVector.Id
+      });
+      
+    });
+
+    return board;
+  };
+
 
 }
-
-

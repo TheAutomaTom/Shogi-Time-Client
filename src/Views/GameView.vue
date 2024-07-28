@@ -17,8 +17,8 @@
       >Is Check: {{ game$.Board.InCheck.X != 0 }}</span> 
 -->
     <span
-      :style="game$.Checks.length > 0 ? 'color:yellow' : ''"
-    >Is Check: {{ game$.Checks.length != 0 }}</span>
+      :style="game$.Board.Checks.length > 0 ? 'color:yellow' : ''"
+    >Is Check: {{ game$.Board.Checks.length != 0 }}</span>
 
     </div>
 
