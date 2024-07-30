@@ -10,14 +10,14 @@ import { VectorName } from "./Movement/VectorName";
 import { VectorTargetReport } from "./Movement/VectorTargetReport";
 
 export class MobilityEngine {
-  logSubject = {enabled: false, id: ""};
+  logSubject = {enabled: true, id: "P1-Bishop-Left"};
   logPhase = true;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
     if(this.logPhase) console.log("\r\nRebuildBoard ... ");
     let result = this.rebuildSquares(input);
-    result = this.rebuildDrops(result);
+    // result = this.rebuildDrops(result);
     
     //...
 
@@ -25,7 +25,7 @@ export class MobilityEngine {
   };
 
 
-
+/*
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
     if(this.logPhase) console.log(`\r\nrebuildDrops... `);
     
@@ -128,21 +128,25 @@ export class MobilityEngine {
     return board;
 
   };
-
+*/
   
   rebuildSquares = ( board: BoardModel ): BoardModel => {
     
     // First iteration finds all moves without consideration of how checks or pins affect individual movement.
-    if(this.logPhase) console.log("\trebuildSquares first iteration... ");
+    if(this.logPhase) console.log("\r\nrebuildSquares first iteration... ");
+    
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
-        if(this.logSubject.enabled && square.Piece.Id == this.logSubject.id ) console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.id}`); 
+
+        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        if(logSubject) console.log(`MobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.id}`); 
+
         square.Piece.Mobility = this.rebuildMobility(board, square);
       }      
     });
     
     // Second iteration finds attackers' checks and pins, and constrains movement on targets.  A flat map is created for each piece for Views to bind on.
-    if(this.logPhase) console.log("\trebuildSquares second iteration... ");
+    if(this.logPhase) console.log("\r\nrebuildSquares second iteration... ");
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
@@ -194,9 +198,12 @@ export class MobilityEngine {
   };
   
   rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: Vector = new Vector(VectorName.None) ): Mobility => {
-    const isLogSubject = this.logSubject.enabled = true && this.logSubject.id == square.Id;
+    const isLogSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+    if(this.logPhase && isLogSubject) console.log("\trebuildMobility... ");
 
-    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);
+    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);    
+    if(this.logPhase && isLogSubject) {console.log("\tsquare.Piece.Mobility 1: "); console.dir(square.Piece.Mobility);}
+
     let result = square.Piece.Mobility;
     
     if(pinnedTo.Name != VectorName.None){
@@ -208,6 +215,7 @@ export class MobilityEngine {
       square.Piece.Mobility.Vectors.push(this.rebuildVector(pinnedTo, board, square, facing, isLogSubject));
     }
 
+    if(this.logPhase && isLogSubject) {console.log("\tsquare.Piece.Mobility 2: "); console.dir(result);}
     return result;
   };
   
