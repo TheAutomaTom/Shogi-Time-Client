@@ -1,5 +1,5 @@
 import { PieceModel } from "./Pieces/PieceModel";
-import { GameSquareModel } from "./GameSquareModel";
+import { GameSquareModel } from "./Squares/GameSquareModel";
 
 export class BoardModel {
   Id: string;

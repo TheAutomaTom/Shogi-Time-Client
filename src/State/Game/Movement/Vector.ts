@@ -1,8 +1,8 @@
-import { GameSquareModel } from "../GameSquareModel";
+import { GameSquareModel } from "../Squares/GameSquareModel";
 import { PieceModel } from "../Pieces/PieceModel";
 import { PieceType } from "../Pieces/PieceType";
-import { TargetSquareModel } from "./TargetSquareModel";
-import { TargetStatus } from "./TargetStatus";
+import { TargetSquareModel } from "../Squares/TargetSquareModel";
+import { TargetStatus } from "../Squares/TargetStatus";
 import { VectorName } from "./VectorName";
 
 export class Vector {
@@ -69,8 +69,7 @@ export class Vector {
       this.YIncrement,
       this.Targets,
       this.IsCheck,
-      this.PinnedPiece,
-      this.PinnedTo
+      this.PinnedPiece
     );
 
     return result;

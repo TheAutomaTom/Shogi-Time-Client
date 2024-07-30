@@ -45,12 +45,12 @@
 <!--  -->
 <script setup lang="ts">
 import { ref, watch } from 'vue';
-import type { GameSquareModel } from "@/State/Game/GameSquareModel";
+import type { GameSquareModel } from "@/State/Game/Squares/GameSquareModel";
 import GamePiece from "./GamePiece.vue";
 import { useGameState } from '@/State/GameState';
 import { GamePhase } from '@/State/Game/GamePhase';
-import { TargetStatus } from '@/State/Game/Movement/TargetStatus';
-import { TargetSquare } from '@/State/Game/Movement/TargetSquare';
+import { TargetStatus } from '@/State/Game/Squares/TargetStatus';
+import { TargetSquareModel } from '@/State/Game/Squares/TargetSquareModel';
 
 //=== Setup ======================================================
 const game$ = useGameState();
@@ -92,14 +92,14 @@ const getNotationStyle = (xy: string): string =>{
 // );
 
 
-const isValidTarget = ref({} as TargetSquare);
+const isValidTarget = ref({} as TargetSquareModel);
 
 watch( // Update highlight class
-  () => game$.PieceInHand.MovementMap,
+  () => game$.PieceInHand.Mobility.Map,
   () => {
     isValidTarget.value = 
-      game$.PieceInHand.MovementMap.find( s => s.X == props.input.X && s.Y == props.input.Y)!
-      || new TargetSquare(0,0,TargetStatus.Na);
+      game$.PieceInHand.Mobility.Map.find( s => s.X == props.input.X && s.Y == props.input.Y)!
+      || new TargetSquareModel(0,0,TargetStatus.Na);
 
     switch (isValidTarget.value.Status) {
       case TargetStatus.Open:

@@ -1,4 +1,4 @@
-import { BaseSquareModel } from "../Bases/BaseSquareModel";
+import { BaseSquareModel } from "./BaseSquareModel";
 import { PieceModel } from "../Pieces/PieceModel";
 import { TargetStatus } from "./TargetStatus";
 

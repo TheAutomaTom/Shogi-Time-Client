@@ -1,5 +1,5 @@
-import { BaseSquareModel } from "./Bases/BaseSquareModel";
-import { PieceModel } from "./Pieces/PieceModel";
+import { BaseSquareModel } from "./BaseSquareModel";
+import { PieceModel } from "../Pieces/PieceModel";
 
 export class GameSquareModel extends BaseSquareModel {
   PromotionZoneFor: number;

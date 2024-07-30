@@ -1,4 +1,3 @@
-
 export type VectorRangeSet = {
   N: number;
   S: number;

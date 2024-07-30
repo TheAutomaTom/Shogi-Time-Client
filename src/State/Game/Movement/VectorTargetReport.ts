@@ -1,5 +1,5 @@
-import { GameSquareModel } from "../GameSquareModel"
-import { TargetStatus } from "./TargetStatus"
+import { GameSquareModel } from "../Squares/GameSquareModel"
+import { TargetStatus } from "../Squares/TargetStatus"
 
 export type VectorTargetReport = {
   Status: TargetStatus

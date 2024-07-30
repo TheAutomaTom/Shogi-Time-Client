@@ -1,13 +1,13 @@
+import { BaseSquareModel } from "./Squares/BaseSquareModel";
 import { BoardModel } from "./BoardModel";
-import { GameSquareModel } from "./GameSquareModel";
+import { GameSquareModel } from "./Squares/GameSquareModel";
 import { Mobility } from "./Movement/Mobility";
 import { PieceType } from "./Pieces/PieceType";
-import { TargetStatus } from "./Movement/TargetStatus";
+import { TargetSquareModel } from "./Squares/TargetSquareModel";
+import { TargetStatus } from "./Squares/TargetStatus";
 import { Vector } from "./Movement/Vector";
 import { VectorName } from "./Movement/VectorName";
 import { VectorTargetReport } from "./Movement/VectorTargetReport";
-import { BaseSquareModel } from "./Bases/BaseSquareModel";
-import { TargetSquareModel } from "./Movement/TargetSquareModel";
 
 export class MobilityEngine {
   logSubject = {enabled: false, id: ""};
@@ -16,26 +16,133 @@ export class MobilityEngine {
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
     if(this.logPhase) console.log("\r\nRebuildBoard ... ");
-    const result = this.rebuildSquares(input);
+    let result = this.rebuildSquares(input);
+    result = this.rebuildDrops(result);
     
     //...
 
     return result;
+  };
+
+
+
+  rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+    if(this.logPhase) console.log(`\r\nrebuildDrops... `);
+    
+    // Make a list of columns that pawns can be placed on for each player.
+    let openFilesP1 = this.findOpenFiles(1, board);
+    let openFilesP2 = this.findOpenFiles(2, board);
+        
+    // Loop through captured pieces (player 1)
+    board.CapturesP1.forEach(capture => {
+      capture.Mobility.Map = [];
+      board.Squares.forEach(s => {
+
+        if(s.Piece.Player == 0){
+          
+          // If not pawn, lance, or night: add whole board
+          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If lance: add all but last back row
+          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If pawn: add all but last back row and other columns with existing pawns
+          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            
+            console.log(`\topenFilesP1...1`);
+            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+              console.warn(`\r\nrebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              console.log(`\topenFilesP1...2`);
+              console.dir(openFilesP1);
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
+
+            if(capture.Player == 2 && openFilesP2.includes(s.X)){
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
+
+          }
+
+          // If knight: add all but back 2 rows
+          else if( (capture.Type == PieceType.Knight)
+            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
+          {
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+        }
+      });
+
+    });
+    
+    // Loop through captured pieces (player 2)
+    board.CapturesP2.forEach(capture => {
+      capture.Mobility.Map = [];
+      board.Squares.forEach(s => {
+
+        if(s.Piece.Player == 0){
+          
+          // If not pawn, lance, or night: add whole board
+          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If lance: add all but last back row
+          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+          // If pawn: add all but last back row and other columns with existing pawns
+          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            
+            console.log(`\topenFilesP1...1`);
+            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+              console.warn(`\r\nrebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              console.log(`\topenFilesP1...2`);
+              console.dir(openFilesP1);
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
+
+            if(capture.Player == 2 && openFilesP2.includes(s.X)){
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
+
+          }
+
+          // If knight: add all but back 2 rows
+          else if( (capture.Type == PieceType.Knight)
+            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
+          {
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
+        
+        }
+      });
+
+    });
+
+    return board;
 
   };
+
   
   rebuildSquares = ( board: BoardModel ): BoardModel => {
-    if(this.logPhase) console.log("\trebuildSquares... ");
-
+    
     // First iteration finds all moves without consideration of how checks or pins affect individual movement.
+    if(this.logPhase) console.log("\trebuildSquares first iteration... ");
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
         if(this.logSubject.enabled && square.Piece.Id == this.logSubject.id ) console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.id}`); 
         square.Piece.Mobility = this.rebuildMobility(board, square);
       }      
     });
-
+    
     // Second iteration finds attackers' checks and pins, and constrains movement on targets.  A flat map is created for each piece for Views to bind on.
+    if(this.logPhase) console.log("\trebuildSquares second iteration... ");
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
@@ -46,25 +153,22 @@ export class MobilityEngine {
             board.Squares.forEach(s => {
 
               if(attackVector.PinnedPiece!.Id == s.Piece.Id){
-                const vectorPinnedToName = this.complimentaryVector(attackVector.Name);
+                const vectorPinnedToName = this.complimentaryVectorName(attackVector.Name);
                 const vectorPinnedTo = s.Piece.Mobility.Vectors.find(v => v.Name == vectorPinnedToName);
                 
                 // This this piece can't move in the attack vector, then it can't move anywhere (like a pawn pinned in the X axis)
                 if(vectorPinnedTo == undefined){
                   s.Piece.Mobility.Map = [];
                 } else{
-                  square.Piece.Mobility = this.rebuildMobility(board, square, vectorPinnedToName);
+                  square.Piece.Mobility = this.rebuildMobility(board, square, vectorPinnedTo);
                   square.Piece.Mobility.Vectors.forEach( v => {
                     const validMoves = v.Targets.filter(t => t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check);
                     s.Piece.Mobility.Map = [...validMoves];
                   });
-
                 }
 
               }
-
             });
-
           });
         }
 
@@ -75,8 +179,6 @@ export class MobilityEngine {
 
       }
     });
-
-    //...
 
     return board;
   };
@@ -91,15 +193,13 @@ export class MobilityEngine {
     return map;
   };
   
-
-
-  rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: VectorName = VectorName.None ): Mobility => {
+  rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: Vector = new Vector(VectorName.None) ): Mobility => {
     const isLogSubject = this.logSubject.enabled = true && this.logSubject.id == square.Id;
 
     const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);
     let result = square.Piece.Mobility;
     
-    if(pinnedTo != VectorName.None){
+    if(pinnedTo.Name != VectorName.None){
       square.Piece.Mobility.Vectors.forEach(vector => {
         vector = this.rebuildVector(vector, board, square, facing, isLogSubject );
       });
@@ -218,28 +318,51 @@ export class MobilityEngine {
 
   squareId = (x: number, y: number): string => `S${x}${y}`;
   
-  complimentaryVector = (input: VectorName): VectorName => {
+  complimentaryVectorName = (input: VectorName): VectorName => {
     switch (input) {
-
       case VectorName.N :
-        return VectorName.S;        
+        return VectorName.S;
       case VectorName.S :
-        return VectorName.N;        
+        return VectorName.N;
       case VectorName.E :
-        return VectorName.W;        
+        return VectorName.W;
       case VectorName.W :
-        return VectorName.E;        
+        return VectorName.E;
       case VectorName.NE:
-        return VectorName.SW;        
+        return VectorName.SW;
       case VectorName.SE:
-        return VectorName.NW;        
+        return VectorName.NW;
       case VectorName.SW:
-        return VectorName.NE;        
+        return VectorName.NE;
       case VectorName.NW:
-        return VectorName.SE;    
+        return VectorName.SE;
       default:
         return VectorName.None;
     }
+  };
+
+  // Make a list of files (columns) without existing pawns, per player.
+  findOpenFiles = ( player: number, board: BoardModel ): number[] => {
+
+    // Check to see if pawns are captured (otherwise there is no point in this process)
+    const hasPawns = player == 1 
+    ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
+    : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
+
+    // All possible files (columns) to be filtered out.
+    let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
+
+    // Filter out files that already contain a player's unpromoted pawn.
+    if(hasPawns.length > 0){
+      board.Squares.forEach(s => {
+        if( s.Piece.Type == PieceType.Pawn ){
+          if( s.Piece.Player == player) { 
+            openFiles = openFiles.filter(x => x != s.X);
+          }
+        }
+      });
+    }    
+    return openFiles;
   };
 
 }

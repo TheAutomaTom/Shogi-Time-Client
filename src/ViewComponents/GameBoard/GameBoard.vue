@@ -1,6 +1,6 @@
 <template>
   
-  <div class="game-board" >
+  <div class="game-board" v-if="game$.Phase != GamePhase.LoadingBoard">
     <game-square 
       v-for="square in game$.Board.Squares"
       :input="square"
@@ -10,6 +10,7 @@
 </template>
 <!-- =============================================== -->
 <script setup lang="ts">
+import { GamePhase } from "@/State/Game/GamePhase";
 import GameSquare from "./GameSquare.vue";
 import { useGameState } from "@/State/GameState";
 

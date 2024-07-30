@@ -1,14 +1,15 @@
-import { BaseSquareModel } from './../Bases/BaseSquareModel';
+import { BaseSquareModel } from '../Squares/BaseSquareModel';
 import { PieceType } from "../Pieces/PieceType";
 import { Vector } from "./Vector";
 import { VectorName } from "./VectorName";
 import { VectorRangeSet } from "./VectorRangeSet";
+import { TargetSquareModel } from '../Squares/TargetSquareModel';
 
 export class Mobility {
 
   Vectors:  Vector[];
   IsFacingDefault: boolean;
-  Map: BaseSquareModel[];
+  Map: TargetSquareModel[];
   // Constrains a piece to vector where an attacker would otherwise gain a check condition.
   PinnedTo: VectorName;
 

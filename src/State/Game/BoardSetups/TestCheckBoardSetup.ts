@@ -1,6 +1,6 @@
-import { GameSquareModel } from "@/State/Game/GameSquareModel";
-import { PieceType } from '../Pieces/PieceType';
+import { GameSquareModel } from '../Squares/GameSquareModel';
 import { PieceModel } from "../Pieces/PieceModel";
+import { PieceType } from '../Pieces/PieceType';
 
 export class TestCheckBoardSetup {
 Squares = [

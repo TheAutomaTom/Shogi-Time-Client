@@ -1,4 +1,3 @@
-
 export enum PieceType {
   None = "None",
   King = "King",

@@ -1,15 +1,15 @@
+import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
+import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
 import { MobilityEngine } from "./Game/MobilityEngine2";
-import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { PieceType } from "./Game/Pieces/PieceType";
-import { GameSquareModel } from "@/State/Game/GameSquareModel";
-import { TargetStatus } from "./Game/Movement/TargetStatus";
+import { TargetStatus } from "./Game/Squares/TargetStatus";
 import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
+import { GameSquareModel } from "./Game/Squares/GameSquareModel";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -47,9 +47,10 @@ export const useGameState = defineStore("GameState", () => {
 
   const TurnStart = () => {
     if(logGamePhase) logPhase("TurnStart begins");
-    Phase.value = GamePhase.TurnStart;
+    Phase.value = GamePhase.LoadingBoard;
     resetSelections();
-    const _ = _engine.rebuildSquares( Board.value );
+    Board.value = _engine.rebuildSquares( Board.value );
+    Phase.value = GamePhase.TurnStart;
     
   };
   
@@ -66,8 +67,7 @@ export const useGameState = defineStore("GameState", () => {
       piece.Type,
       piece.StartingPosition,
       piece.Icon,
-      piece.IsFacingDefault,
-      piece.MovementMap
+      piece.Mobility.IsFacingDefault
     );
     
     Origin.value = Board.value.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
@@ -81,7 +81,7 @@ export const useGameState = defineStore("GameState", () => {
   const MoveAttempt =  (square: GameSquareModel)=>{
 
     // Check if target is in the current selection's movement rules.
-    const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);    
+    const target = PieceInHand.value.Mobility.Map.find(s => s.X === square.X && s.Y === square.Y);    
     if (!target) return;
 
 
@@ -107,7 +107,7 @@ export const useGameState = defineStore("GameState", () => {
         // Remove the piece from the origin.
         Origin.value.Piece = new PieceModel();
         // Clear the MovementMap causes squares to highlight.
-        PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault);
+        PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility.IsFacingDefault);
 
         return MoveEnd(square);
 
@@ -122,7 +122,7 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
-        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, square.Piece.StartingPosition, square.Piece.Icon, true, square.Piece.MovementMap);
+        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, square.Piece.StartingPosition, square.Piece.Icon, true);
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
@@ -138,7 +138,7 @@ export const useGameState = defineStore("GameState", () => {
         Origin.value.Piece = new PieceModel();
 
         // Clear the MovementMap that causes squares to highlight.
-        PieceInHand.value = new PieceModel( PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.IsFacingDefault );
+        PieceInHand.value = new PieceModel( PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility.IsFacingDefault );
 
         return MoveEnd(square);
     
@@ -207,8 +207,7 @@ export const useGameState = defineStore("GameState", () => {
       piece.Type,
       piece.StartingPosition,
       piece.Icon,
-      piece.IsFacingDefault,
-      piece.MovementMap
+      piece.Mobility.IsFacingDefault,
     );
     
   };
@@ -218,7 +217,7 @@ export const useGameState = defineStore("GameState", () => {
     // Find the square that was clicked...
     Board.value.Squares.map(  s =>{
       // ...and check if it's in the movement rules.
-      if(s.Id == square.Id && PieceInHand.value.MovementMap.some(ts => ts.Id == s.Id)){
+      if(s.Id == square.Id && PieceInHand.value.Mobility.Map.some(ts => ts.Id == s.Id)){
 
         Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZoneFor);     
         console.log(`DropAttempt Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZoneFor}`);
@@ -231,7 +230,7 @@ export const useGameState = defineStore("GameState", () => {
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPosition, 
           PieceInHand.value.Icon,
-          PieceInHand.value.IsFacingDefault
+          PieceInHand.value.Mobility.IsFacingDefault
         );
         if(logPieceSelect) logPieceDetails("s.Piece", s.Piece);
 
@@ -330,9 +329,9 @@ export const useGameState = defineStore("GameState", () => {
       \tIcon: ${input.Icon}\r
       \tIconPath: ${input.IconPath}\r
       \tType: ${input.Type}\r
-      \tMovementMap: ${input.MovementMap.length}
+      \tMovementMap: ${input.Mobility.Map.length}
       `);
-      if(input.MovementMap.length > 0) console.dir(input.MovementMap);
+      if(input.Mobility.Map.length > 0) console.dir(input.Mobility.Map);
   };  
 
   return {

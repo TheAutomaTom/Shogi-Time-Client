@@ -24,8 +24,8 @@ export class PieceModel {
 
   // Why does `private get iconPrefix` cause compile errors?
   public get iconPrefix() {
-    if(this.Player == 1){ return this.IsFacingDefault == true ? "0" : "1"; }
-    if(this.Player == 2){ return this.IsFacingDefault == true ? "1" : "0"; }
+    if(this.Player == 1){ return this.Mobility.IsFacingDefault == true ? "0" : "1"; }
+    if(this.Player == 2){ return this.Mobility.IsFacingDefault == true ? "1" : "0"; }
     // Player = 0...
     return "";
   };
@@ -64,7 +64,7 @@ export class PieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
+    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.Mobility.IsFacingDefault);
   };
   
   Demote = (): PieceModel => {
