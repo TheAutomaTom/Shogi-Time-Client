@@ -1,5 +1,3 @@
-import { indexOf } from "lodash";
-
 export class EnvironmentService {
   private getApiUrl(): string {
     if (

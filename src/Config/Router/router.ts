@@ -1,12 +1,19 @@
 import { createWebHistory, createRouter } from "vue-router";
-import Home from "../../Views/Home.vue";
+import Dashboard from "../../Views/DashboardView.vue";
 
 export const routes = [
   {
     path: "/",
-    name: "/home",
     //  This is the only page that is NOT lazy-loaded, so it looks different from the other imported pages.    
-    component: Home,
+    component: Dashboard,
+  },
+  {
+    path: "/account",
+    component: () => import("../../Views/AccountView.vue"),
+  },
+  {
+    path: "/game",
+    component: () => import("../../Views/GameView.vue"),
   },
   {
     path: "/:pathMatch(.*)*",
@@ -15,10 +22,9 @@ export const routes = [
   },
 ];
 
-const router = createRouter({
-  //
-  history: createWebHistory(/*import.meta.env.BASE_URL*/),
+const router = createRouter({  
   routes,
+  history: createWebHistory(import.meta.env.BASE_URL),
 });
 
 export default router;

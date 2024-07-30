@@ -1,43 +1,26 @@
-// import { ModalSpecification, ModalType } from "./../models/modals";
-import { ref } from "vue";
-import { defineStore } from "pinia";
-// import { ApiClient } from "../services/apiClient";
 import { EnvironmentService } from "../Services/EnvironmentService";
+import { defineStore } from "pinia";
+import { useLayoutState } from './LayoutState';
+import { useAccountState } from './AccountState';
+import { useGameState } from './GameState';
 
 export const useAppState = defineStore("AppState", () => {
-  const Client = new ApiClient();
+  const Layout$ = useLayoutState();
+  const Account$ = useAccountState();
+  const Game$ = useGameState();
+  
   const EnvService = new EnvironmentService();
 
-  const IsLoading = ref(true);
-  const IsScrolled = ref(false);
-  const Lang = ref(languageService.Detect());
-  const Modals = ref([
-    {
-      type: ModalType.TermsAndConditions,
-      isVisible: false,
-      payload: false,
-    } as ModalSpecification,
-  ]);
-  //=== MODALS =================================================//
-  const SetModalVisible = (modal: ModalType) => {
-    Modals.value.find((m) => m.type === modal)!.isVisible = true;
-  };
-  const SetModalBoolean = (modal: ModalType, choice: boolean) => {
-    const m = Modals.value.find((m) => m.type === modal)!;
-    m.payload = choice;
-    m.isVisible = false;
-  };
 
-  //============================================================//
+
+  // const IsLoading = ref(true);
 
   return {
-    Client,
+    Account$,
+    Layout$,
+    Game$,
     EnvService,
-    IsLoading,
-    IsScrolled,
-    Lang,
-    Modals,
-    SetModalBoolean,
-    SetModalVisible,
+
   };
 });
+

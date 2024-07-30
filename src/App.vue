@@ -1,62 +1,129 @@
 <script setup lang="ts">
+import Drawer from "@Components/Body/Drawer.vue";
+import Header from "@Components/Body/Header.vue";
+import Modal from '@Components/Body/Modal.vue'
+import { computed } from "vue";
+import { useAppState } from "./State/AppState";
+
+const app$ = useAppState();
+
+const isUnfocussed = computed(() => {
+  return app$.Layout$.IsLoading ? "unfocussed" : "";
+})
+
 </script>
-
-<template>
-  <div id="root" class="app-wrapper"
-      style="background-color:orange"
+  <template> 
+  
+    <div 
+      class="loading-screen"
+      v-show="app$.Layout$.IsLoading == true"  
     >
-
-    <!-- Header ------------------------------------------------------>
-    <Header 
-      style="background-color:orange"
+      "Loading..."
+    </div>
+    
+    <modal 
+      v-show="app$.Layout$.ModalIsOpen"
+      class="modal-container"
+      :class="isUnfocussed"
     />
-    <div class="grid grid-rows-2" style="grid-template-rows: 3em 1fr">
-      <div class="buffer-header"></div>
-
-      <!-- Content ------------------------------------------------------>
+    
+    <drawer></drawer>
+    
+    <div 
+      id="root" 
+      class="app-container"
+      :class="isUnfocussed"
+    >
       <div 
-        class="content-wrapper"
-        style="background-color:yellow"    
+        style="grid-row:2;grid-column:2;cursor:pointer;"
+        @click="app$.Layout$.ToggleDrawer()"
       >
-        <Content 
-          class="content"
-          style="background-color:orange"
-        >
-          <template v-slot:content>
-            <router-view />
-          </template>
-        </Content>
+      </div> 
+
+      <div style="grid-row:3/5;grid-column:2;">
+      </div> 
+      
+      <Header v-show="!app$.Layout$.DrawerIsOpen"></Header>
+
+      <div class="content-wrapper">
+        <router-view />
       </div>
+      
+      <div style="grid-row:4;grid-column:3/4">
+      </div>
+
+      <div style="grid-row:2/5;grid-column:4">
+      </div>
+
+      <div style="grid-row:1/6;grid-column:5">
+      </div>
+
+      <div style="grid-row:5;grid-column:2/5;background-color: purple;">
+      </div> 
+
     </div>
 
-    <!-- Footer ------------------------------------------------------>
-    <Footer 
-      style="background-color:goldenrod"
-      class="footer-wrapper" 
-    />
-  </div>
-  
-</template>
-
+  </template>
 <style scoped lang="scss">
-.app-wrapper {
-  @apply w-full;
-}
-.buffer-header {
-  @apply w-full;
-}
-$footer-height: 15em;
-.content-wrapper {
-  @apply w-full flex justify-center;
-  padding-bottom: $footer-height;
-}
-.content {
-  @apply w-full max-w-2xl flex;
-}
-.footer-wrapper {
+
+.loading-screen{
   position: absolute;
-  bottom: 0;
-  width: 100%;
-  height: $footer-height;
+  z-index: 50;
+  height: 100vh;
+  width:100%;
+  
+  overflow: hidden;
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
+
+  background-color: black;
+  opacity: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  font-size: xx-large;
+  vertical-align:baseline;
 }
+
+.modal-container{
+  position: absolute;
+  z-index: 30;
+  height: 100vh;
+  width:100%;
+  display: grid;
+  overflow: hidden;
+
+  grid-template-rows: 2.5em 1fr 2.5em;
+  grid-template-columns: 2.5em 1fr 2.5em;
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.app-container {  
+  z-index: 0;
+  height: 100vh;
+  width:100vw;
+  display: grid;
+  overflow-x: hidden;
+
+  grid-template-rows: 0em 2.5em 1fr 2.5em 0em;
+  grid-template-columns: 0em 2.5em 1fr 2.5em 0em;
+
+  transition: 150ms;
+  transition-timing-function: ease-out;
+}
+
+.content-wrapper{
+  grid-row:3/4;
+  grid-column:3;
+
+  display: flex;
+  // align-items: center;
+  justify-content: center;
+  
+}
+
 </style>
