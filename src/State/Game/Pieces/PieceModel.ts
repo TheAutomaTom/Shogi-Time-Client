@@ -1,22 +1,15 @@
 import { PieceType } from "./PieceType";
-import { PieceRangeSet } from "./PieceRange";
-import { VectorSet } from "../Movement/VectorSet";
-import { TargetSquare } from "../Movement/TargetSquare";
+import { Mobility } from "../Movement/Mobility";
 
 export class PieceModel {
   Player: number;
   Type: PieceType;
-  StartingPosition: string;
-  
+  StartingPosition: string;  
   Icon: string;
-  
-  IsFacingDefault: boolean;
-  
-  Range: PieceRangeSet;
-  VectorSet: VectorSet;
-  MovementMap: TargetSquare[];
+    
+  Mobility: Mobility;
 
-  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true, movementMap: TargetSquare[] = []) {
+  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
     
     this.Type = type;
     this.StartingPosition = startingPos;
@@ -24,28 +17,10 @@ export class PieceModel {
 
     this.Icon = icon;
 
-    this.IsFacingDefault = isFacingDefault;
-    this.Range = this.setRange();
-    
-    this.MovementMap = [];
-    movementMap.forEach(ts => { this.MovementMap.push(ts); });
-
-    this.VectorSet = {
-      N:  [],
-      S:  [],
-      E:  [],
-      W:  [],
-      NW: [],
-      NE: [],
-      SW: [],
-      SE: [],
-      K:  [],
-    }
-
-
+    this.Mobility = new Mobility(type, isFacingDefault);    
   };
 
-  public get Id() { return `Player${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
+  public get Id() { return `P${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
 
   // Why does `private get iconPrefix` cause compile errors?
   public get iconPrefix() {
@@ -57,217 +32,6 @@ export class PieceModel {
 
   public get IconPath() { return this.iconPrefix + this.Icon; }
 
-  setRange = (): PieceRangeSet =>{
-    switch (this.Type) {
-      case PieceType.King: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 1,
-          SW: 1,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      // case PieceType.KingChallenger: 
-      //   return {
-      //     N:  1,
-      //     S:  1,
-      //     E:  1,
-      //     W:  1,
-      //     NE: 1,
-      //     SE: 1,
-      //     SW: 1,
-      //     NW: 1,
-      //     K:  0
-      //   } as PieceRangeSet;
-    
-      case PieceType.Rook: 
-        return {
-          N:  8,
-          S:  8,
-          E:  8,
-          W:  8,
-          NE: 0,
-          SE: 0,
-          SW: 0,
-          NW: 0,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.RookPro: 
-        return {
-          N:  8,
-          S:  8,
-          E:  8,
-          W:  8,
-          NE: 1,
-          SE: 1,
-          SW: 1,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Bishop: 
-        return {
-          N:  0,
-          S:  0,
-          E:  0,
-          W:  0,
-          NE: 8,
-          SE: 8,
-          SW: 8,
-          NW: 8,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.BishopPro: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 8,
-          SE: 8,
-          SW: 8,
-          NW: 8,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Gold: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 0,
-          SW: 0,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Silver: 
-        return {
-          N:  1,
-          S:  0,
-          E:  0,
-          W:  0,
-          NE: 1,
-          SE: 1,
-          SW: 1,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.SilverPro: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 0,
-          SW: 0,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Knight: 
-        return {
-          N:  0,
-          S:  0,
-          E:  0,
-          W:  0,
-          NE: 0,
-          SE: 0,
-          SW: 0,
-          NW: 0,
-          K:  1
-        } as PieceRangeSet;
-    
-      case PieceType.KnightPro: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 0,
-          SW: 0,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Lance: 
-        return {
-          N:  8,
-          S:  0,
-          E:  0,
-          W:  0,
-          NE: 0,
-          SE: 0,
-          SW: 0,
-          NW: 0,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.LancePro: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 0,
-          SW: 0,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.Pawn: 
-        return {
-          N:  1,
-          S:  0,
-          E:  0,
-          W:  0,
-          NE: 0,
-          SE: 0,
-          SW: 0,
-          NW: 0,
-          K:  0
-        } as PieceRangeSet;
-    
-      case PieceType.PawnPro: 
-        return {
-          N:  1,
-          S:  1,
-          E:  1,
-          W:  1,
-          NE: 1,
-          SE: 0,
-          SW: 0,
-          NW: 1,
-          K:  0
-        } as PieceRangeSet;
-    
-      default: //GamePieceType.None: 
-      return {
-        N:  0,
-        S:  0,
-        E:  0,
-        W:  0,
-        NE: 0,
-        SE: 0,
-        SW: 0,
-        NW: 0,
-        K:  0
-      } as PieceRangeSet;
-    };
-  };
 
   Promote = (): PieceModel => {
     switch (this.Type) {
@@ -334,7 +98,7 @@ export class PieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.IsFacingDefault);
+    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon);
   };
 
   

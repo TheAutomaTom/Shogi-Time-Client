@@ -1,21 +1,21 @@
 import { PieceModel } from "./Pieces/PieceModel";
-import { SquareModel } from "./SquareModel";
+import { GameSquareModel } from "./GameSquareModel";
 
 export class BoardModel {
   Id: string;
   CurrentPlayer: number;
-  Squares:    Array<SquareModel>;
+  Squares:    Array<GameSquareModel>;
   CapturesP1: Array<PieceModel>;
   CapturesP2: Array<PieceModel>;
-  Checks:    SquareModel[]
+  Checks:    GameSquareModel[]
 
   constructor(
     id: string,
     currentPlayer: number,
-    squares:    Array<SquareModel>,
+    squares:    Array<GameSquareModel>,
     capturesP1: Array<PieceModel>,
     capturesP2: Array<PieceModel>,
-    checks:    SquareModel[] = []
+    checks:    GameSquareModel[] = []
   ) {
     this.Id = id;
     this.CurrentPlayer = currentPlayer;

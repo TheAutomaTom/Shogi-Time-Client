@@ -1,11 +1,11 @@
-import { BoardModel } from "../BoardModel";
-import { PieceModel } from "../Pieces/PieceModel";
+import { BoardModel } from "./BoardModel";
+import { PieceModel } from "./Pieces/PieceModel";
 import { PieceRangeSet } from "../Pieces/PieceRange";
-import { PieceType } from "../Pieces/PieceType";
-import { SquareModel } from "../SquareModel";
-import { TargetSquare } from "./TargetSquare";
-import { TargetStatus } from "./TargetStatus";
-import { VectorSet } from "./VectorSet";
+import { PieceType } from "./Pieces/PieceType";
+import { GameSquareModel } from "./GameSquareModel";
+import { TargetSquare } from "./Movement/TargetSquare";
+import { TargetStatus } from "./Movement/TargetStatus";
+import { Vectors } from "./Movement/Mobility";
 
 export class MobilityEngine {
   logSubject = {enabled: false, x:7, y:3};
@@ -28,10 +28,10 @@ export class MobilityEngine {
 
       checks.forEach(s =>
         board.Checks.push(
-        new SquareModel(
+        new GameSquareModel(
           s.X, 
           s.Y, 
-          s.PromotionZone,
+          s.PromotionZoneFor,
           new PieceModel(
             s.Piece.Player,
             s.Piece.Type,
@@ -50,7 +50,7 @@ export class MobilityEngine {
     return board;
   };
 
-  rebuildSquares = ( board: BoardModel ): SquareModel[] =>{
+  rebuildSquares = ( board: BoardModel ): GameSquareModel[] =>{
     if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
     if(this.logPhase) console.log("\r\nrebuildSquares... ");
 
@@ -58,7 +58,7 @@ export class MobilityEngine {
     //   complete movement range and determines targets' relation to origin.
     board.Squares.forEach( square => {
       if(square.Piece.Player != 0){
-        square.Piece.VectorSet = this.evaluateVectors(
+        square.Piece.Mobility = this.evaluateVectors(
           board, 
           square.X, 
           square.Y,
@@ -80,17 +80,17 @@ export class MobilityEngine {
     return board.Squares;
   };
   
-  flattenMap = (square: SquareModel): TargetSquare[] => {
+  flattenMap = (square: GameSquareModel): TargetSquare[] => {
     let map = [] as TargetSquare[];
-    square.Piece.VectorSet.N.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.E.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.W.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.NE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-    square.Piece.VectorSet.K.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });    
+    square.Piece.Mobility.N.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.E.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.W.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.NE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
+    square.Piece.Mobility.K.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });    
     return map;
   };
 
@@ -297,204 +297,16 @@ export class MobilityEngine {
     return new TargetSquare(10, 10, TargetStatus.OutOfRange );
   }
 
-  evaluateVectors = (
-    board: BoardModel, originX: number, originY: number, piece: PieceModel, facing: number
-  ): VectorSet => {
-    
-    let mobility = {} as VectorSet;
-    const isLogSubject = this.logSubject.enabled && originX == this.logSubject.x && originY == this.logSubject.y;
-
-    if(isLogSubject) console.warn(`isLogSubject? ${isLogSubject} (x: ${this.logSubject.x}, y: ${this.logSubject.y})`);
-    let isBlocked = false;
-
-    const rangeSet = piece.Range;
-
-    // Process North ===============================================
-    mobility.N=[];
-    if(rangeSet.N > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range N = ${rangeSet.N}`); }
-
-      // Iterate each coordinate along one vector (ex: north)...
-      for (let i = 1; i <= rangeSet.N; i++) {
-        let x = originX;
-        let y = originY + i * facing 
-        
-        const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-        isBlocked = this.isBlocked(s.Status, "N", isLogSubject);
-
-        if(s.Status != TargetStatus.OutOfRange){
-          mobility.N.push(s);
-        }
-
-      }
-    }
-    isBlocked = false;
-    
-    // Process South ===============================================
-    mobility.S=[];
-    if(rangeSet.S > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range S = ${rangeSet.S}`); }
-      for (let i = 1; i <= rangeSet.S; i++) {
-        let x = originX;
-        let y = originY - i * facing;
-        const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-        isBlocked = this.isBlocked(s.Status, "S", isLogSubject);
-        if(s.Status != TargetStatus.OutOfRange){
-          mobility.S.push(s);
-        }
-      }
-    }
-    isBlocked = false;
-
-    // Process East ================================================
-    mobility.E=[];
-    if(rangeSet.E > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range E = ${rangeSet.E}`); }
-    for (let i = 1; i <= rangeSet.E; i++) {    
-          let x = originX - i * facing;
-          let y = originY;
-          const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-          isBlocked = this.isBlocked(s.Status, "E", isLogSubject);
-          if(s.Status != TargetStatus.OutOfRange){
-            mobility.E.push(s);
-          }
-      }
-    }
-    isBlocked = false;
-      
-    // Process West ================================================
-    mobility.W=[];
-    if(rangeSet.W > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range W = ${rangeSet.W}`); }
-      for (let i = 1; i <= rangeSet.W; i++) { 
-          let x = originX + i * facing;
-          let y = originY;
-          const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-          isBlocked = this.isBlocked(s.Status, "W", isLogSubject);
-          if(s.Status != TargetStatus.OutOfRange){
-            mobility.W.push(s);
-          }
-      }
-    }
-    isBlocked = false;
-      
-    // Process North-West ==========================================
-    mobility.NW=[];
-    if(rangeSet.NW > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range NW= ${rangeSet.NW}`); }
-    for (let i = 1; i <= rangeSet.NW; i++) {  
-        let x = originX + i * facing;
-        let y = originY + i * facing;
-        const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-        isBlocked = this.isBlocked(s.Status, "NW", isLogSubject);
-        if(s.Status != TargetStatus.OutOfRange){
-          mobility.NW.push(s);
-        }
-      }
-    }
-    isBlocked = false;
-      
-    // Process North-East ==========================================
-    mobility.NE=[];
-    if(rangeSet.NE > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range NE= ${rangeSet.NE}`); }
-      for (let i = 1; i <= rangeSet.NE; i++) {    
-          let x = originX - i * facing;
-          let y = originY + i * facing;
-          const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-          isBlocked = this.isBlocked(s.Status, "NE", isLogSubject);
-          if(s.Status != TargetStatus.OutOfRange){
-            mobility.NE.push(s);
-          }
-      }
-    }
-    isBlocked = false;
-        
-    // Process South-East =========================================
-    mobility.SE=[];
-    if(rangeSet.SE > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range SE= ${rangeSet.SE}`); }
-      for (let i = 1; i <= rangeSet.SE; i++) {   
-          let x = originX - i * facing;
-          let y = originY - i * facing; 
-          const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-          isBlocked = this.isBlocked(s.Status, "SE", isLogSubject);
-          if(s.Status != TargetStatus.OutOfRange){
-            mobility.SE.push(s);
-          }
-      }
-    }
-    isBlocked = false;
-      
-    // Process South-West ==========================================
-    mobility.SW=[];
-    if(rangeSet.SW > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range SW= ${rangeSet.SW}`); }
-      for (let i = 1; i <= rangeSet.SW; i++) {  
-        let x = originX + i * facing;
-        let y = originY - i * facing; 
-        const s = this.evaluateVector( piece, board, x, y, isBlocked, isLogSubject);
-        isBlocked = this.isBlocked(s.Status, "SW", isLogSubject);
-        if(s.Status != TargetStatus.OutOfRange){
-          mobility.SW.push(s);
-        }
-      }
-    }
-    isBlocked = false;
-        
-    // Process Knight ==============================================
-    mobility.K=[];
-    if(rangeSet.K > 0){
-      if(isLogSubject){ console.log(`${originX}${originY}: Range K = ${rangeSet.K}`); }
-      
-        let targetX = originX + 1 * facing;
-        let targetY = originY + 2 * facing;
-
-      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-        board.Squares.forEach( square => {
-          if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( piece, board, targetX, targetY, false, isLogSubject );
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.K.push(s);
-            }
-          }
-        });
-      }
-
-      targetX = originX - 1 * facing;
-      targetY = originY + 2 * facing;
-
-      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-        board.Squares.forEach( square => {
-          if(square.X == targetX && square.Y == targetY){
-            const s = this.evaluateVector( piece, board, targetX, targetY, false, isLogSubject );
-            if(s.Status != TargetStatus.OutOfRange){
-              mobility.K.push(s);
-            }
-          }
-        });
-      }
-    }
-    
-    return mobility;
-  };
   
 
-  isBlocked = (status: TargetStatus, vector: string = "", isLogSubject = false): boolean =>{
-    if( vector != "" 
-        && (status == TargetStatus.Blocked || status == TargetStatus.Ally || status == TargetStatus.Enemy || status == TargetStatus.Check) ){
-      if(isLogSubject) console.log(`\t${vector} isBlocked: ${status}`);
-      return true; 
-    }
-    return false;
-  };
+  
 
   //===================================================================================================================
  
-  detectCheckCondition (squares: SquareModel[]): SquareModel[] {
+  detectCheckCondition (squares: GameSquareModel[]): GameSquareModel[] {
     if(this.logPhase) console.log("\r\ndetectCheckCondition... ");
 
-    let checks = [] as SquareModel[];
+    let checks = [] as GameSquareModel[];
 
     squares.forEach(s => {
       if(s.Piece.Player != 0){
@@ -502,10 +314,10 @@ export class MobilityEngine {
         if(inCheck){
 
           checks.push(
-            new SquareModel(
+            new GameSquareModel(
               s.X, 
               s.Y, 
-              s.PromotionZone,
+              s.PromotionZoneFor,
               new PieceModel(
                 s.Piece.Player,
                 s.Piece.Type,

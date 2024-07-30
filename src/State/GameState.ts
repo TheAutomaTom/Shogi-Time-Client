@@ -1,10 +1,10 @@
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
-import { MobilityEngine } from "./Game/Movement/MobilityEngine";
+import { MobilityEngine } from "./Game/MobilityEngine2";
 import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { PieceType } from "./Game/Pieces/PieceType";
-import { SquareModel } from "@/State/Game/SquareModel";
+import { GameSquareModel } from "@/State/Game/GameSquareModel";
 import { TargetStatus } from "./Game/Movement/TargetStatus";
 import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 import { defineStore } from "pinia";
@@ -31,8 +31,8 @@ export const useGameState = defineStore("GameState", () => {
   // const Checks = ref( [] as SquareModel[] );
 
   const PieceInHand = ref({} as PieceModel);
-  const Origin = ref({} as SquareModel);
-  const Destination = ref({} as SquareModel);
+  const Origin = ref({} as GameSquareModel);
+  const Destination = ref({} as GameSquareModel);
 
   const _engine = new MobilityEngine();
 
@@ -71,14 +71,14 @@ export const useGameState = defineStore("GameState", () => {
     );
     
     Origin.value = Board.value.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
-                   || new SquareModel(0, 0);
+                   || new GameSquareModel(0, 0);
         
     if(logPieceSelect) logPieceDetails(`\r\n${GamePhase.MoveStart} PieceInHand`, PieceInHand.value);
 
   };
   
   
-  const MoveAttempt =  (square: SquareModel)=>{
+  const MoveAttempt =  (square: GameSquareModel)=>{
 
     // Check if target is in the current selection's movement rules.
     const target = PieceInHand.value.MovementMap.find(s => s.X === square.X && s.Y === square.Y);    
@@ -151,20 +151,20 @@ export const useGameState = defineStore("GameState", () => {
 
 
 
-  const MoveEnd =(square: SquareModel)=> {
+  const MoveEnd =(square: GameSquareModel)=> {
     
-    Destination.value = new SquareModel( square.X, square.Y, square.PromotionZone, square.Piece );
+    Destination.value = new GameSquareModel( square.X, square.Y, square.PromotionZoneFor, square.Piece );
     Phase.value = GamePhase.MoveEnd;
     if(logGamePhase) logPhase("MoveEnd begins");
           
     // Test for promotion zone and if piece type can be promoted.
-    if( square.PromotionZone != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
+    if( square.PromotionZoneFor != PieceInHand.value.Player || !_promotable.includes(PieceInHand.value.Type) )
     { 
       return CompleteMove();
     }
 
-    if( square.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type) ){
-      if(logPieceSelect) logPieceDetails(`Can promote? ${square.PromotionZone == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)}`, PieceInHand.value)
+    if( square.PromotionZoneFor == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type) ){
+      if(logPieceSelect) logPieceDetails(`Can promote? ${square.PromotionZoneFor == PieceInHand.value.Player && _promotable.includes(PieceInHand.value.Type)}`, PieceInHand.value)
       
       // Handle mandatory promotions...
       // First, pawns and lances on the back row get promoted.
@@ -213,15 +213,15 @@ export const useGameState = defineStore("GameState", () => {
     
   };
   
-  const DropAttempt =  (square: SquareModel) =>{
+  const DropAttempt =  (square: GameSquareModel) =>{
     
     // Find the square that was clicked...
     Board.value.Squares.map(  s =>{
       // ...and check if it's in the movement rules.
       if(s.Id == square.Id && PieceInHand.value.MovementMap.some(ts => ts.Id == s.Id)){
 
-        Destination.value = new SquareModel(s.X, s.Y, s.PromotionZone);     
-        console.log(`DropAttempt Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZone}`);
+        Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZoneFor);     
+        console.log(`DropAttempt Destination: ${Destination.value.X}/${Destination.value.Y}/${Destination.value.PromotionZoneFor}`);
         
         if(logPieceSelect) logPieceDetails("PieceInHand", PieceInHand.value);
 
@@ -292,7 +292,7 @@ export const useGameState = defineStore("GameState", () => {
     // PriorTarget.value = Destination.value;
     
     PieceInHand.value = new PieceModel( );
-    Origin.value = new SquareModel(0,0);
+    Origin.value = new GameSquareModel(0,0);
     // Destination.value = new SquareModel(0,0);
 
   };

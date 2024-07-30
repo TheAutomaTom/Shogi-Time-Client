@@ -1,17 +1,13 @@
+import { BaseSquareModel } from "./Bases/BaseSquareModel";
 import { PieceModel } from "./Pieces/PieceModel";
 
-export class SquareModel {
-  Id: string;
-  X: number;
-  Y: number;
-  PromotionZone: number;
+export class GameSquareModel extends BaseSquareModel {
+  PromotionZoneFor: number;
   Piece: PieceModel;
 
   constructor(x: number, y: number, promotes: number = 0, piece: PieceModel = new PieceModel()) {
-    this.Id = `Square-${x}${y}`;
-    this.X= x;
-    this.Y= y;
-    this.PromotionZone = promotes;
+    super(x, y);
+    this.PromotionZoneFor = promotes;
     this.Piece = piece;
   }
 }
