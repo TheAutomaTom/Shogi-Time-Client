@@ -198,42 +198,85 @@ export class MobilityEngine {
   };
   
   rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: Vector = new Vector(VectorName.None) ): Mobility => {
-    const isLogSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
-    if(this.logPhase && isLogSubject) console.log("\trebuildMobility... ");
-
-    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);    
-    if(this.logPhase && isLogSubject) {console.log("\tsquare.Piece.Mobility 1: "); console.dir(square.Piece.Mobility);}
-
-    let result = square.Piece.Mobility;
     
-    if(pinnedTo.Name != VectorName.None){
-      square.Piece.Mobility.Vectors.forEach(vector => {
-        vector = this.rebuildVector(vector, board, square, facing, isLogSubject );
-      });
-    } else {
-      square.Piece.Mobility.Vectors = [];
-      square.Piece.Mobility.Vectors.push(this.rebuildVector(pinnedTo, board, square, facing, isLogSubject));
+    const isLogSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        
+    if(this.logPhase && isLogSubject) {
+      console.warn("\t rebuildMobility 1... ");
+      console.dir(square.Piece.Mobility);
+      console.dir(square.Piece.Mobility.Vectors);
+      // square.Piece.Mobility.Vectors.forEach(v => { console.log(`\t ${v.Name}`); });
+      console.log(`\t pinnedTo.Name == ${pinnedTo.Name}`);
     }
 
-    if(this.logPhase && isLogSubject) {console.log("\tsquare.Piece.Mobility 2: "); console.dir(result);}
-    return result;
+    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);
+     
+
+
+    if(pinnedTo.Name == VectorName.None){ // Typical workflow.
+            
+      //==========================================================================================================
+      if(this.logPhase && isLogSubject) {
+        console.log("\tvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv");
+      }
+      let newVectors = [] as Vector[];
+      square.Piece.Mobility.Vectors.forEach(vector => {
+        const v = this.rebuildVector(vector, board, square, facing, isLogSubject);
+        newVectors.push(v);
+        
+      });
+      if(this.logPhase && isLogSubject) {
+        console.log("\t^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^");         
+      }
+      //==========================================================================================================
+
+        
+      if(this.logPhase && isLogSubject) {
+        console.log("\tsquare.Piece.Mobility 2 (newVectors): "); 
+        console.dir(newVectors); 
+        square.Piece.Mobility.Vectors = newVectors;
+        console.log("\tsquare.Piece.Mobility 2b: "); 
+        console.dir(square.Piece.Mobility.Vectors);
+      }
+
+    } else {  // This piece is pinned, so constrain its movement to that vector.
+      square.Piece.Mobility.Vectors.forEach(vector => {        
+
+        if(this.logPhase && isLogSubject) { console.warn(`\t\tRebuild vector # ${square.Piece.Mobility.Vectors.length}: ${vector.Name}`); }
+        vector = this.rebuildVector(pinnedTo, board, square, facing, isLogSubject );
+      });
+
+    }
+
+    if(this.logPhase && isLogSubject) {
+      console.log("\tsquare.Piece.Mobility 3: "); 
+      console.dir(square.Piece.Mobility);
+      console.log("\tsquare.Piece.Mobility 3b: "); 
+      console.dir(square.Piece.Mobility.Vectors);
+    }
+  
+    return square.Piece.Mobility;
   };
   
   rebuildVector = ( vector: Vector, board: BoardModel, square: GameSquareModel, facing: number , isLogSubject: boolean): Vector => {
+    if(isLogSubject) {
+      console.warn("\t\trebuildVector 1: " + vector.Name + " w/ range " + + vector.Range); 
+      console.dir(vector);
+    }
 
-    if(vector.Name == VectorName.K){      
+    if(vector.Name == VectorName.K){
       let targetX = square.X + 1 * facing;
       let targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        const result = vector.Update( target.Status, target.Square! );
+        const result = vector.Update( target.Status, target.Square!, isLogSubject );
         return result;
       }
       targetX = square.X + -1 * facing;
       targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        const result = vector.Update( target.Status, target.Square! );
+        const result = vector.Update( target.Status, target.Square!, isLogSubject );
         return result;
       }
 
@@ -251,17 +294,22 @@ export class MobilityEngine {
           const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked, isLogSubject );
           isBlocked = this.isBlocked(target.Status);
           const result = vector.Update( target.Status, target.Square! );
+          if(isLogSubject) {console.log("\t\trebuildVector 2 (update result): "); console.dir(result);}
           return result;
         }
       }
     }
-    return vector.Update( TargetStatus.Na, new GameSquareModel(0, 0) );
+    if(isLogSubject) {console.error("\t\trebuildVector END (TargetStatus.Na) ");}
+    return vector.Update( TargetStatus.Na, new GameSquareModel(0, 0), isLogSubject );
 
   };
 
   evaluateVectorTarget = (
     board: BoardModel, playersTurn: number, targetId: string, isBlocked: boolean, isLogSubject: boolean
   ): VectorTargetReport => {
+
+    if(isLogSubject) console.warn("\t\t\t\t evaluateVectorTarget 1: " + targetId); 
+
     // Find the target square.
     const s = board.Squares.find( s => s.Id == targetId);
     if(s == undefined) {
@@ -273,28 +321,37 @@ export class MobilityEngine {
     
     let status: TargetStatus;
     switch (s?.Piece.Player) {
-        
+      
       case 0: // Open squares
-        // if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Open} (!isBlocked)`);}
+        if(isLogSubject) {
+          console.log("\t\t\t\t evaluateVectorTarget 2: " + s?.Piece.Player + " (Open)"); 
+          console.log(`\t\t\t\t ${targetId}: ${TargetStatus.Open}`);
+        }
         status = isBlocked ? TargetStatus.Blocked : TargetStatus.Open;
         break;
 
       case playersTurn:
-        if(isLogSubject){ console.log(`\t${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}.`); }
+        if(isLogSubject) {
+          console.log("\t\t\t\t evaluateVectorTarget 2: " + s?.Piece.Player + " (Ally)"); 
+          console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}.`); 
+
+
+        }
         status = TargetStatus.Ally;
         break;
     
       default: // Enemy
+      if(isLogSubject) console.log("\t\t\t\t evaluateVectorTarget 2: " + s?.Piece.Player + " (Enemy)"); 
         // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
         const isCheck = s.Piece.Type == PieceType.King;
         if( isCheck ){
-          if(isLogSubject){ console.log(`\t${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked}, isCheck: ${isCheck}.`); }
+          if(isLogSubject){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked}, isCheck: ${isCheck}.`); }
 
           status = isBlocked ? TargetStatus.BlockedCheck : TargetStatus.Check;
           break;
 
         } else {
-          if(isLogSubject){ console.log(`\t${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked},isCheck: ${isCheck}.`); }
+          if(isLogSubject){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked},isCheck: ${isCheck}.`); }
           
           status = isBlocked ? TargetStatus.Blocked : TargetStatus.Enemy;
           break;

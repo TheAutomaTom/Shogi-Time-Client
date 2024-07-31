@@ -37,8 +37,10 @@ export class Vector {
     
   }
 
-  Update( status: TargetStatus, target: GameSquareModel ): Vector{
+  Update( status: TargetStatus, target: GameSquareModel, toLog: boolean = false ): Vector{
     
+    if(toLog) {console.log(`Vector.Update...`);}
+
     if(status == TargetStatus.Check){
       this.IsCheck = true;
     }
@@ -71,6 +73,8 @@ export class Vector {
       this.IsCheck,
       this.PinnedPiece
     );
+
+    if(toLog) {console.dir(result);}
 
     return result;
   }
