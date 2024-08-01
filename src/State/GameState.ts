@@ -49,7 +49,17 @@ export const useGameState = defineStore("GameState", () => {
     if(logGamePhase) logPhase("TurnStart begins");
     Phase.value = GamePhase.LoadingBoard;
     resetSelections();
-    Board.value = _engine.rebuildSquares( Board.value );
+
+    const update = _engine.RebuildBoard( Board.value );
+    Board.value = new BoardModel( 
+                          update.Id, 
+                          update.CurrentPlayer,
+                          update.Squares,
+                          update.CapturesP1,
+                          update.CapturesP2,
+                          update.Checks                                        
+                        );
+    
     Phase.value = GamePhase.TurnStart;
     
   };
@@ -107,7 +117,7 @@ export const useGameState = defineStore("GameState", () => {
         // Remove the piece from the origin.
         Origin.value.Piece = new PieceModel();
         // Clear the MovementMap causes squares to highlight.
-        PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility.IsFacingDefault);
+        PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility);
 
         return MoveEnd(square);
 
@@ -122,7 +132,7 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
-        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, square.Piece.StartingPosition, square.Piece.Icon, true);
+        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, square.Piece.StartingPosition, square.Piece.Icon);
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
@@ -138,7 +148,7 @@ export const useGameState = defineStore("GameState", () => {
         Origin.value.Piece = new PieceModel();
 
         // Clear the MovementMap that causes squares to highlight.
-        PieceInHand.value = new PieceModel( PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility.IsFacingDefault );
+        PieceInHand.value = new PieceModel( PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility );
 
         return MoveEnd(square);
     
@@ -207,7 +217,7 @@ export const useGameState = defineStore("GameState", () => {
       piece.Type,
       piece.StartingPosition,
       piece.Icon,
-      piece.Mobility.IsFacingDefault,
+      piece.Mobility,
     );
     
   };
@@ -230,7 +240,7 @@ export const useGameState = defineStore("GameState", () => {
           PieceInHand.value.Type, 
           PieceInHand.value.StartingPosition, 
           PieceInHand.value.Icon,
-          PieceInHand.value.Mobility.IsFacingDefault
+          PieceInHand.value.Mobility
         );
         if(logPieceSelect) logPieceDetails("s.Piece", s.Piece);
 

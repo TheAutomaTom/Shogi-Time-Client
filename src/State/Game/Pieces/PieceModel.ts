@@ -12,16 +12,25 @@ export class PieceModel {
 
   constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", mobility: Mobility | null = null) {
     
-    this.Type = type;
-    this.StartingPosition = startingPos;
     this.Player = player;
+    
+    if(player != 0){
+      this.Type = type;
+      this.StartingPosition = startingPos;
+      this.Icon = icon;
+      
+      if(mobility != null){
+        
+        this.Mobility = mobility;
+        // this.Mobility = new Mobility(type, mobility.IsFacingDefault, mobility.Map, mobility.PinnedTo);
+      } else {
+        this.Mobility = new Mobility(type);
+      }
 
-    this.Icon = icon;
-
-    if(mobility != null){
-
-      this.Mobility = mobility;
     } else {
+      this.Type = PieceType.None;
+      this.StartingPosition = "_" ;
+      this.Icon = "";
       this.Mobility = new Mobility(type);
     }
     
@@ -32,6 +41,12 @@ export class PieceModel {
     // if(type == PieceType.Bishop) console.dir(this.Mobility.Vectors);
 
   };
+
+  
+  Reset(): boolean {
+    this.Mobility = new Mobility(this.Type);
+    return true;
+  }
 
 
   // Why does `private get iconPrefix` cause compile errors?

@@ -23,8 +23,6 @@ export class Mobility {
     
     if(pinnedTo == VectorName.None){
       this.Vectors = [];
-      if(piece == PieceType.Bishop) console.log(`Mobility ctor:. PieceType.Bishop ranges/ Vectors...`);
-      if(piece == PieceType.Bishop) console.dir(ranges);
       if(ranges.N  > 0) this.Vectors.push( new Vector( VectorName.N,  ranges.N,   0,  1 ) );
       if(ranges.S  > 0) this.Vectors.push( new Vector( VectorName.S,  ranges.S,   0, -1 ) );
       if(ranges.E  > 0) this.Vectors.push( new Vector( VectorName.E,  ranges.E,  -1,  0 ) );
@@ -35,7 +33,6 @@ export class Mobility {
       if(ranges.NW > 0) this.Vectors.push( new Vector( VectorName.NW, ranges.NW,  1,  1 ) );
       if(ranges.K  > 0) this.Vectors.push( new Vector( VectorName.K,  ranges.K,   1,  2 ) );
       
-      if(piece == PieceType.Bishop) console.dir(this.Vectors);
     } else {
 
       this.Vectors = [];
@@ -79,7 +76,6 @@ export class Mobility {
       
     }
     
-    if(piece == PieceType.Bishop) console.dir(this.Vectors);
     
   }
   

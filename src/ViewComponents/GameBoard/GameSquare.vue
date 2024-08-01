@@ -103,10 +103,10 @@ watch( // Update highlight class
 
     switch (isValidTarget.value.Status) {
       case TargetStatus.Open:
-        currentClass.value = "game-square-potential-move";
+        currentClass.value = "game-square-potential-kill";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
-      case TargetStatus.Enemy:
+        case TargetStatus.Enemy || TargetStatus.Check:
         currentClass.value = "game-square-potential-move";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
@@ -191,7 +191,11 @@ const handleClickSquare = () => {
 
   .game-square-potential-move{
     // background-color: #431706;
-    background-color: #ccc927;
+    background-color: #9b0000b4;
+  }
+  .game-square-potential-kill{
+    // background-color: #431706;
+    background-color: #7e0b0b64;
   }
   .game-piece-promotion-option{
     background-color: lightseagreen;
