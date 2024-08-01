@@ -13,10 +13,10 @@ export class Mobility {
   // Constrains a piece to block an attacker's vector, where otherwise a check condition would occur.
   PinnedTo: VectorName;
 
-  constructor(piece: PieceType, isFacingDefault: boolean = true, pinnedTo: VectorName = VectorName.None) {
+  constructor(piece: PieceType, isFacingDefault: boolean = true, map: TargetSquareModel[] = [], pinnedTo: VectorName = VectorName.None) {
     
     this.IsFacingDefault = isFacingDefault;
-    this.Map = [];
+    this.Map = map;
     this.PinnedTo = pinnedTo;
 
     const ranges = this.setRanges(piece);

@@ -10,7 +10,7 @@ export class PieceModel {
   Mobility: Mobility;
   public get Id() { return `P${this.Player}-${this.Type.toString()}-${this.StartingPosition}`; };
 
-  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", isFacingDefault = true) {
+  constructor(player: number = 0, type: PieceType = PieceType.None, startingPos: string = "X", icon: string = "", mobility: Mobility | null = null) {
     
     this.Type = type;
     this.StartingPosition = startingPos;
@@ -18,14 +18,18 @@ export class PieceModel {
 
     this.Icon = icon;
 
-    const m = new Mobility(type, isFacingDefault);
-    this.Mobility = m;
+    if(mobility != null){
+
+      this.Mobility = mobility;
+    } else {
+      this.Mobility = new Mobility(type);
+    }
     
-    if(type == PieceType.Bishop) console.log(`PieceModel ctor: ${type} Mobility...`);
-    if(type == PieceType.Bishop) console.dir(m.Vectors);
-    if(type == PieceType.Bishop) console.dir(this.Mobility);
-    if(type == PieceType.Bishop) console.dir(m.Vectors);
-    if(type == PieceType.Bishop) console.dir(this.Mobility.Vectors);
+    // if(type == PieceType.Bishop) console.log(`PieceModel ctor: ${type} Mobility...`);
+    // if(type == PieceType.Bishop) console.dir(m.Vectors);
+    // if(type == PieceType.Bishop) console.dir(this.Mobility);
+    // if(type == PieceType.Bishop) console.dir(m.Vectors);
+    // if(type == PieceType.Bishop) console.dir(this.Mobility.Vectors);
 
   };
 
@@ -72,7 +76,7 @@ export class PieceModel {
         this.Icon = this.Icon;
         break;
     }
-    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.Mobility.IsFacingDefault);
+    return new PieceModel(this.Player, this.Type, this.StartingPosition, this.Icon, this.Mobility);
   };
   
   Demote = (): PieceModel => {

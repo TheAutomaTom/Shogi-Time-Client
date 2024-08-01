@@ -67,7 +67,7 @@ export const useGameState = defineStore("GameState", () => {
       piece.Type,
       piece.StartingPosition,
       piece.Icon,
-      piece.Mobility.IsFacingDefault
+      piece.Mobility
     );
     
     Origin.value = Board.value.Squares.find( s =>  s.Piece.Id == PieceInHand.value.Id )
