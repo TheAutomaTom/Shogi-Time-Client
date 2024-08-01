@@ -291,16 +291,17 @@ export class MobilityEngine {
       let targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        const result = vector.Update( target.Status, target.Square!, isLogSubject );
-        return result;
+        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        
       }
       targetX = square.X + -1 * facing;
       targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
         const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        const result = vector.Update( target.Status, target.Square!, isLogSubject );
-        return result;
+        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        
       }
+      return vector;
 
     } else { // Anything except a Knight...
       let isBlocked = false;
@@ -315,14 +316,13 @@ export class MobilityEngine {
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
           const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked, isLogSubject );
           isBlocked = this.isBlocked(target.Status);
-          const result = vector.Update( target.Status, target.Square! );
-          if(isLogSubject) {console.log("\t\trebuildVector 2 (update result): "); console.dir(result);}
-          return result;
+          vector = vector.Update( target.Status, target.Square! );
+          if(isLogSubject) {console.log("\t\trebuildVector 2 (update result): "); console.dir(vector);}
+          
         }
       }
+      return vector;
     }
-    if(isLogSubject) {console.error("\t\trebuildVector END (TargetStatus.Na) ");}
-    return vector.Update( TargetStatus.Na, new GameSquareModel(0, 0), isLogSubject );
 
   };
 
