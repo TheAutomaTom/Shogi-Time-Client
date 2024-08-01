@@ -139,7 +139,7 @@ export class MobilityEngine {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
         const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
-        if(logSubject) console.log(`MobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.id}`); 
+        if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.id}`); 
 
         square.Piece.Mobility = this.rebuildMobility(board, square);
       }      
@@ -150,9 +150,28 @@ export class MobilityEngine {
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
+        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n\tlogSubject: ${this.logSubject.id}`); 
+        
         const pinning = square.Piece.Mobility.Vectors.filter(v => v.PinnedPiece != null);
-        if(pinning.length > 0){
+        if(pinning.length == 0){
+          
+          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
+          square.Piece.Mobility.Vectors.forEach(vector => {
+            // vector.Targets.forEach( t => square.Piece.Mobility.Map.push(new BaseSquareModel(t.X, t.Y)) );
+            if(logSubject) {
+              console.log(`\t vector.Targets...`);
+              console.dir(vector.Targets);
+            }
+            vector.Targets.forEach( t => square.Piece.Mobility.Map.push(t) );
+          });
+          if(logSubject) {
+            console.log(`\t Piece.Mobility.Map...`);
+            console.dir(square.Piece.Mobility.Map);
+          }
 
+        } else {
+          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
           pinning.forEach(attackVector => { 
             board.Squares.forEach(s => {
 
@@ -176,13 +195,16 @@ export class MobilityEngine {
           });
         }
 
-        square.Piece.Mobility.Vectors.forEach(vector => {
-          // vector.Targets.forEach( t => square.Piece.Mobility.Map.push(new BaseSquareModel(t.X, t.Y)) );
-          vector.Targets.forEach( t => square.Piece.Mobility.Map.push(t) );
-        });
 
       }
     });
+
+    if(this.logSubject.enabled){
+      const subject = board.Squares.filter(s => s.Piece.Id == this.logSubject.id);
+      console.log("subject[0].Piece.Mobility.Map...");
+      console.dir(subject[0].Piece.Mobility.Map);
+      
+    }
 
     return board;
   };
