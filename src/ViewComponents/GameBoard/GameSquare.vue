@@ -13,7 +13,7 @@
     >{{ getNotationText('y') }}</div>
 
 <!--  -->
-    <div class="board-notation board-notation-left">{{ input.X }}{{ input.Y }} {{ input.Piece.Type != "None" ? input.Piece.Type : "" }}</div>
+    <div class="board-notation board-notation-debug">{{ input.X }}{{ input.Y }} {{ input.Piece.Type != "None" ? input.Piece.Type : "" }}</div>
 <!--  -->
 
     <div 
@@ -106,8 +106,12 @@ watch( // Update highlight class
         currentClass.value = "game-square-potential-kill";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
-        case TargetStatus.Enemy || TargetStatus.Check:
+        case TargetStatus.Enemy:
         currentClass.value = "game-square-potential-move";
+        // console.log(`${props.input.Id}: ${currentClass.value}`);
+        break;
+        case TargetStatus.Check:
+        currentClass.value = "game-square-potential-check";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
       default:
@@ -172,7 +176,7 @@ const handleClickSquare = () => {
   .board-notation{
     position: absolute;
     font-size: x-small;
-    color: #2a0e04;
+    color: #000000;
 
   }
   .board-notation-top{
@@ -181,9 +185,9 @@ const handleClickSquare = () => {
   }
   .board-notation-right{
     top:50%;
-    right:2px;    
+    right:4px;    
   }
-  .board-notation-left{
+  .board-notation-debug{
     left:0;
     bottom:0;
     color: white;   
@@ -196,6 +200,10 @@ const handleClickSquare = () => {
   .game-square-potential-kill{
     // background-color: #431706;
     background-color: #7e0b0b64;
+  }
+  .game-square-potential-check{
+    // background-color: #431706;
+    background-color: #ff1616;
   }
   .game-piece-promotion-option{
     background-color: lightseagreen;

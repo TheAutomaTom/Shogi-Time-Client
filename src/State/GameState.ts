@@ -14,7 +14,8 @@ import { GameSquareModel } from "./Game/Squares/GameSquareModel";
 export const useGameState = defineStore("GameState", () => {
   
   const logPieceSelect = false;
-  const logGamePhase = false;
+  const logPieceCaptures = true;
+  const logGamePhase = true;
   const logMethodCalled = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
@@ -46,7 +47,7 @@ export const useGameState = defineStore("GameState", () => {
   ];
 
   const TurnStart = () => {
-    if(logGamePhase) logPhase("TurnStart begins");
+    if(logGamePhase) logPhase("TurnStart() begins...");
     Phase.value = GamePhase.LoadingBoard;
     resetSelections();
 
@@ -95,14 +96,10 @@ export const useGameState = defineStore("GameState", () => {
     if (!target) return;
 
 
-    console.log(`MoveAttempt square.Piece.Type: ${square.Piece.Type}`);
-   
-
 
     // If so, find out how the target relates to the origin.
+    if(logGamePhase) console.log(`MoveAttempt square.Piece.Type: ${square.Piece.Type} is a ${target.Status}`);
     switch (target.Status) {
-
-
 
       case TargetStatus.Blocked ||TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
         // Do nothing
@@ -123,7 +120,8 @@ export const useGameState = defineStore("GameState", () => {
 
 
 
-      case TargetStatus.Enemy: // Kit it! 
+      case TargetStatus.Enemy || TargetStatus.Check: // Kit it! 
+
 
         if( square.Piece.Type == PieceType.King ){
           console.log(`MoveAttempt: ${TargetStatus.Enemy} = ${PieceType.King}... call gameOver()`);
@@ -306,13 +304,9 @@ export const useGameState = defineStore("GameState", () => {
 
   };
 
-  const switchCurrentPlayer =()=> {
-    if(Board.value.CurrentPlayer == 1){
-      Board.value.CurrentPlayer = 2;
-    } else {
-      Board.value.CurrentPlayer = 1;
-    }
-    console.error(`Board.value.CurrentPlayer: ${Board.value.CurrentPlayer}`);
+  const switchCurrentPlayer = ()=> {
+    Board.value.CurrentPlayer = Board.value.CurrentPlayer == 1 ? 2 : 1;
+    if(logGamePhase) logPhase(`Player #${Board.value.CurrentPlayer}'s turn begins.`);
   };
 
   const gameOver = (player: number) =>{

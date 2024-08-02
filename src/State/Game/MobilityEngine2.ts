@@ -13,7 +13,7 @@ import { PieceModel } from "./Pieces/PieceModel";
 
 export class MobilityEngine {
   logSubject = {enabled: false, id: "P1-Rook-Right"};
-  logPhase = true;
+  logPhase = false;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
@@ -327,7 +327,7 @@ export class MobilityEngine {
           
           isBlocked = this.isBlocked(target.Status);
 
-          if( isBlocked && square.Piece.Type == PieceType.Rook ){ console.log(`${square.Piece.Id} isBlocked on ${vector.Name} at ${this.squareId(targetX, targetY)}.`); }
+          if( isLogSubject && isBlocked && square.Piece.Type == PieceType.Rook ){ console.log(`${square.Piece.Id} isBlocked on ${vector.Name} at ${this.squareId(targetX, targetY)}.`); }
 
           vector = vector.Update( target.Status, target.Square! );
           
@@ -352,7 +352,7 @@ export class MobilityEngine {
   ): VectorTargetReport => {
 
     if(isLogSubject) console.warn("\t\t\t\t evaluateVectorTarget 1: " + targetId); 
-     const toLog = targetId == "S28";
+     const toLog = targetId == "DISABLED"; //"S28";
 
     // Find the target square.
     const s = board.Squares.find( s => s.Id == targetId );
@@ -383,7 +383,9 @@ export class MobilityEngine {
         break;
     
       default: // Enemy      
-          console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Enemy"); 
+        if(isLogSubject || toLog) {
+            console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Enemy"); 
+        }
         // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
         const isCheck = s.Piece.Type == PieceType.King;
         if( isCheck ){
