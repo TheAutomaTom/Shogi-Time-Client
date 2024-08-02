@@ -13,7 +13,10 @@ Squares = [
     // new SquareModel( 5, 9, 2, new PieceModel( 1, PieceType.KingVictor, "Center", "OU")),
     // new SquareModel( 6, 9, 2, new PieceModel( 1, PieceType.Gold,    "Right", "KI")),
     // new SquareModel( 7, 9, 2, new PieceModel( 1, PieceType.Silver,  "Right", "GI")),
+    
     new GameSquareModel( 8, 9, 2, new PieceModel( 1, PieceType.Knight,  "Right", "KE")),
+    // new GameSquareModel( 8, 9, 2 ),
+    
     // new SquareModel( 9, 9, 2, new PieceModel( 1, PieceType.Lance,   "Right", "KY")),
     
     new GameSquareModel( 1, 9, 2 ),

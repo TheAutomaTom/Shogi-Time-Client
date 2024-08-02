@@ -13,7 +13,13 @@
     >{{ getNotationText('y') }}</div>
 
 <!--  -->
-    <div class="board-notation board-notation-debug">{{ input.X }}{{ input.Y }} {{ input.Piece.Type != "None" ? input.Piece.Type : "" }}</div>
+    <div>
+      <!-- v-if="input.Piece.Player != 0" -->
+    <span
+      class="board-notation board-notation-debug"
+    >{{ input.X }}{{ input.Y }} {{ input.Piece.Player != 0 ? input.Piece.Id : "" }}
+    </span>
+    </div>
 <!--  -->
 
     <div 
@@ -190,7 +196,10 @@ const handleClickSquare = () => {
   .board-notation-debug{
     left:0;
     bottom:0;
-    color: white;   
+    
+    z-index: 1000000;
+    color:white;
+    background-color: black;
   }
 
   .game-square-potential-move{

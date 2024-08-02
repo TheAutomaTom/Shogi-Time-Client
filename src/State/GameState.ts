@@ -14,8 +14,8 @@ import { GameSquareModel } from "./Game/Squares/GameSquareModel";
 export const useGameState = defineStore("GameState", () => {
   
   const logPieceSelect = false;
-  const logPieceCaptures = true;
-  const logGamePhase = true;
+  const logPieceCaptures = false;
+  const logGamePhase = false;
   const logMethodCalled = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
@@ -94,31 +94,33 @@ export const useGameState = defineStore("GameState", () => {
     // Check if target is in the current selection's movement rules.
     const target = PieceInHand.value.Mobility.Map.find(s => s.X === square.X && s.Y === square.Y);    
     if (!target) return;
-
-
-
+    
     // If so, find out how the target relates to the origin.
     if(logGamePhase) console.log(`MoveAttempt square.Piece.Type: ${square.Piece.Type} is a ${target.Status}`);
+    
+    console.log(target.Status);
+
     switch (target.Status) {
 
-      case TargetStatus.Blocked ||TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
-        // Do nothing
-        return;
-        
-
+      // case TargetStatus.Blocked ||TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
+      //   // Do nothing
+      //   return;
 
       case TargetStatus.Open:
         // Create the moved piece in that spot.
         square.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
         
         // Remove the piece from the origin.
+        
+        console.dir(Origin.value);
         Origin.value.Piece = new PieceModel();
+        console.error("Origin resetting...");
+        console.dir(Origin.value);
+
         // Clear the MovementMap causes squares to highlight.
         PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility);
 
         return MoveEnd(square);
-
-
 
       case TargetStatus.Enemy || TargetStatus.Check: // Kit it! 
 
@@ -130,7 +132,7 @@ export const useGameState = defineStore("GameState", () => {
         }
 
         // let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
-        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, square.Piece.StartingPosition, square.Piece.Icon);
+        let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}-${Board.value.CurrentPlayer}`, square.Piece.Icon);
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
@@ -151,6 +153,7 @@ export const useGameState = defineStore("GameState", () => {
         return MoveEnd(square);
     
       default:
+        console.error(target.Status);
         break;
 
 

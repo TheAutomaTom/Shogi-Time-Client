@@ -21,7 +21,7 @@ export class MobilityEngine {
     let result = this.resetPieces(input);
     result = this.recalculateVectors(result);
     result = this.redrawValidMoves(result);
-    // result = this.rebuildDrops(result);
+    result = this.rebuildDrops(result);
     
     //...
 
@@ -38,7 +38,7 @@ export class MobilityEngine {
   };
 
 
-/*
+
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
     if(this.logPhase) console.log(`\r\n rebuildDrops... `);
     
@@ -141,7 +141,7 @@ export class MobilityEngine {
     return board;
 
   };
-*/
+
   
 // First iteration finds all moves without consideration of how checks or pins affect individual movement.
   recalculateVectors = ( board: BoardModel ): BoardModel => {
