@@ -15,10 +15,10 @@
 <!--  -->
     <div>
       <!-- v-if="input.Piece.Player != 0" -->
-    <span
-      class="board-notation board-notation-debug"
-    >{{ input.X }}{{ input.Y }} {{ input.Piece.Player != 0 ? input.Piece.Id : "" }}
-    </span>
+      <span
+        class="board-notation board-notation-debug"
+      >{{ input.Piece.Player != 0 ? `${input.Piece.Id}` : "" }}<br/><br/>{{ input.X }}{{ input.Y }} 
+      </span>
     </div>
 <!--  -->
 
@@ -199,7 +199,7 @@ const handleClickSquare = () => {
     
     z-index: 1000000;
     color:white;
-    background-color: black;
+    background-color: #250c04;
   }
 
   .game-square-potential-move{

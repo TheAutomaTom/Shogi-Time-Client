@@ -162,6 +162,9 @@ export class MobilityEngine {
   
   // Second iteration finds attackers' checks and pins, and constrains movement on targets.  A flat map is created for each piece for Views to bind on.
   redrawValidMoves = ( board: BoardModel ): BoardModel => {
+
+    let p1Attacks = [] as TargetSquareModel[];
+    let p2Attacks = [] as TargetSquareModel[];
     
     if(this.logPhase) console.log("\r\n rebuildSquares second iteration... ");
     board.Squares.forEach( square => {
@@ -177,6 +180,7 @@ export class MobilityEngine {
         const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
         if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n \t logSubject: ${this.logSubject.id}`); 
         
+        // If this target is not pinned to the king...
         const pinning = square.Piece.Mobility.Vectors.filter(v => v.PinnedPiece != null);
         if(pinning.length == 0){
           
@@ -187,13 +191,18 @@ export class MobilityEngine {
               console.log(`\t vector.Targets...`);
               console.dir(vector.Targets);
             }
-            vector.Targets.forEach( t => square.Piece.Mobility.Map.push(t) );
+            vector.Targets.forEach( t => {
+              square.Piece.Mobility.Map.push(t);
+              square.Piece.Player == 1 ? p1Attacks.push(t) : p2Attacks.push(t);
+            });
+
           });
           if(logSubject) {
             console.log(`\t Piece.Mobility.Map...`);
             console.dir(square.Piece.Mobility.Map);
           }
 
+        // Else, constrain the piece to the pinned vector.
         } else {
           if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
           pinning.forEach(attackVector => { 
@@ -220,7 +229,22 @@ export class MobilityEngine {
         }
 
 
+
+
       } 
+    });
+    
+    
+    // Lastly, re-evaluate each King, now that we know where everything else can move.
+    board.Squares.forEach( square => {
+      if(square.Piece.Type == PieceType.King){
+        if(square.Piece.Player == 1){
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Attacks);
+        } else {
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Attacks);
+        }
+        
+      }
     });
 
     if(this.logSubject.enabled){
@@ -231,6 +255,16 @@ export class MobilityEngine {
     }
 
     return board;
+  };
+
+  restrictKing = (moves: TargetSquareModel[], attacks: TargetSquareModel[]): TargetSquareModel[] => {
+    const validMoves = moves.filter(move => 
+      !attacks.some(attack => 
+        attack.X == move.X 
+        && attack.Y == move.Y
+      ));
+    return validMoves;
+
   };
 
   flattenVectors = (vectors: Vector[]): BaseSquareModel[] =>{
