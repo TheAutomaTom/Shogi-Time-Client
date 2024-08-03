@@ -199,7 +199,8 @@ const handleClickSquare = () => {
     
     z-index: 1000000;
     color:white;
-    background-color: #250c04;
+    background-color: #250c0494;
+    
   }
 
   .game-square-potential-move{

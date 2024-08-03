@@ -2,6 +2,7 @@ import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
+import { GameSquareModel } from "./Game/Squares/GameSquareModel";
 import { MobilityEngine } from "./Game/MobilityEngine2";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { PieceType } from "./Game/Pieces/PieceType";
@@ -9,7 +10,6 @@ import { TargetStatus } from "./Game/Squares/TargetStatus";
 import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 import { defineStore } from "pinia";
 import { ref } from "vue";
-import { GameSquareModel } from "./Game/Squares/GameSquareModel";
 
 export const useGameState = defineStore("GameState", () => {
   
@@ -102,20 +102,12 @@ export const useGameState = defineStore("GameState", () => {
 
     switch (target.Status) {
 
-      // case TargetStatus.Blocked ||TargetStatus.Ally || TargetStatus.Pinned || TargetStatus.Check || TargetStatus.OutOfRange || TargetStatus.Na:
-      //   // Do nothing
-      //   return;
-
       case TargetStatus.Open:
         // Create the moved piece in that spot.
         square.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
         
         // Remove the piece from the origin.
-        
-        console.dir(Origin.value);
         Origin.value.Piece = new PieceModel();
-        console.error("Origin resetting...");
-        console.dir(Origin.value);
 
         // Clear the MovementMap causes squares to highlight.
         PieceInHand.value = new PieceModel(PieceInHand.value.Player, PieceInHand.value.Type, PieceInHand.value.StartingPosition, PieceInHand.value.Icon, PieceInHand.value.Mobility);

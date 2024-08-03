@@ -94,11 +94,11 @@ Squares = [
     new GameSquareModel( 2, 4 ),
     new GameSquareModel( 3, 4 ),
     new GameSquareModel( 4, 4 ),
-    new GameSquareModel( 5, 4 ),
 
-    // new GameSquareModel( 6, 4 ),
-    new GameSquareModel( 6, 4, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
-    
+    // new GameSquareModel( 5, 4 ),
+    new GameSquareModel( 5, 4, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
+
+    new GameSquareModel( 6, 4 ),    
     new GameSquareModel( 7, 4 ),
     new GameSquareModel( 8, 4 ),
     new GameSquareModel( 9, 4 ),
