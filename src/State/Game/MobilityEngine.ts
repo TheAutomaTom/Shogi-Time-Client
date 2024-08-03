@@ -1,365 +1,504 @@
-// import { BoardModel } from "./BoardModel";
-// import { PieceModel } from "./Pieces/PieceModel";
-// import { PieceType } from "./Pieces/PieceType";
-// import { GameSquareModel } from "./GameSquareModel";
-// import { TargetStatus } from "./Movement/TargetStatus";
+import { BaseSquareModel } from "./Squares/BaseSquareModel";
+import { BoardModel } from "./BoardModel";
+import { GameSquareModel } from "./Squares/GameSquareModel";
+import { Mobility } from "./Movement/Mobility";
+import { PieceType } from "./Pieces/PieceType";
+import { TargetSquareModel } from "./Squares/TargetSquareModel";
+import { TargetStatus } from "./Squares/TargetStatus";
+import { Vector } from "./Movement/Vector";
+import { VectorName } from "./Movement/VectorName";
+import { VectorTargetReport } from "./Movement/VectorTargetReport";
+import { execPath } from "process";
+import { PieceModel } from "./Pieces/PieceModel";
 
-// export class MobilityEngine {
-//   logSubject = {enabled: false, x:7, y:3};
-//   logPhase = true;
+export class MobilityEngine {
+  logSubject = {enabled: false, id: "P1-Rook-Right"};
+  logPhase = false;
 
-//   RebuildBoard = ( board: BoardModel ): BoardModel =>{
-//     if(this.logPhase) console.log("\r\nRebuildBoard ... ");
-//     this.rebuildSquares(board);
-//     board = this.rebuildDrops(board);
+  RebuildBoard = ( input: BoardModel ): BoardModel =>{
+
+    if(this.logPhase) console.log("\r\n RebuildBoard ... ");
+    let result = this.resetPieces(input);
+    result = this.recalculateVectors(result);
+    result = this.redrawValidMoves(result);
+    result = this.rebuildDrops(result);
     
-//     const checks = this.detectCheckCondition(board.Squares);
+    //...
+
+    return result;
+  };
+
+  resetPieces = ( board: BoardModel ): BoardModel => {        
+    board.Squares.forEach(square => {
+      if(square.Piece.Player != 0){
+        const _ = square.Piece.Reset();
+      }      
+    });
+    return board;
+  };
+
+
+
+  rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+    if(this.logPhase) console.log(`\r\n rebuildDrops... `);
     
-//     if(checks.length > 0){
-//       if(this.logPhase) console.log(`\r\nRebuildBoard/ checks.length = ${checks.length} ... `);
-      
-//       if(this.logPhase){ 
-//         console.warn("Checks..."); 
-//         console.dir(board.Checks); 
-//       }
-
-//       checks.forEach(s =>
-//         board.Checks.push(
-//         new GameSquareModel(
-//           s.X, 
-//           s.Y, 
-//           s.PromotionZoneFor,
-//           new PieceModel(
-//             s.Piece.Player,
-//             s.Piece.Type,
-//             s.Piece.StartingPosition,
-//             s.Piece.Icon,
-//             s.Piece.Mobility.IsFacingDefault
-//           )
-//         ))
-//       );
-//       board.Checks = checks;
-//       board = this.HandleChecks( board );
-//     } else {
-//       board.Checks = [];
-//     }
-//     return board;
-//   };
-
-//   rebuildSquares = ( board: BoardModel ): GameSquareModel[] =>{
-//     if(this.logSubject.enabled){ console.log(`\r\n\r\nMobilityEngine.RebuildSquares()\r\nlogSubject: ${this.logSubject.x}, ${this.logSubject.y}`); }
-//     if(this.logPhase) console.log("\r\nrebuildSquares... ");
-
-//     // First iteration builds vector arrays evaluating each pieces' 
-//     //   complete movement range and determines targets' relation to origin.
-//     board.Squares.forEach( square => {
-//       if(square.Piece.Player != 0){
-//         square.Piece.Mobility = this.evaluateVectors(
-//           board, 
-//           square.X, 
-//           square.Y,
-//           square.Piece,
-//           this.setPieceIsFacing(square.Piece.Player, square.Piece.IsFacingDefault)
-//         )
-//       }      
-//     });
-
-//     // Create flat maps for each piece 
-//     //   so squares know where to highlight valid moves.
-//     board.Squares.forEach( square => {
-//       if(square.Piece.Player != 0){
-//         square.Piece.MovementMap = [];        
-//         square.Piece.MovementMap.push( ...this.flattenMap(square) );
-//       }      
-//     });
-
-//     return board.Squares;
-//   };
-  
-//   flattenMap = (square: GameSquareModel): TargetSquare[] => {
-//     let map = [] as TargetSquare[];
-//     square.Piece.Mobility.N.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.S.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.E.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.W.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.NE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.NW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.SE.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.SW.forEach(target  => { if(target.Status != TargetStatus.Blocked) map.push(target); });
-//     square.Piece.Mobility.K.forEach(target   => { if(target.Status != TargetStatus.Blocked) map.push(target); });    
-//     return map;
-//   };
-
-
-
-
-//   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
-//     if(this.logPhase) console.log("\r\nrebuildDrops... ");
-    
-//     // Make a list of columns that pawns can be placed on for each player.
-//     let openFilesP1 = this.findOpenFiles(1, board);
-//     let openFilesP2 = this.findOpenFiles(2, board);
+    // Make a list of columns that pawns can be placed on for each player.
+    let openFilesP1 = this.findOpenFiles(1, board);
+    let openFilesP2 = this.findOpenFiles(2, board);
         
-//     // Loop through captured pieces (player 1)
-//     board.CapturesP1.forEach(capture => {
-//       capture.MovementMap = [];
-//       board.Squares.forEach(s => {
+    // Loop through captured pieces (player 1)
+    board.CapturesP1.forEach(capture => {
+      capture.Mobility.Map = [];
+      board.Squares.forEach(s => {
 
-//         if(s.Piece.Player == 0){
+        if(s.Piece.Player == 0){
           
-//           // If not pawn, lance, or night: add whole board
-//           if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If not pawn, lance, or night: add whole board
+          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//           // If lance: add all but last back row
-//           else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If lance: add all but last back row
+          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//           // If pawn: add all but last back row and other columns with existing pawns
-//           else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+          // If pawn: add all but last back row and other columns with existing pawns
+          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             
-//             console.log(`\topenFilesP1...1`);
-//             if(capture.Player == 1 && openFilesP1.includes(s.X)){
-//               console.warn(`\r\nrebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
-//               console.log(`\topenFilesP1...2`);
-//               console.dir(openFilesP1);
-//               capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//             }
+            console.log(`\topenFilesP1...1`);
+            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+              console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              console.log(`\topenFilesP1...2`);
+              console.dir(openFilesP1);
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
 
-//             if(capture.Player == 2 && openFilesP2.includes(s.X)){
-//               capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//             }
+            if(capture.Player == 2 && openFilesP2.includes(s.X)){
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
 
-//           }
+          }
 
-//           // If knight: add all but back 2 rows
-//           else if( (capture.Type == PieceType.Knight)
-//             && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
-//           {
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If knight: add all but back 2 rows
+          else if( (capture.Type == PieceType.Knight)
+            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
+          {
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//         }
-//       });
+        }
+      });
 
-//     });
+    });
     
-//     // Loop through captured pieces (player 2)
-//     board.CapturesP2.forEach(capture => {
-//       capture.MovementMap = [];
-//       board.Squares.forEach(s => {
+    // Loop through captured pieces (player 2)
+    board.CapturesP2.forEach(capture => {
+      capture.Mobility.Map = [];
+      board.Squares.forEach(s => {
 
-//         if(s.Piece.Player == 0){
+        if(s.Piece.Player == 0){
           
-//           // If not pawn, lance, or night: add whole board
-//           if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If not pawn, lance, or night: add whole board
+          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//           // If lance: add all but last back row
-//           else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If lance: add all but last back row
+          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//           // If pawn: add all but last back row and other columns with existing pawns
-//           else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
+          // If pawn: add all but last back row and other columns with existing pawns
+          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             
-//             console.log(`\topenFilesP1...1`);
-//             if(capture.Player == 1 && openFilesP1.includes(s.X)){
-//               console.warn(`\r\nrebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
-//               console.log(`\topenFilesP1...2`);
-//               console.dir(openFilesP1);
-//               capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//             }
+            console.log(`\topenFilesP1...1`);
+            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+              console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              console.log(`\topenFilesP1...2`);
+              console.dir(openFilesP1);
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
 
-//             if(capture.Player == 2 && openFilesP2.includes(s.X)){
-//               capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//             }
+            if(capture.Player == 2 && openFilesP2.includes(s.X)){
+              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+            }
 
-//           }
+          }
 
-//           // If knight: add all but back 2 rows
-//           else if( (capture.Type == PieceType.Knight)
-//             && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
-//           {
-//             capture.MovementMap.push(new TargetSquare(s.X, s.Y, TargetStatus.Open));
-//           }
+          // If knight: add all but back 2 rows
+          else if( (capture.Type == PieceType.Knight)
+            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
+          {
+            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
+          }
         
-//         }
-//       });
+        }
+      });
 
-//     });
+    });
 
-//     return board;
+    return board;
 
-//   };
-  
-//   setPieceIsFacing = (player: number, isDefault: boolean): number =>{
-//     if(isDefault){
-//       return player == 1 ? -1 : 1;
-//     }
-//     return player == 1 ? 1 : -1;
-//   };
-  
-//   // Make a list of files (columns) without existing pawns, per player.
-//   findOpenFiles = ( player: number, board: BoardModel ): number[] => {
-
-//     // Check to see if pawns are captured (otherwise there is no point in this process)
-//     const hasPawns = player == 1 
-//     ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
-//     : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
-
-//     // All possible files (columns) to be filtered out.
-//     let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
-
-//     // Filter out files that already contain a player's unpromoted pawn.
-//     if(hasPawns.length > 0){
-//       board.Squares.forEach(s => {
-//         if( s.Piece.Type == PieceType.Pawn ){
-//           if( s.Piece.Player == player) { 
-//             // console.log(`openFilesP1...filter BEFORE ${s.X}`);
-//             // console.dir(openFilesP1);
-//             openFiles = openFiles.filter(x => x != s.X); 
-//             // console.log(`openFilesP1...filter AFTER ${s.X}`);
-//             // console.dir(openFilesP1);
-//           }
-//         }
-//       });
-//     }    
-//     return openFiles;
-//   };
-
-
-//   evaluateVector = ( 
-//     piece: PieceModel, board: BoardModel, targetX: number, targetY: number, isBlocked: Boolean, isLogSubject: boolean = false
-//   ): TargetSquare =>{
-
-//     // Check board dimensions.
-//     if(targetX >= 1 && targetX <= 9 && targetY >= 1 && targetY <= 9){
-          
-//       // Find the target square.
-//       const s = board.Squares.find( s => s.X == targetX && s.Y == targetY );
-//       if(s == undefined) return new TargetSquare(11, 11, TargetStatus.Na );
-
-//       switch (s?.Piece.Player) {
-        
-//         case 0: // Open squares
-//           if(isBlocked){
-//             // if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Blocked} (isBlocked)`);}            
-//             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
-//             return result;
-            
-//           } else {
-//             // if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Open} (!isBlocked)`);}
-//             const result = new TargetSquare(s.X, s.Y, TargetStatus.Open );
-//             return result;
-//           }
-
-//         case piece.Player:
-//           if(isLogSubject){console.log(`\tpiece.Player: ${piece.Player}`);}
-//           if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Ally} (${s.Piece.Id})`);}
-//           return new TargetSquare(s.X, s.Y, TargetStatus.Ally );
-      
-//         default: // Enemy
-
-//           if(isBlocked){
-//             if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Blocked} (isBlocked enemy)`);}
-//             const result = new TargetSquare(s.X, s.Y, TargetStatus.Blocked );
-//             return result;
-            
-//           } else {
-            
-//             // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
-//             const isCheck = s.Piece.Type == PieceType.King;
-//             if( isCheck ){              
-//               if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Check} (!isBlocked enemy && isCheck)`);}
-//               const result = new TargetSquare(s.X, s.Y, TargetStatus.Check );
-//               return result;
-//             }
-//             if(isLogSubject){console.log(`\t${targetX}${targetY}: ${TargetStatus.Enemy} (!isBlocked enemy && !isCheck)`);}
-//             const result = new TargetSquare(s.X, s.Y, TargetStatus.Enemy );  
-//             return result;
-
-//           }
-
-
-
-
-//       }
-
-//     };
-//     return new TargetSquare(10, 10, TargetStatus.OutOfRange );
-//   }
+  };
 
   
-
-  
-
-//   //===================================================================================================================
- 
-//   detectCheckCondition (squares: GameSquareModel[]): GameSquareModel[] {
-//     if(this.logPhase) console.log("\r\ndetectCheckCondition... ");
-
-//     let checks = [] as GameSquareModel[];
-
-//     squares.forEach(s => {
-//       if(s.Piece.Player != 0){
-//         var inCheck = s.Piece.MovementMap.some(p => p.Status == TargetStatus.Check);
-//         if(inCheck){
-
-//           checks.push(
-//             new GameSquareModel(
-//               s.X, 
-//               s.Y, 
-//               s.PromotionZoneFor,
-//               new PieceModel(
-//                 s.Piece.Player,
-//                 s.Piece.Type,
-//                 s.Piece.StartingPosition,
-//                 s.Piece.Icon,
-//                 s.Piece.IsFacingDefault,
-//                 s.Piece.MovementMap
-//               )
-//             ));
-
-//           console.error(`inCheck from ${s.Id}'s ${s.Piece.Id} (${s.X}, ${s.Y})`);
-//         }
-//       }
-//     });
-
-//     return checks;
-//   }
-
-  
-//   HandleChecks = ( board: BoardModel ): BoardModel =>{
-//     if(this.logPhase) console.log(`\r\nHandleChecks ... `);
+// First iteration finds all moves without consideration of how checks or pins affect individual movement.
+  recalculateVectors = ( board: BoardModel ): BoardModel => {
     
-//     if(board.Checks.length == 0){ 
-//       return board;
-//     }
+    if(this.logPhase) console.log("\r\n rebuildSquares first iteration... ");
+    
+    board.Squares.forEach( square => {
+      if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
-//     const defender = board.Checks[0]?.Piece?.Player;
-//     if(defender != 0){
-//       const target = board.Squares.filter(s => 
-//         s.Piece.Player == defender 
-//         && s.Piece.Type == PieceType.King
-//       )[0];
+        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        // if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n logSubject: ${this.logSubject.id}`); 
 
+        square.Piece.Mobility = this.rebuildMobility(board, square);
+      }      
+    });
+    return board;
+  };
+  
+  // Second iteration finds attackers' checks and pins, and constrains movement on targets.  A flat map is created for each piece for Views to bind on.
+  redrawValidMoves = ( board: BoardModel ): BoardModel => {
+
+    let p1Attacks = [] as TargetSquareModel[];
+    let p2Attacks = [] as TargetSquareModel[];
+    
+    if(this.logPhase) console.log("\r\n rebuildSquares second iteration... ");
+    board.Squares.forEach( square => {
+
+      // Empty squares actually have blank pieces assigned to Player 0.
+      if(square.Piece?.Player == 0){
+        if(square.Piece.Type != PieceType.None) console.error(`${square.Piece.Id}'s Player == 0, but piece type = ${square.Piece.Type} (${square.Piece.Id}).`);
+        square.Piece = new PieceModel(0);
       
+        // Everyone else needs updated moves.
+      } else { 
 
-//     }
+        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n \t logSubject: ${this.logSubject.id}`); 
+        
+        // If this target is not pinned to the king...
+        const pinning = square.Piece.Mobility.Vectors.filter(v => v.PinnedPiece != null);
+        if(pinning.length == 0){
+          
+          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
+          square.Piece.Mobility.Vectors.forEach(vector => {
+            // vector.Targets.forEach( t => square.Piece.Mobility.Map.push(new BaseSquareModel(t.X, t.Y)) );
+            if(logSubject) {
+              console.log(`\t vector.Targets...`);
+              console.dir(vector.Targets);
+            }
+            vector.Targets.forEach( t => {
+              square.Piece.Mobility.Map.push(t);
+              square.Piece.Player == 1 ? p1Attacks.push(t) : p2Attacks.push(t);
+            });
 
-//     board.Checks.forEach( attackVector => {
-//       target.Piece.MovementMap.filter( escapeVector => {
-//         escapeVector.Id != attackVector.Id
-//       });
+          });
+          if(logSubject) {
+            console.log(`\t Piece.Mobility.Map...`);
+            console.dir(square.Piece.Mobility.Map);
+          }
+
+        // Else, constrain the piece to the pinned vector.
+        } else {
+          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
+          pinning.forEach(attackVector => { 
+            board.Squares.forEach(s => {
+
+              if(attackVector.PinnedPiece!.Id == s.Piece.Id){
+                const vectorPinnedToName = this.complimentaryVectorName(attackVector.Name);
+                const vectorPinnedTo = s.Piece.Mobility.Vectors.find(v => v.Name == vectorPinnedToName);
+                
+                // This this piece can't move in the attack vector, then it can't move anywhere (like a pawn pinned in the X axis)
+                if(vectorPinnedTo == undefined){
+                  s.Piece.Mobility.Map = [];
+                } else{
+                  square.Piece.Mobility = this.rebuildMobility(board, square, vectorPinnedTo);
+                  square.Piece.Mobility.Vectors.forEach( v => {
+                    const validMoves = v.Targets.filter(t => t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check);
+                    s.Piece.Mobility.Map = [...validMoves];
+                  });
+                }
+
+              }
+            });
+          });
+        }
+
+
+
+
+      } 
+    });
+    
+    
+    // Lastly, re-evaluate each King, now that we know where everything else can move.
+    board.Squares.forEach( square => {
+      if(square.Piece.Type == PieceType.King){
+        if(square.Piece.Player == 1){
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Attacks);
+        } else {
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Attacks);
+        }
+        
+      }
+    });
+
+    if(this.logSubject.enabled){
+      const subject = board.Squares.filter(s => s.Piece.Id == this.logSubject.id);
+      console.log("subject[0].Piece.Mobility.Map...");
+      console.dir(subject[0].Piece.Mobility.Map);
       
-//     });
+    }
 
-//     return board;
-//   };
+    return board;
+  };
+
+  restrictKing = (moves: TargetSquareModel[], attacks: TargetSquareModel[]): TargetSquareModel[] => {
+    const validMoves = moves.filter(move => 
+      !attacks.some(attack => 
+        attack.X == move.X 
+        && attack.Y == move.Y
+      ));
+    return validMoves;
+
+  };
+
+  flattenVectors = (vectors: Vector[]): BaseSquareModel[] =>{
+    const map = [] as BaseSquareModel[];
+    vectors.forEach(vector => {
+      vector.Targets.forEach( t => 
+        map.push(new BaseSquareModel(t.X, t.Y))
+      )
+    });
+    return map;
+  };
+  
+  rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: Vector = new Vector(VectorName.None) ): Mobility => {
+    
+    // const isLogSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+    const isLogSubject = false;
+        
+    if(this.logPhase && isLogSubject) {
+      console.warn("\t rebuildMobility 1... ");
+      console.dir(square.Piece.Mobility);
+      console.dir(square.Piece.Mobility.Vectors);
+      // square.Piece.Mobility.Vectors.forEach(v => { console.log(`\t ${v.Name}`); });
+      console.log(`\t pinnedTo.Name == ${pinnedTo.Name}`);
+    }
+
+    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);
+     
+    if(pinnedTo.Name == VectorName.None){ // Typical workflow.
+
+      let newVectors = [] as Vector[];
+      square.Piece.Mobility.Vectors.forEach(vector => {
+        const v = this.rebuildVector(vector, board, square, facing, isLogSubject);
+        newVectors.push(v);        
+      });
+        
+      if(this.logPhase && isLogSubject) {
+        console.log("\tsquare.Piece.Mobility 2 (newVectors): "); 
+        console.dir(newVectors); 
+        square.Piece.Mobility.Vectors = newVectors;
+        console.log("\tsquare.Piece.Mobility 2b: "); 
+        console.dir(square.Piece.Mobility.Vectors);
+      }
+
+    } else {  // This piece is pinned, so constrain its movement to that vector.
+      square.Piece.Mobility.Vectors.forEach(vector => {        
+
+        if(this.logPhase && isLogSubject) { console.warn(`\t\tRebuild vector # ${square.Piece.Mobility.Vectors.length}: ${vector.Name}`); }
+        vector = this.rebuildVector(pinnedTo, board, square, facing, isLogSubject );
+      });
+    }
+  
+    return square.Piece.Mobility;
+  };
+  
+  rebuildVector = ( vector: Vector, board: BoardModel, square: GameSquareModel, facing: number , isLogSubject: boolean): Vector => {
+    if(isLogSubject) {
+      console.warn("\t\trebuildVector 1: " + vector.Name + " w/ range " + + vector.Range); 
+      console.dir(vector);
+    }
+
+    // Knights only...
+    if(vector.Name == VectorName.K){
+      let targetX = square.X + 1 * facing;
+      let targetY = square.Y + 2 * facing;
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
+        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
+        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        
+      }
+      targetX = square.X + -1 * facing;
+      targetY = square.Y + 2 * facing;
+      if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
+        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
+        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        
+      }
+      return vector;
+
+    // Anything except Knights...
+    } else { 
+      let isBlocked = false;
+      
+      // Iterate each coordinate along one vector (ex: north)...
+      for (let i = 1; i <= vector.Range; i++) {
+      
+        const targetX = vector.XIncrement == 0 ? square.X 
+                                               : square.X + i * vector.XIncrement * facing;
+        const targetY = vector.YIncrement == 0 ? square.Y 
+                                               : square.Y + i * vector.YIncrement * facing;
+        
+        if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
+          
+          const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked, isLogSubject );
+          
+          isBlocked = this.isBlocked(target.Status);
+
+          if( isLogSubject && isBlocked && square.Piece.Type == PieceType.Rook ){ console.log(`${square.Piece.Id} isBlocked on ${vector.Name} at ${this.squareId(targetX, targetY)}.`); }
+
+          vector = vector.Update( target.Status, target.Square! );
+          
+          if(isLogSubject) {console.warn("\t\trebuildVector 2 (update result): "); console.dir(vector);}
+          
+        }
+      }
+      return vector;
+    }
+
+  };
+
+  isBlocked = (status: TargetStatus): boolean =>{
+    if(status == TargetStatus.Blocked || status == TargetStatus.Ally || status == TargetStatus.Enemy || status == TargetStatus.Check){
+      return true;
+    }
+    return false;
+  };
+
+  evaluateVectorTarget = (
+    board: BoardModel, playersTurn: number, targetId: string, isBlocked: boolean, isLogSubject: boolean
+  ): VectorTargetReport => {
+
+    if(isLogSubject) console.warn("\t\t\t\t evaluateVectorTarget 1: " + targetId); 
+     const toLog = targetId == "DISABLED"; //"S28";
+
+    // Find the target square.
+    const s = board.Squares.find( s => s.Id == targetId );
+    if(s == undefined) {
+      return {
+        Square: new GameSquareModel(0, 0),
+        Status: TargetStatus.OutOfRange
+      } as VectorTargetReport;
+    }
+    
+    let status: TargetStatus;
+    switch (s?.Piece.Player) {
+      
+      case 0: // Open squares
+        if(isLogSubject || toLog) {
+          console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Open Square"); 
+          console.log(`\t\t\t\t ${targetId}: ${TargetStatus.Open}`);
+        }
+        status = isBlocked ? TargetStatus.Blocked : TargetStatus.Open;
+        break;
+
+      case playersTurn:
+        if(isLogSubject || toLog) {
+          console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Ally"); 
+          console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}.`); 
+        }
+        status = TargetStatus.Ally;
+        break;
+    
+      default: // Enemy      
+        if(isLogSubject || toLog) {
+            console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Enemy"); 
+        }
+        // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
+        const isCheck = s.Piece.Type == PieceType.King;
+        if( isCheck ){
+          if(isLogSubject || toLog){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked}, isCheck: ${isCheck}.`); }
+
+          status = isBlocked ? TargetStatus.BlockedCheck : TargetStatus.Check;
+          break;
+
+        } else {
+          if(isLogSubject || toLog){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked},isCheck: ${isCheck}.`); }
+          
+          status = isBlocked ? TargetStatus.Blocked : TargetStatus.Enemy;
+          break;
+        }
+    };
+
+    return {
+      Square: s,
+      Status: status
+    } as VectorTargetReport;
+
+  };
+  
 
 
-// }
+  setPieceIsFacing = (player: number, isDefault: boolean): number =>{
+    if(isDefault){
+      return player == 1 ? -1 : 1;
+    }
+    return player == 1 ? 1 : -1;
+  };
+
+  squareId = (x: number, y: number): string => `S${x}${y}`;
+  
+  complimentaryVectorName = (input: VectorName): VectorName => {
+    switch (input) {
+      case VectorName.N :
+        return VectorName.S;
+      case VectorName.S :
+        return VectorName.N;
+      case VectorName.E :
+        return VectorName.W;
+      case VectorName.W :
+        return VectorName.E;
+      case VectorName.NE:
+        return VectorName.SW;
+      case VectorName.SE:
+        return VectorName.NW;
+      case VectorName.SW:
+        return VectorName.NE;
+      case VectorName.NW:
+        return VectorName.SE;
+      default:
+        return VectorName.None;
+    }
+  };
+
+  // Make a list of files (columns) without existing pawns, per player.
+  findOpenFiles = ( player: number, board: BoardModel ): number[] => {
+
+    // Check to see if pawns are captured (otherwise there is no point in this process)
+    const hasPawns = player == 1 
+    ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
+    : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
+
+    // All possible files (columns) to be filtered out.
+    let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
+
+    // Filter out files that already contain a player's unpromoted pawn.
+    if(hasPawns.length > 0){
+      board.Squares.forEach(s => {
+        if( s.Piece.Type == PieceType.Pawn ){
+          if( s.Piece.Player == player) { 
+            openFiles = openFiles.filter(x => x != s.X);
+          }
+        }
+      });
+    }    
+    return openFiles;
+  };
+
+}

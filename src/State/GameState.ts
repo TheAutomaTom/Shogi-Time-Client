@@ -3,7 +3,7 @@ import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
 import { GameSquareModel } from "./Game/Squares/GameSquareModel";
-import { MobilityEngine } from "./Game/MobilityEngine2";
+import { MobilityEngine } from "./Game/MobilityEngine";
 import { PieceModel } from "./Game/Pieces/PieceModel";
 import { PieceType } from "./Game/Pieces/PieceType";
 import { TargetStatus } from "./Game/Squares/TargetStatus";
