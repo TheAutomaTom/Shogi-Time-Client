@@ -59,8 +59,11 @@ Squares = [
   new GameSquareModel( 3, 7, 2 ),
   new GameSquareModel( 4, 7, 2 ),
   new GameSquareModel( 5, 7, 2 ),
-  new GameSquareModel( 6, 7, 2, new PieceModel( 1, PieceType.Pawn, "4", "FU")),
-  new GameSquareModel( 7, 7, 2 ),
+  new GameSquareModel( 6, 7, 2 ),
+
+  // new GameSquareModel( 7, 7, 2 ),
+  new GameSquareModel( 7, 7, 2, new PieceModel( 1, PieceType.Pawn, "4", "FU")),
+
   new GameSquareModel( 8, 7, 2 ),
   new GameSquareModel( 9, 7, 2 ),
 
@@ -92,7 +95,10 @@ Squares = [
     new GameSquareModel( 3, 4 ),
     new GameSquareModel( 4, 4 ),
     new GameSquareModel( 5, 4 ),
-    new GameSquareModel( 6, 4 ),
+
+    // new GameSquareModel( 6, 4 ),
+    new GameSquareModel( 6, 4, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
+    
     new GameSquareModel( 7, 4 ),
     new GameSquareModel( 8, 4 ),
     new GameSquareModel( 9, 4 ),
@@ -155,8 +161,8 @@ Squares = [
   // Player 2: Mid Row (empty) /==================
     new GameSquareModel( 1, 2, 1, new PieceModel( )),
 
-    // new SquareModel( 2, 2, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
     new GameSquareModel( 2, 2, 1, new PieceModel( )),
+    // new GameSquareModel( 2, 2, 1, new PieceModel( 2, PieceType.Rook, "Right", "HI")),
 
     new GameSquareModel( 3, 2, 1, new PieceModel( )),
     new GameSquareModel( 4, 2, 1, new PieceModel( )),
@@ -168,8 +174,8 @@ Squares = [
 
     new GameSquareModel( 7, 2, 1, new PieceModel( )),
 
-    // new SquareModel( 8, 2, 1, new PieceModel( 2, PieceType.Bishop, "Left", "KA")),
-    new GameSquareModel( 8, 2, 1, new PieceModel( )),
+    new GameSquareModel( 8, 2, 1, new PieceModel( 2, PieceType.Bishop, "Left", "KA")),
+    // new GameSquareModel( 8, 2, 1, new PieceModel( )),
 
     new GameSquareModel( 9, 2, 1, new PieceModel( )),
 
@@ -185,4 +191,25 @@ Squares = [
     new GameSquareModel( 9, 1, 1 ),
   
   ] // ...Squares
+
+  checkForRedundantCoordinates(){
+    let count = 0;
+    this.Squares.forEach(square => {
+      count = 0;
+      this.Squares.forEach(s => {
+        if( square.X == s.X && square.Y == s.Y){
+          if (++count > 1){
+            console.error(`Board contains redundant coordinates: ${square.X}${square.Y}`); 
+          }
+
+        }      
+      });
+    });
+  }  
+  
+  constructor() {
+
+
+    
+  }
 };
