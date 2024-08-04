@@ -2,46 +2,42 @@ import { BaseSquareModel } from "./Squares/BaseSquareModel";
 import { BoardModel } from "./BoardModel";
 import { GameSquareModel } from "./Squares/GameSquareModel";
 import { Mobility } from "./Movement/Mobility";
+import { PieceModel } from "./Pieces/PieceModel";
 import { PieceType } from "./Pieces/PieceType";
 import { TargetSquareModel } from "./Squares/TargetSquareModel";
 import { TargetStatus } from "./Squares/TargetStatus";
 import { Vector } from "./Movement/Vector";
 import { VectorName } from "./Movement/VectorName";
 import { VectorTargetReport } from "./Movement/VectorTargetReport";
-import { execPath } from "process";
-import { PieceModel } from "./Pieces/PieceModel";
+import { AttackModel } from "./Movement/AttackModel";
 
 export class MobilityEngine {
-  logSubject = {enabled: false, id: "P1-Rook-Right"};
-  logPhase = false;
+  // logSubject = {enabled: true, id: "P2-Rook-Right"};
+  // logPhase = false;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
-    if(this.logPhase) console.log("\r\n RebuildBoard ... ");
-    let result = this.resetPieces(input);
-    result = this.recalculateVectors(result);
+    let result = this.resetBoard(input);
+    result = this.calculateStandardVectors(result);
+    result = this.defineAttackVectors(result);
+    result = this.constrainPinnedPieces(result);
     result = this.redrawValidMoves(result);
     result = this.rebuildDrops(result);
-    
-    //...
 
     return result;
   };
 
-  resetPieces = ( board: BoardModel ): BoardModel => {        
+  resetBoard = ( board: BoardModel ): BoardModel => {
     board.Squares.forEach(square => {
       if(square.Piece.Player != 0){
-        const _ = square.Piece.Reset();
+        const _ = square.Piece.ResetMobility();
       }      
     });
+    board.Attacks = [];
     return board;
   };
 
-
-
   rebuildDrops  = ( board: BoardModel ): BoardModel =>{
-    if(this.logPhase) console.log(`\r\n rebuildDrops... `);
-    
     // Make a list of columns that pawns can be placed on for each player.
     let openFilesP1 = this.findOpenFiles(1, board);
     let openFilesP2 = this.findOpenFiles(2, board);
@@ -66,11 +62,7 @@ export class MobilityEngine {
           // If pawn: add all but last back row and other columns with existing pawns
           else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             
-            console.log(`\topenFilesP1...1`);
             if(capture.Player == 1 && openFilesP1.includes(s.X)){
-              console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
-              console.log(`\topenFilesP1...2`);
-              console.dir(openFilesP1);
               capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
             }
 
@@ -141,17 +133,13 @@ export class MobilityEngine {
     return board;
 
   };
-
   
-// First iteration finds all moves without consideration of how checks or pins affect individual movement.
-  recalculateVectors = ( board: BoardModel ): BoardModel => {
-    
-    if(this.logPhase) console.log("\r\n rebuildSquares first iteration... ");
-    
+  // Finds all moves without consideration of how checks or pins affect individual movement.
+  calculateStandardVectors = ( board: BoardModel ): BoardModel => {
     board.Squares.forEach( square => {
       if(square.Piece?.Player != 0){ // Empty squares actually have blank pieces assigned to Player 0.
 
-        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
+        // const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
         // if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n logSubject: ${this.logSubject.id}`); 
 
         square.Piece.Mobility = this.rebuildMobility(board, square);
@@ -160,14 +148,86 @@ export class MobilityEngine {
     return board;
   };
   
-  // Second iteration finds attackers' checks and pins, and constrains movement on targets.  A flat map is created for each piece for Views to bind on.
+  // Second iteration finds attackers' checks and pins, and constrains movement on targets.
+  defineAttackVectors = (board: BoardModel): BoardModel => {
+    board.Squares.forEach(square => {
+
+      let attackModel = new AttackModel(square);
+      let defenders = [] as TargetSquareModel[];
+
+      if (square.Piece.Player != 0) {
+        square.Piece.Mobility.Vectors.forEach(vector => {
+          if (vector.Targets.some(t => t.Status == TargetStatus.Enemy || TargetStatus.Check || TargetStatus.BlockedCheck)) {
+
+            // Walk the array starting from farthest square.
+            for (let i = vector.Targets.length - 1; i > -1; i--) {
+
+              if (vector.Targets[i].Status == TargetStatus.Check || vector.Targets[i].Status == TargetStatus.BlockedCheck) {
+                attackModel.AttackVector = vector.Name;
+                attackModel.Checked = new TargetSquareModel(
+                  vector.Targets[i].X,
+                  vector.Targets[i].Y,
+                  vector.Targets[i].Status,
+                  vector.Targets[i].Piece
+                );
+              }
+              
+              // Only count enemies, if there has already been a check or blocked-check.
+              if (attackModel.Checked != null && vector.Targets[i].Status == TargetStatus.Enemy) {                
+                defenders.push( new TargetSquareModel(
+                                      vector.Targets[i].X,
+                                      vector.Targets[i].Y,
+                                      vector.Targets[i].Status,
+                                      vector.Targets[i].Piece
+                                    )
+                );                
+              }
+            }
+            // If there are 2 or more enemies protecting the king, they can't both be pinned.
+            if(defenders.length == 1){
+              attackModel.Defender = defenders[0];
+            }
+            board.Attacks.push(attackModel);
+          }
+        });
+      }
+    });
+
+    return board;
+  };
+
+  constrainPinnedPieces  = ( board: BoardModel ): BoardModel => {
+    // Use the short list of attacks to filter out invalid moves that would put the player into check.
+    board.Attacks.forEach(attack => {
+      if(attack.IsPin){
+        board.Squares.forEach(defender => {
+          if(defender.Id == attack.Defender?.Id){
+            const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+            console.dir(constraints);
+          }
+        });
+      }
+      
+    });
+    return board;
+
+  };
+
+
+
+
+  // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
   redrawValidMoves = ( board: BoardModel ): BoardModel => {
 
     let p1Attacks = [] as TargetSquareModel[];
     let p2Attacks = [] as TargetSquareModel[];
     
-    if(this.logPhase) console.log("\r\n rebuildSquares second iteration... ");
     board.Squares.forEach( square => {
+
+      if(square.Piece.Mobility.Map.length != 0) {
+        console.log(`Mobility.Map for ${square.Piece.Id}...BEFORE`);
+        console.dir(square.Piece.Mobility.Map);
+      }
 
       // Empty squares actually have blank pieces assigned to Player 0.
       if(square.Piece?.Player == 0){
@@ -175,36 +235,26 @@ export class MobilityEngine {
         square.Piece = new PieceModel(0);
       
         // Everyone else needs updated moves.
-      } else { 
-
-        const logSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
-        if(logSubject) console.warn(`MobilityEngine.RebuildSquares()\r\n \t logSubject: ${this.logSubject.id}`); 
+      } else {
         
         // If this target is not pinned to the king...
         const pinning = square.Piece.Mobility.Vectors.filter(v => v.PinnedPiece != null);
         if(pinning.length == 0){
           
-          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
           square.Piece.Mobility.Vectors.forEach(vector => {
-            // vector.Targets.forEach( t => square.Piece.Mobility.Map.push(new BaseSquareModel(t.X, t.Y)) );
-            if(logSubject) {
-              console.log(`\t vector.Targets...`);
-              console.dir(vector.Targets);
-            }
             vector.Targets.forEach( t => {
-              square.Piece.Mobility.Map.push(t);
-              square.Piece.Player == 1 ? p1Attacks.push(t) : p2Attacks.push(t);
+              if(t.Status == TargetStatus.Open || TargetStatus.Enemy || TargetStatus.Check || TargetStatus.EnemyPin){
+
+                square.Piece.Mobility.Map.push(t);   
+                square.Piece.Player == 1 ? p1Attacks.push(t) : p2Attacks.push(t);
+              }
             });
 
           });
-          if(logSubject) {
-            console.log(`\t Piece.Mobility.Map...`);
-            console.dir(square.Piece.Mobility.Map);
-          }
-
+        /*
         // Else, constrain the piece to the pinned vector.
         } else {
-          if(logSubject) console.log(`\t pinning.length = ${pinning.length}`); 
+    
           pinning.forEach(attackVector => { 
             board.Squares.forEach(s => {
 
@@ -215,6 +265,7 @@ export class MobilityEngine {
                 // This this piece can't move in the attack vector, then it can't move anywhere (like a pawn pinned in the X axis)
                 if(vectorPinnedTo == undefined){
                   s.Piece.Mobility.Map = [];
+
                 } else{
                   square.Piece.Mobility = this.rebuildMobility(board, square, vectorPinnedTo);
                   square.Piece.Mobility.Vectors.forEach( v => {
@@ -226,11 +277,9 @@ export class MobilityEngine {
               }
             });
           });
-        }
-
-
-
-
+        */
+        } 
+         
       } 
     });
     
@@ -239,33 +288,37 @@ export class MobilityEngine {
     board.Squares.forEach( square => {
       if(square.Piece.Type == PieceType.King){
         if(square.Piece.Player == 1){
-          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Attacks);
+          // square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Attacks);
         } else {
-          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Attacks);
+          // square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Attacks);
         }
         
       }
     });
 
-    if(this.logSubject.enabled){
-      const subject = board.Squares.filter(s => s.Piece.Id == this.logSubject.id);
-      console.log("subject[0].Piece.Mobility.Map...");
-      console.dir(subject[0].Piece.Mobility.Map);
-      
-    }
-
     return board;
   };
 
-  restrictKing = (moves: TargetSquareModel[], attacks: TargetSquareModel[]): TargetSquareModel[] => {
-    const validMoves = moves.filter(move => 
-      !attacks.some(attack => 
-        attack.X == move.X 
-        && attack.Y == move.Y
-      ));
-    return validMoves;
+  // restrictKing = (moves: TargetSquareModel[], attacks: TargetSquareModel[]): TargetSquareModel[] => {
+  //   attacks.filter(a => a.Status == TargetStatus.Open || TargetStatus.Enemy || TargetStatus.Check);
 
-  };
+  //   const validAttacks = attacks.filter(attack => attack.Status == TargetStatus.Enemy || TargetStatus.Open);
+
+  //   attacks.forEach(s => {
+  //     if(s.X == 6 && s.Y == 3){
+  //       console.error("...");
+  //       console.dir(s);
+  //     }
+      
+  //   });
+
+  //   const validMoves = moves.filter(move => !validAttacks.some(attack => 
+  //       attack.X == move.X 
+  //       && attack.Y == move.Y
+  //     ));
+  //   return validMoves;
+
+  // };
 
   flattenVectors = (vectors: Vector[]): BaseSquareModel[] =>{
     const map = [] as BaseSquareModel[];
@@ -277,44 +330,26 @@ export class MobilityEngine {
     return map;
   };
   
-  rebuildMobility = ( board: BoardModel, square: GameSquareModel, pinnedTo: Vector = new Vector(VectorName.None) ): Mobility => {
+  rebuildMobility = ( board: BoardModel, square: GameSquareModel): Mobility => {
     
     // const isLogSubject = this.logSubject.enabled && square.Piece.Id == this.logSubject.id;
     const isLogSubject = false;
         
-    if(this.logPhase && isLogSubject) {
-      console.warn("\t rebuildMobility 1... ");
-      console.dir(square.Piece.Mobility);
-      console.dir(square.Piece.Mobility.Vectors);
-      // square.Piece.Mobility.Vectors.forEach(v => { console.log(`\t ${v.Name}`); });
-      console.log(`\t pinnedTo.Name == ${pinnedTo.Name}`);
-    }
+    // if(this.logPhase && isLogSubject) {
+    //   console.warn("\t rebuildMobility 1... ");
+    //   console.dir(square.Piece.Mobility);
+    //   console.dir(square.Piece.Mobility.Vectors);
+    //   // square.Piece.Mobility.Vectors.forEach(v => { console.log(`\t ${v.Name}`); });
+    //   console.log(`\t pinnedTo.Name == ${pinnedTo.Name}`);
+    // }
 
-    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);
-     
-    if(pinnedTo.Name == VectorName.None){ // Typical workflow.
+    const facing = this.setPieceIsFacing(square.Piece.Player, square.Piece.Mobility.IsFacingDefault);     
 
-      let newVectors = [] as Vector[];
-      square.Piece.Mobility.Vectors.forEach(vector => {
-        const v = this.rebuildVector(vector, board, square, facing, isLogSubject);
-        newVectors.push(v);        
-      });
-        
-      if(this.logPhase && isLogSubject) {
-        console.log("\tsquare.Piece.Mobility 2 (newVectors): "); 
-        console.dir(newVectors); 
-        square.Piece.Mobility.Vectors = newVectors;
-        console.log("\tsquare.Piece.Mobility 2b: "); 
-        console.dir(square.Piece.Mobility.Vectors);
-      }
-
-    } else {  // This piece is pinned, so constrain its movement to that vector.
-      square.Piece.Mobility.Vectors.forEach(vector => {        
-
-        if(this.logPhase && isLogSubject) { console.warn(`\t\tRebuild vector # ${square.Piece.Mobility.Vectors.length}: ${vector.Name}`); }
-        vector = this.rebuildVector(pinnedTo, board, square, facing, isLogSubject );
-      });
-    }
+    let newVectors = [] as Vector[];
+    square.Piece.Mobility.Vectors.forEach(vector => {
+      const v = this.rebuildVector(vector, board, square, facing, isLogSubject);
+      newVectors.push(v);        
+    });
   
     return square.Piece.Mobility;
   };
@@ -356,29 +391,14 @@ export class MobilityEngine {
                                                : square.Y + i * vector.YIncrement * facing;
         
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-          
           const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked, isLogSubject );
-          
-          isBlocked = this.isBlocked(target.Status);
-
-          if( isLogSubject && isBlocked && square.Piece.Type == PieceType.Rook ){ console.log(`${square.Piece.Id} isBlocked on ${vector.Name} at ${this.squareId(targetX, targetY)}.`); }
-
+          isBlocked = target.Status != TargetStatus.Open;
           vector = vector.Update( target.Status, target.Square! );
-          
-          if(isLogSubject) {console.warn("\t\trebuildVector 2 (update result): "); console.dir(vector);}
-          
         }
       }
       return vector;
     }
 
-  };
-
-  isBlocked = (status: TargetStatus): boolean =>{
-    if(status == TargetStatus.Blocked || status == TargetStatus.Ally || status == TargetStatus.Enemy || status == TargetStatus.Check){
-      return true;
-    }
-    return false;
   };
 
   evaluateVectorTarget = (

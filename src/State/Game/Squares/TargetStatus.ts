@@ -7,8 +7,8 @@ export enum TargetStatus {
   Ally = "ally",
   Enemy = "enemy",
 
-  Pinned = "pinned",
-  Check = "check",
+  EnemyPin = "pinned",
+  Check = "checked",
 
   // BlockedCheck is used to retroactively scan for pinned pieces.
   BlockedCheck = "blocked-check",

@@ -43,7 +43,7 @@ export class PieceModel {
   };
 
   
-  Reset(): boolean {
+  ResetMobility(): boolean {
     this.Mobility = new Mobility(this.Type);
     return true;
   }

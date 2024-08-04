@@ -114,7 +114,7 @@ export const useGameState = defineStore("GameState", () => {
 
         return MoveEnd(square);
 
-      case TargetStatus.Enemy || TargetStatus.Check: // Kit it! 
+      case TargetStatus.Enemy || TargetStatus.Check: // Kill it! 
 
 
         if( square.Piece.Type == PieceType.King ){

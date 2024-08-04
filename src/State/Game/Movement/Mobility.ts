@@ -10,74 +10,51 @@ export class Mobility {
   IsFacingDefault: boolean;
   Map: TargetSquareModel[];
 
-  // Constrains a piece to block an attacker's vector, where otherwise a check condition would occur.
-  PinnedTo: VectorName;
-
-  constructor(piece: PieceType, isFacingDefault: boolean = true, map: TargetSquareModel[] = [], pinnedTo: VectorName = VectorName.None) {
+  constructor(piece: PieceType, isFacingDefault: boolean = true, map: TargetSquareModel[] = []) {
     
     this.IsFacingDefault = isFacingDefault;
     this.Map = map;
-    this.PinnedTo = pinnedTo;
 
     const ranges = this.setRanges(piece);
     
-    if(pinnedTo == VectorName.None){
-      this.Vectors = [];
-      if(ranges.N  > 0) this.Vectors.push( new Vector( VectorName.N,  ranges.N,   0,  1 ) );
-      if(ranges.S  > 0) this.Vectors.push( new Vector( VectorName.S,  ranges.S,   0, -1 ) );
-      if(ranges.E  > 0) this.Vectors.push( new Vector( VectorName.E,  ranges.E,  -1,  0 ) );
-      if(ranges.W  > 0) this.Vectors.push( new Vector( VectorName.W,  ranges.W,   1,  0 ) );
-      if(ranges.NE > 0) this.Vectors.push( new Vector( VectorName.NE, ranges.NE, -1,  1 ) );
-      if(ranges.SE > 0) this.Vectors.push( new Vector( VectorName.SE, ranges.SE, -1, -1 ) );
-      if(ranges.SW > 0) this.Vectors.push( new Vector( VectorName.SW, ranges.SW,  1, -1 ) );
-      if(ranges.NW > 0) this.Vectors.push( new Vector( VectorName.NW, ranges.NW,  1,  1 ) );
-      if(ranges.K  > 0) this.Vectors.push( new Vector( VectorName.K,  ranges.K,   1,  2 ) );
-      
-    } else {
-
-      this.Vectors = [];
-      switch (pinnedTo) {
-        case VectorName.N:
-          if(ranges.N  > 0) this.Vectors.push( new Vector( VectorName.N,  ranges.N,   0,  1 ) );
-          break;
-          
-        case VectorName.S:
-          if(ranges.S  > 0) this.Vectors.push( new Vector( VectorName.S,  ranges.S,   0, -1 ) );
-          break;
-          
-        case VectorName.E:
-          if(ranges.E  > 0) this.Vectors.push( new Vector( VectorName.E,  ranges.E,  -1,  0 ) );
-          break;
-          
-        case VectorName.W:
-          if(ranges.W  > 0) this.Vectors.push( new Vector( VectorName.W,  ranges.W,   1,  0 ) );
-          break;
-          
-        case VectorName.NE:
-          if(ranges.NE > 0) this.Vectors.push( new Vector( VectorName.NE, ranges.NE, -1,  1 ) );
-          break;
-          
-        case VectorName.SE:
-          if(ranges.SE > 0) this.Vectors.push( new Vector( VectorName.SE, ranges.SE, -1, -1 ) );
-          break;
-          
-        case VectorName.SW:
-          if(ranges.SW > 0) this.Vectors.push( new Vector( VectorName.SW, ranges.SW,  1, -1 ) );
-          break;
-          
-        case VectorName.NW:
-          if(ranges.NW > 0) this.Vectors.push( new Vector( VectorName.NW, ranges.NW,  1,  1 ) );
-          break;
-                
-        default:
-          break;
-      }
-      
-      
-    }
-    
+    this.Vectors = [];
+    if(ranges.N  > 0) this.Vectors.push( new Vector( VectorName.N,  ranges.N,   0,  1 ) );
+    if(ranges.S  > 0) this.Vectors.push( new Vector( VectorName.S,  ranges.S,   0, -1 ) );
+    if(ranges.E  > 0) this.Vectors.push( new Vector( VectorName.E,  ranges.E,  -1,  0 ) );
+    if(ranges.W  > 0) this.Vectors.push( new Vector( VectorName.W,  ranges.W,   1,  0 ) );
+    if(ranges.NE > 0) this.Vectors.push( new Vector( VectorName.NE, ranges.NE, -1,  1 ) );
+    if(ranges.SE > 0) this.Vectors.push( new Vector( VectorName.SE, ranges.SE, -1, -1 ) );
+    if(ranges.SW > 0) this.Vectors.push( new Vector( VectorName.SW, ranges.SW,  1, -1 ) );
+    if(ranges.NW > 0) this.Vectors.push( new Vector( VectorName.NW, ranges.NW,  1,  1 ) );
+    if(ranges.K  > 0) this.Vectors.push( new Vector( VectorName.K,  ranges.K,   1,  2 ) );
     
   }
+
+  setConstraint = (constraint: VectorName): number =>{
+
+    let valid = [] as Vector[];
+    switch (constraint) {
+      case VectorName.N || VectorName.S:
+        valid.push(... this.Vectors.filter(v => v.Name == VectorName.N || v.Name == VectorName.S));
+        break;
+      case VectorName.E || VectorName.W:
+        valid.push(... this.Vectors.filter(v => v.Name == VectorName.E || v.Name == VectorName.W));
+        break;
+      case VectorName.NE || VectorName.SW:
+        valid.push(... this.Vectors.filter(v => v.Name == VectorName.NE || v.Name == VectorName.SW));
+        break;
+      case VectorName.NW || VectorName.SE:
+        valid.push(... this.Vectors.filter(v => v.Name == VectorName.NW || v.Name == VectorName.SE));
+        break;       
+        
+      default:
+        break;
+    } 
+    this.Vectors = [];
+    this.Vectors.push(...valid);
+    
+    return this.Vectors.length;
+  };
   
   setRanges = (piece: PieceType): VectorRangeSet =>{
     switch (piece) {
