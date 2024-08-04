@@ -19,9 +19,13 @@ export class MobilityEngine {
 
     let result = this.resetBoard(input);
     result = this.calculateStandardVectors(result);
+    console.warn("\r\n defineAttackVectors...");
     result = this.defineAttackVectors(result);
+    console.warn("\r\n constrainPinnedPieces...");
     result = this.constrainPinnedPieces(result);
+    console.warn("\r\n redrawValidMoves...");
     result = this.redrawValidMoves(result);
+    console.warn("\r\n rebuildDrops...");
     result = this.rebuildDrops(result);
 
     return result;
@@ -34,6 +38,8 @@ export class MobilityEngine {
       }      
     });
     board.Attacks = [];
+    console.error("board.Attacks.length: " + board.Attacks.length);
+    console.dir(board.Attacks);
     return board;
   };
 
@@ -157,11 +163,13 @@ export class MobilityEngine {
 
       if (square.Piece.Player != 0) {
         square.Piece.Mobility.Vectors.forEach(vector => {
-          if (vector.Targets.some(t => t.Status == TargetStatus.Enemy || TargetStatus.Check || TargetStatus.BlockedCheck)) {
-
+          if ( vector.Targets.some(t => t.Status == TargetStatus.Enemy
+                                     || t.Status == TargetStatus.Check
+                                     || t.Status == TargetStatus.BlockedCheck
+          )){            
             // Walk the array starting from farthest square.
             for (let i = vector.Targets.length - 1; i > -1; i--) {
-
+              
               if (vector.Targets[i].Status == TargetStatus.Check || vector.Targets[i].Status == TargetStatus.BlockedCheck) {
                 attackModel.AttackVector = vector.Name;
                 attackModel.Checked = new TargetSquareModel(
@@ -172,22 +180,23 @@ export class MobilityEngine {
                 );
               }
               
-              // Only count enemies, if there has already been a check or blocked-check.
-              if (attackModel.Checked != null && vector.Targets[i].Status == TargetStatus.Enemy) {                
-                defenders.push( new TargetSquareModel(
-                                      vector.Targets[i].X,
-                                      vector.Targets[i].Y,
-                                      vector.Targets[i].Status,
-                                      vector.Targets[i].Piece
-                                    )
-                );                
+              // Only count defenders after a check or blocked-check has been detected.
+              if ( attackModel.Checked != null 
+                   && vector.Targets[i].Status == TargetStatus.Enemy ) {
+                  defenders.push( new TargetSquareModel(
+                    vector.Targets[i].X,
+                    vector.Targets[i].Y,
+                    vector.Targets[i].Status,
+                    vector.Targets[i].Piece
+                  )
+                );
               }
             }
             // If there are 2 or more enemies protecting the king, they can't both be pinned.
             if(defenders.length == 1){
               attackModel.Defender = defenders[0];
+              board.Attacks.push(attackModel);
             }
-            board.Attacks.push(attackModel);
           }
         });
       }
@@ -198,12 +207,20 @@ export class MobilityEngine {
 
   constrainPinnedPieces  = ( board: BoardModel ): BoardModel => {
     // Use the short list of attacks to filter out invalid moves that would put the player into check.
+
+    console.log(`\t board.Attacks (length: ${board.Attacks.length})`);
+    console.dir(board.Attacks);
+    
     board.Attacks.forEach(attack => {
+      console.log(`\t\t attack => `);
+      // console.dir(attack);
+      
       if(attack.IsPin){
         board.Squares.forEach(defender => {
           if(defender.Id == attack.Defender?.Id){
+            // console.log(`\t defender.Id == attack.Defender?.Id (${defender.Id} == ${attack.Defender?.Id})`);
             const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
-            console.dir(constraints);
+            // console.dir(constraints);
           }
         });
       }
