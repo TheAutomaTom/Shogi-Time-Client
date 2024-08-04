@@ -19,7 +19,7 @@ export class MobilityEngine {
     let result = this.resetBoard(input);
     result = this.calculateStandardVectors(result);
     result = this.definePinningAttackVectors(result);
-    // result = this.constrainPinnedPieces(result);
+    result = this.constrainPinnedPieces(result);
     result = this.redrawValidMoves(result);
     result = this.rebuildDrops(result);
     return result;
@@ -293,7 +293,8 @@ export class MobilityEngine {
       
       case playersTurn:
         switch (obstruction) {
-          case TargetStatus.Open:          
+          case TargetStatus.Open:
+          case TargetStatus.Na:   
             status = TargetStatus.Ally;
             break;
           case TargetStatus.Ally:
@@ -328,6 +329,7 @@ export class MobilityEngine {
               
           case TargetStatus.Enemy:
           case TargetStatus.EnemyBlocksOpen:
+          case TargetStatus.EnemyBlocksEnemy:
           case TargetStatus.BlockedCheck:
             status = TargetStatus.EnemyBlocksOpen;
             break;
@@ -346,6 +348,7 @@ export class MobilityEngine {
         if( s.Piece.Type == PieceType.King ){
           switch (obstruction) {
             case TargetStatus.Open:
+              case TargetStatus.Na:
               status = TargetStatus.Check;
               break;
             case TargetStatus.AllyBlocks:
@@ -355,6 +358,8 @@ export class MobilityEngine {
             case TargetStatus.Enemy:
             case TargetStatus.EnemyBlocksOpen:
             case TargetStatus.EnemyBlocksEnemy:
+            // case TargetStatus.Check:
+            // case TargetStatus.BlockedCheck:
               status = TargetStatus.BlockedCheck;
               break;
             default:
@@ -367,6 +372,7 @@ export class MobilityEngine {
         } else { //s.Piece.Type != PieceType.King
           switch (obstruction) {
             case TargetStatus.Open:
+              case TargetStatus.Na:
               status = TargetStatus.Enemy;
               break;
             case TargetStatus.Enemy:
