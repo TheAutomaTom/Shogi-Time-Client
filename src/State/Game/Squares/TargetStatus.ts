@@ -2,15 +2,12 @@ export enum TargetStatus {
   Na = "na",
   OutOfRange = "out-of-range",
 
-  Open = "open",
-  Blocked = "blocked",
+  Open = "open",  
   Ally = "ally",
-  Enemy = "enemy",
+  Enemy = "enemy",  
+  Check = "check",
 
-  EnemyPin = "pinned",
-  Check = "checked",
-
-  // BlockedCheck is used to retroactively scan for pinned pieces.
-  BlockedCheck = "blocked-check",
+  Blocked = "blocked",
+  BlockedCheck = "blocked-check"
 
 }

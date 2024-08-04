@@ -57,12 +57,9 @@ export const useGameState = defineStore("GameState", () => {
                           update.CurrentPlayer,
                           update.Squares,
                           update.CapturesP1,
-                          update.CapturesP2,
-                          update.Checks                                        
-                        );
-    
-    Phase.value = GamePhase.TurnStart;
-    
+                          update.CapturesP2
+                        );    
+    Phase.value = GamePhase.TurnStart;    
   };
   
   // CurrentPlayer selects one of their own piece on the board.
@@ -97,8 +94,6 @@ export const useGameState = defineStore("GameState", () => {
     
     // If so, find out how the target relates to the origin.
     if(logGamePhase) console.log(`MoveAttempt square.Piece.Type: ${square.Piece.Type} is a ${target.Status}`);
-    
-    console.log(target.Status);
 
     switch (target.Status) {
 
@@ -123,13 +118,10 @@ export const useGameState = defineStore("GameState", () => {
           break;
         }
 
-        // let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}.${Board.value.CurrentPlayer}`, square.Piece.Icon, true );
         let capturedPiece = new PieceModel( Board.value.CurrentPlayer, square.Piece.Type, `${square.Piece.StartingPosition}-${Board.value.CurrentPlayer}`, square.Piece.Icon);
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
-        // if(Board.value.CurrentPlayer == 1){ CapturesP1.value.push(capturedPiece); }
-        // if(Board.value.CurrentPlayer == 2){ CapturesP2.value.push(capturedPiece); }
         if(Board.value.CurrentPlayer == 1){ Board.value.CapturesP1.push(capturedPiece); }
         if(Board.value.CurrentPlayer == 2){ Board.value.CapturesP2.push(capturedPiece); }
 
@@ -218,8 +210,7 @@ export const useGameState = defineStore("GameState", () => {
   const DropAttempt =  (square: GameSquareModel) =>{
     
     // Find the square that was clicked...
-    Board.value.Squares.map(  s =>{
-      // ...and check if it's in the movement rules.
+    Board.value.Squares.map(  s =>{ 
       if(s.Id == square.Id && PieceInHand.value.Mobility.Map.some(ts => ts.Id == s.Id)){
 
         Destination.value = new GameSquareModel(s.X, s.Y, s.PromotionZoneFor);     
@@ -235,6 +226,7 @@ export const useGameState = defineStore("GameState", () => {
           PieceInHand.value.Icon,
           PieceInHand.value.Mobility
         );
+        
         if(logPieceSelect) logPieceDetails("s.Piece", s.Piece);
 
         // Remove the piece from the origin.
@@ -250,8 +242,6 @@ export const useGameState = defineStore("GameState", () => {
       }
     });
   }
-    
-  
 
   // This may be called by PromotionModal
   const PromotePiece =(toPromote: boolean = true)=> {
@@ -285,8 +275,6 @@ export const useGameState = defineStore("GameState", () => {
     Phase.value = GamePhase.TurnStart;
     if(logGamePhase) logPhase("CompleteMove ends");
   };
- 
-  
   
   const resetSelections = () =>{
     // PriorPieceInHand.value = PieceInHand.value;
