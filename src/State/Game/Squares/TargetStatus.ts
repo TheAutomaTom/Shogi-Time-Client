@@ -8,6 +8,7 @@ export enum TargetStatus {
   Check = "check",
 
   Blocked = "blocked",
-  BlockedCheck = "blocked-check"
+  BlockedCheck = "blocked-check",
+  BlockedByKingInCheck = "blocked-by-king-in-check"
 
 }

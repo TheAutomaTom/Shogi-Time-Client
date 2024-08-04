@@ -354,10 +354,9 @@ export class MobilityEngine {
 
   };
 
-  evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, isBlocked: boolean ): VectorTargetReport => {
+  evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, obstruction: TargetStatus ): VectorTargetReport => {
     
-     const toLog = ["S61", "S62", "S63"].includes(targetId);
-     if(toLog){ console.log(`${targetId}`); }
+    const toLog = ["S61", "S62", "S63"].includes(targetId);
 
     // Find the target square.
     const s = board.Squares.find( s => s.Id == targetId );
@@ -371,23 +370,69 @@ export class MobilityEngine {
     let status: TargetStatus;
     switch (s?.Piece.Player) {
       
-      case 0: // Open squares
-        status = isBlocked ? TargetStatus.Blocked : TargetStatus.Open;
-        break;
-
       case playersTurn:
         status = TargetStatus.Ally;
         break;
+
+      case 0: // Open squares
+        switch (obstruction) {
+          case TargetStatus.Open:
+            status = TargetStatus.Open;
+            break;
+          case TargetStatus.Blocked:
+          case TargetStatus.Ally:
+          case TargetStatus.Enemy:
+          case TargetStatus.BlockedCheck:
+            status = TargetStatus.Blocked;
+            break;
+          case TargetStatus.Check:
+            status = TargetStatus.BlockedByKingInCheck;
+            break;
+
+          default:
+            status = TargetStatus.Na;
+            break;
+        }
+        if(toLog){ console.log(`${targetId} case 0: obstruction: ${obstruction}, ${status}`); }
+        break;
     
-      default: // Enemy   
-        // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
-        const isCheck = s.Piece.Type == PieceType.King;
-        if( isCheck ){
-          status = isBlocked ? TargetStatus.BlockedCheck : TargetStatus.Check;
+      default: // Enemy
+        if( s.Piece.Type == PieceType.King ){
+          switch (obstruction) {
+            case TargetStatus.Open:
+              status = TargetStatus.Check;
+              break;
+            case TargetStatus.Blocked:
+            case TargetStatus.Ally:
+            case TargetStatus.Enemy:
+            // case TargetStatus.Check:
+            // case TargetStatus.BlockedCheck:
+              status = TargetStatus.BlockedCheck;
+              break;
+            default:
+              status = TargetStatus.Na;
+              break;
+          }
+          if(toLog){ console.log(`${targetId} case Enemy-King: obstruction: ${obstruction}, ${status}`); }
           break;
 
         } else {
-          status = isBlocked ? TargetStatus.Blocked : TargetStatus.Enemy;
+          switch (obstruction) {
+            case TargetStatus.Open:
+              status = TargetStatus.Enemy;
+              break;
+            case TargetStatus.Blocked:
+            case TargetStatus.Ally:
+            case TargetStatus.Enemy:
+            case TargetStatus.Check:
+            case TargetStatus.BlockedCheck:
+              status = TargetStatus.Blocked;
+              break;
+            default:
+              status = TargetStatus.Na;
+              break;
+          }
+          if(toLog){ console.log(`${targetId} case Enemy: obstruction: ${obstruction}, ${status}`); }
           break;
         }
     };
