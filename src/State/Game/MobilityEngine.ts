@@ -304,33 +304,29 @@ export class MobilityEngine {
 
     let newVectors = [] as Vector[];
     square.Piece.Mobility.Vectors.forEach(vector => {
-      const v = this.rebuildVector(vector, board, square, facing, isLogSubject);
+      const v = this.rebuildVector(vector, board, square, facing);
       newVectors.push(v);        
     });
   
     return square.Piece.Mobility;
   };
   
-  rebuildVector = ( vector: Vector, board: BoardModel, square: GameSquareModel, facing: number , isLogSubject: boolean): Vector => {
-    if(isLogSubject) {
-      console.warn("\t\trebuildVector 1: " + vector.Name + " w/ range " + + vector.Range); 
-      console.dir(vector);
-    }
-
+  rebuildVector = ( vector: Vector, board: BoardModel, square: GameSquareModel, facing: number ): Vector => {
+    
     // Knights only...
     if(vector.Name == VectorName.K){
       let targetX = square.X + 1 * facing;
       let targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false );
+        vector = vector.Update( target.Status, target.Square! );
         
       }
       targetX = square.X + -1 * facing;
       targetY = square.Y + 2 * facing;
       if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false, isLogSubject );
-        vector = vector.Update( target.Status, target.Square!, isLogSubject );
+        const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), false );
+        vector = vector.Update( target.Status, target.Square! );
         
       }
       return vector;
@@ -348,7 +344,7 @@ export class MobilityEngine {
                                                : square.Y + i * vector.YIncrement * facing;
         
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-          const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked, isLogSubject );
+          const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), isBlocked );
           isBlocked = target.Status != TargetStatus.Open;
           vector = vector.Update( target.Status, target.Square! );
         }
@@ -358,12 +354,10 @@ export class MobilityEngine {
 
   };
 
-  evaluateVectorTarget = (
-    board: BoardModel, playersTurn: number, targetId: string, isBlocked: boolean, isLogSubject: boolean
-  ): VectorTargetReport => {
-
-    if(isLogSubject) console.warn("\t\t\t\t evaluateVectorTarget 1: " + targetId); 
-     const toLog = targetId == "DISABLED"; //"S28";
+  evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, isBlocked: boolean ): VectorTargetReport => {
+    
+     const toLog = ["S61", "S62", "S63"].includes(targetId);
+     if(toLog){ console.log(`${targetId}`); }
 
     // Find the target square.
     const s = board.Squares.find( s => s.Id == targetId );
@@ -378,36 +372,21 @@ export class MobilityEngine {
     switch (s?.Piece.Player) {
       
       case 0: // Open squares
-        if(isLogSubject || toLog) {
-          console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Open Square"); 
-          console.log(`\t\t\t\t ${targetId}: ${TargetStatus.Open}`);
-        }
         status = isBlocked ? TargetStatus.Blocked : TargetStatus.Open;
         break;
 
       case playersTurn:
-        if(isLogSubject || toLog) {
-          console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Ally"); 
-          console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}.`); 
-        }
         status = TargetStatus.Ally;
         break;
     
-      default: // Enemy      
-        if(isLogSubject || toLog) {
-            console.log("\t\t\t\t evaluateVectorTarget 2: Player #" + s?.Piece.Player + "'s Enemy"); 
-        }
+      default: // Enemy   
         // const isCheck = s.Piece.Type == PieceType.KingChallenger || PieceType.KingVictor;
         const isCheck = s.Piece.Type == PieceType.King;
         if( isCheck ){
-          if(isLogSubject || toLog){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked}, isCheck: ${isCheck}.`); }
-
           status = isBlocked ? TargetStatus.BlockedCheck : TargetStatus.Check;
           break;
 
         } else {
-          if(isLogSubject || toLog){ console.log(`\t\t\t\t ${targetId}/ ${TargetStatus.Enemy}/ ${s.Piece.Id}.  Input playersTurn: ${playersTurn}, isBlocked: ${isBlocked},isCheck: ${isCheck}.`); }
-          
           status = isBlocked ? TargetStatus.Blocked : TargetStatus.Enemy;
           break;
         }
