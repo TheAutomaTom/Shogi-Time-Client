@@ -1,12 +1,11 @@
 import { GameSquareModel } from "../Squares/GameSquareModel";
 import { TargetSquareModel } from "../Squares/TargetSquareModel";
-import { Vector } from "./Vector";
 import { VectorName } from "./VectorName";
 
 export class AttackModel {
   Attacker: GameSquareModel;
   AttackVector: VectorName = VectorName.None;
-  Checked: TargetSquareModel | null;
+  BlockedChecked: TargetSquareModel | null;
   Defender: TargetSquareModel | null;
 
   get IsCheck(): boolean {
@@ -18,7 +17,7 @@ export class AttackModel {
   
   constructor(attacker: GameSquareModel) {
     this.Attacker = attacker;
-    this.Checked = null;
+    this.BlockedChecked = null;
     this.Defender = null;
   }
 }

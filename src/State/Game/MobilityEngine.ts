@@ -13,13 +13,13 @@ import { VectorTargetReport } from "./Movement/VectorTargetReport";
 
 export class MobilityEngine {
   // logSubject = {enabled: true, id: "P2-Rook-Right"};
-  logPhase = false;
+  logPhase = true;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
     let result = this.resetBoard(input);
     result = this.calculateStandardVectors(result);
-    result = this.defineAttackVectors(result);
-    result = this.constrainPinnedPieces(result);
+    result = this.definePinningAttackVectors(result);
+    // result = this.constrainPinnedPieces(result);
     result = this.redrawValidMoves(result);
     result = this.rebuildDrops(result);
     return result;
@@ -48,27 +48,26 @@ export class MobilityEngine {
   };
   
   // Second iteration finds attackers' checks and pins, and constrains movement on targets.
-  defineAttackVectors = (board: BoardModel): BoardModel => {
+  definePinningAttackVectors = (board: BoardModel): BoardModel => {
     if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
     board.Squares.forEach(square => {
 
       let attackModel = new AttackModel(square);
       let defenders = [] as TargetSquareModel[];
-      let allies = [] as TargetSquareModel[];
+      let obstructions = [] as TargetSquareModel[];
 
-      if (square.Piece.Player != 0) {
+      if (square.Piece.Player != 0) {        
         square.Piece.Mobility.Vectors.forEach(vector => {
-          if ( vector.Targets.some(t => t.Status == TargetStatus.Enemy
-                                     || t.Status == TargetStatus.Check
-                                     || t.Status == TargetStatus.BlockedCheck
-          )){            
+          
+        
+          if( vector.Targets.some(t => t.Status == TargetStatus.BlockedCheck )){
             // Walk the array starting from farthest square.
             for (let i = vector.Targets.length - 1; i > -1; i--) {              
               
               // The process doesn't begin until the King is found.
-              if (vector.Targets[i].Status == TargetStatus.Check || vector.Targets[i].Status == TargetStatus.BlockedCheck) {
+              if( vector.Targets[i].Status == TargetStatus.BlockedCheck){
                 attackModel.AttackVector = vector.Name;
-                attackModel.Checked = new TargetSquareModel(
+                attackModel.BlockedChecked = new TargetSquareModel(
                   vector.Targets[i].X,
                   vector.Targets[i].Y,
                   vector.Targets[i].Status,
@@ -77,8 +76,8 @@ export class MobilityEngine {
               }
               
               // Only count defenders after a check or blocked-check has been detected.
-              if ( attackModel.Checked != null 
-                   && vector.Targets[i].Status == TargetStatus.Enemy ) {
+              if( attackModel.BlockedChecked?.Id != ""
+                  && vector.Targets[i].Status == TargetStatus.Enemy ) {
                   defenders.push( new TargetSquareModel(
                     vector.Targets[i].X,
                     vector.Targets[i].Y,
@@ -89,9 +88,13 @@ export class MobilityEngine {
               }
 
               // If an Ally obstructs the king, no one is pinned.
-              if ( attackModel.Checked != null 
-                   && vector.Targets[i].Status == TargetStatus.Ally ) {
-                  allies.push( new TargetSquareModel(
+              if( attackModel.BlockedChecked?.Id != ""
+                  && (vector.Targets[i].Status == TargetStatus.Ally
+                   || vector.Targets[i].Status == TargetStatus.EnemyBlocksEnemy
+                  ) 
+                
+                ) {
+                  obstructions.push( new TargetSquareModel(
                     vector.Targets[i].X,
                     vector.Targets[i].Y,
                     vector.Targets[i].Status,
@@ -101,11 +104,13 @@ export class MobilityEngine {
               }
             }
             // If there are 2 or more enemies or any allies protecting the king, then no one is pinned.
-            if(defenders.length == 1 && allies.length == 0){
+            if(defenders.length == 1 && obstructions.length == 0){
               attackModel.Defender = defenders[0];
               board.Attacks.push(attackModel);
             }
           }
+
+
         });
       }
     });
@@ -132,8 +137,8 @@ export class MobilityEngine {
   redrawValidMoves = ( board: BoardModel ): BoardModel => {
     if(this.logPhase) console.warn("\r\n redrawValidMoves...");
 
-    let p1Attacks = [] as TargetSquareModel[];
-    let p2Attacks = [] as TargetSquareModel[];
+    let p1Controlled = [] as TargetSquareModel[];
+    let p2Controlled = [] as TargetSquareModel[];
     
     board.Squares.forEach( square => {
 
@@ -150,25 +155,23 @@ export class MobilityEngine {
         // Everyone else needs updated moves.
       } else {
         
-        // If this target is not pinned to the king...
-        const pinning = square.Piece.Mobility.Vectors.filter(v => v.PinnedPiece != null);
-        if(pinning.length == 0){
-          
-          square.Piece.Mobility.Vectors.forEach(vector => {
-            vector.Targets.forEach( t => {
-              if(t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check || t.Status == TargetStatus.BlockedByKingInCheck){
+        if( square.Piece.Id == "P1-Rook-Right" ){
+          console.log(`${square.Piece.Id}`);
+          console.dir(square.Piece.Mobility);
+        }
 
-                if( square.Piece.Id == "P1-Rook-Right" && (t.Id == "S63" || t.Id == "S62" || t.Id == "S61") ){
-                  console.log(`${square.Piece.Id}: ${t.Id} == ${t.Status}`);
-                }
+        square.Piece.Mobility.Vectors.forEach(vector => {
+          vector.Targets.forEach( t => {
+            
+            if(t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check || t.Status == TargetStatus.CheckBlocks){
+              square.Piece.Mobility.Map.push(t);
+              square.Piece.Player == 1 ? p1Controlled.push(t) : p2Controlled.push(t);
 
-                square.Piece.Mobility.Map.push(t);
-                square.Piece.Player == 1 ? p1Attacks.push(t) : p2Attacks.push(t);
-              }
-            });
-
+              
+            }
           });
-        } 
+
+        });
          
       } 
     });
@@ -178,9 +181,9 @@ export class MobilityEngine {
     board.Squares.forEach( square => {
       if(square.Piece.Type == PieceType.King){
         if(square.Piece.Player == 1){
-          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Attacks);
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Controlled);
         } else {
-          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Attacks);
+          square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Controlled);
         }
         
       }
@@ -252,9 +255,19 @@ export class MobilityEngine {
                                                : square.Y + i * vector.YIncrement * facing;
         
         if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-          const target = this.evaluateVectorTarget( board, square.Piece.Player, this.squareId(targetX, targetY), obstruction );
+
+          
+          const squareId = this.squareId(targetX, targetY);
+
+          if(square.Piece.Id == "P1-Rook-Right" && ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(squareId)){ 
+            console.log(`${square.Piece.Id} evaluateVectorTarget...`)
+          };
+
+          const target = this.evaluateVectorTarget( board, square.Piece.Player, squareId, obstruction );
+          
           obstruction = target.Status;
           vector = vector.Update( target.Status, target.Square! );
+
         }
       }
       return vector;
@@ -279,29 +292,54 @@ export class MobilityEngine {
     switch (s?.Piece.Player) {
       
       case playersTurn:
-        status = TargetStatus.Ally;
-        break;
-
-      case 0: // Open squares
         switch (obstruction) {
-          case TargetStatus.Na:
-          case TargetStatus.Open:
-            status = TargetStatus.Open;
+          case TargetStatus.Open:          
+            status = TargetStatus.Ally;
             break;
-          case TargetStatus.Blocked:
           case TargetStatus.Ally:
+          case TargetStatus.AllyBlocks:
+            status = TargetStatus.AllyBlocks;
+            break;
           case TargetStatus.Enemy:
-          case TargetStatus.BlockedCheck:
-            status = TargetStatus.Blocked;
+          case TargetStatus.EnemyBlocksOpen:
+            status = TargetStatus.EnemyBlocksOpen;
             break;
           case TargetStatus.Check:
-            status = TargetStatus.BlockedByKingInCheck;
+          case TargetStatus.BlockedCheck:
+            status = TargetStatus.CheckBlocks;
             break;
           default:
             status = TargetStatus.Na;
             break;
         }
-        if(toLog){ console.log(`${targetId} case 0: obstruction: ${obstruction}, ${status}`); }
+        if(toLog){ console.log(`${targetId} case Ally: obstruction: ${obstruction}, status: ${status}`); }
+        break;
+
+      case 0: // Open squares
+        switch (obstruction) {
+          case TargetStatus.Open:
+          case TargetStatus.Na:
+            status = TargetStatus.Open;
+            break;
+          case TargetStatus.Ally:
+          case TargetStatus.AllyBlocks:
+            status = TargetStatus.AllyBlocks;
+            break;
+              
+          case TargetStatus.Enemy:
+          case TargetStatus.EnemyBlocksOpen:
+          case TargetStatus.BlockedCheck:
+            status = TargetStatus.EnemyBlocksOpen;
+            break;
+
+          case TargetStatus.Check:
+            status = TargetStatus.CheckBlocks;
+            break;
+          default:
+            status = TargetStatus.Na;
+            break;
+        }
+        if(toLog){ console.log(`${targetId} case Open: obstruction: ${obstruction}, status: ${status}`); }
         break;
     
       default: // Enemy
@@ -310,37 +348,43 @@ export class MobilityEngine {
             case TargetStatus.Open:
               status = TargetStatus.Check;
               break;
-            case TargetStatus.Blocked:
+            case TargetStatus.AllyBlocks:
             case TargetStatus.Ally:
+              status = TargetStatus.AllyBlocks;
+              break;
             case TargetStatus.Enemy:
-            // case TargetStatus.Check:
-            // case TargetStatus.BlockedCheck:
+            case TargetStatus.EnemyBlocksOpen:
+            case TargetStatus.EnemyBlocksEnemy:
               status = TargetStatus.BlockedCheck;
               break;
             default:
               status = TargetStatus.Na;
               break;
           }
-          if(toLog){ console.log(`${targetId} case Enemy-King: obstruction: ${obstruction}, ${status}`); }
+          if(toLog){ console.log(`${targetId} case Enemy-King: obstruction: ${obstruction}, status: ${status}`); }
           break;
 
-        } else {
+        } else { //s.Piece.Type != PieceType.King
           switch (obstruction) {
             case TargetStatus.Open:
               status = TargetStatus.Enemy;
               break;
-            case TargetStatus.Blocked:
-            case TargetStatus.Ally:
             case TargetStatus.Enemy:
+            case TargetStatus.EnemyBlocksOpen:
+            case TargetStatus.EnemyBlocksEnemy:
             case TargetStatus.Check:
             case TargetStatus.BlockedCheck:
-              status = TargetStatus.Blocked;
+              status = TargetStatus.EnemyBlocksEnemy;
+              break;
+            case TargetStatus.Ally:
+            case TargetStatus.AllyBlocks:
+              status = TargetStatus.AllyBlocks;
               break;
             default:
               status = TargetStatus.Na;
               break;
           }
-          if(toLog){ console.log(`${targetId} case Enemy: obstruction: ${obstruction}, ${status}`); }
+          if(toLog){ console.log(`${targetId} case Enemy: obstruction: ${obstruction}, status: ${status}`); }
           break;
         }
     };
