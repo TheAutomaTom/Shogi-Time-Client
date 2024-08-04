@@ -1,6 +1,4 @@
 import { GameSquareModel } from "../Squares/GameSquareModel";
-import { PieceModel } from "../Pieces/PieceModel";
-import { PieceType } from "../Pieces/PieceType";
 import { TargetSquareModel } from "../Squares/TargetSquareModel";
 import { TargetStatus } from "../Squares/TargetStatus";
 import { VectorName } from "./VectorName";
