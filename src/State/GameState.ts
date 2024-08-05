@@ -14,9 +14,9 @@ import { ref } from "vue";
 export const useGameState = defineStore("GameState", () => {
   
   const logPieceSelect = false;
-  const logPieceCaptures = false;
+  // const logPieceCaptures = false;
   const logGamePhase = false;
-  const logMethodCalled = false;
+  // const logMethodCalled = false;
 
   const Phase = ref(GamePhase.LoadingBoard);
   const Board = ref( 
@@ -303,10 +303,10 @@ export const useGameState = defineStore("GameState", () => {
     console.log(`\r\n\r\nGame Phase: ${Phase.value} (${caller})`);
   };
   
-  const logMethod = (method: string, step: string = "") =>{
-    const s = step != "" ? `: ${step}` : '';
-    console.log(`${method}${s}`);
-  };
+  // const logMethod = (method: string, step: string = "") =>{
+  //   const s = step != "" ? `: ${step}` : '';
+  //   console.log(`${method}${s}`);
+  // };
 
   const logPieceDetails =(name: string, input: PieceModel) => {
     console.log(`${name}...\r

@@ -126,7 +126,8 @@ export class MobilityEngine {
     if(this.logPhase) console.warn("\r\n resetBoard...");
     board.Squares.forEach(square => {
       if(square.Piece.Player != 0){
-        const _ = square.Piece.ResetMobility();
+        // const _ = 
+        square.Piece.ResetMobility();
       }
     });
     board.Pins = [];
@@ -219,7 +220,7 @@ export class MobilityEngine {
       if(attack.IsPin){
         board.Squares.forEach(defender => {
           if(defender.Id == attack.Defender?.Id){
-            const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+            // const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
           }
         });
       }      
