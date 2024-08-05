@@ -46,14 +46,20 @@ export class MobilityEngine {
       board.IsInMate = player;
       return board;
     }
+    
+    let foundBlock = false;
+    const toBlock = player == 1 ? board.ToBlockP1 : board.ToBlockP2;
 
+    captures.forEach(capture => {
+      capture.Mobility.Map.forEach(drop => {        
+        if(toBlock.some(s => s.X == drop.X && s.Y == drop.Y)){
+          // This capture could block check.
+          foundBlock = true;
+        }        
+      });      
+    });
 
-
-
-
-
-
-
+    if(foundBlock == false) board.IsInMate = player;
     return board;
   };
   
