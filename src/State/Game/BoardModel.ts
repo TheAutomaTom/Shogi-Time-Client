@@ -8,7 +8,8 @@ export class BoardModel {
   Squares:    Array<GameSquareModel>;
   CapturesP1: Array<PieceModel>;
   CapturesP2: Array<PieceModel>;
-  Attacks:    AttackModel[]
+  Pins: AttackModel[];
+  CheckApproaches: AttackModel[];
 
   constructor(
     id: string,
@@ -23,7 +24,7 @@ export class BoardModel {
     this.Squares = squares;
     this.CapturesP1 = capturesP1;
     this.CapturesP2 = capturesP2;
-    this.Attacks = attacks
+    this.Pins = attacks
     
   }
 }

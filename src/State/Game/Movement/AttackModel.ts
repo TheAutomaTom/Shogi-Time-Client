@@ -5,7 +5,7 @@ import { VectorName } from "./VectorName";
 export class AttackModel {
   Attacker: GameSquareModel;
   AttackVector: VectorName = VectorName.None;
-  BlockedChecked: TargetSquareModel | null;
+  Checked: TargetSquareModel | null;
   Defender: TargetSquareModel | null;
 
   get IsCheck(): boolean {
@@ -17,7 +17,7 @@ export class AttackModel {
   
   constructor(attacker: GameSquareModel) {
     this.Attacker = attacker;
-    this.BlockedChecked = null;
+    this.Checked = null;
     this.Defender = null;
   }
 }

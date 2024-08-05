@@ -19,10 +19,71 @@ export class MobilityEngine {
     let result = this.resetBoard(input);
     result = this.calculateStandardVectors(result);
     result = this.definePinningAttackVectors(result);
-    result = this.constrainPinnedPieces(result);
+    result = this.pinDefenders(result);
+    result = this.handleCheck(result);
     result = this.redrawValidMoves(result);
     result = this.rebuildDrops(result);
     return result;
+  };
+
+  handleCheck = ( board: BoardModel ): BoardModel => {
+    if(this.logPhase) console.warn("\r\n handleCheck...");
+    let squaresToBlock = [] as TargetSquareModel[];    
+
+    // Find all the squares that put the king in check.
+    board.Squares.forEach(square => {
+      if (square.Piece.Player != 0) {
+        square.Piece.Mobility.Vectors.forEach(vector => {
+          
+          if( vector.Targets.some(t => t.Status == TargetStatus.Check )){
+            // Walk the array starting from farthest square.
+            for (let i = vector.Targets.length - 1; i > -1; i--) {
+              let attackModel = new AttackModel(square);
+
+              // The process doesn't begin until the King is found.
+              if( vector.Targets[i].Status == TargetStatus.Check ){
+                attackModel.AttackVector = vector.Name;
+                attackModel.Checked = new TargetSquareModel(
+                  vector.Targets[i].X,
+                  vector.Targets[i].Y,
+                  vector.Targets[i].Status,
+                  vector.Targets[i].Piece
+                );
+              }
+              
+              // Only count open spaces after a check or blocked-check has been detected.
+              if( attackModel.Checked?.Id != "" ) {
+                squaresToBlock.push( new TargetSquareModel(
+                  vector.Targets[i].X,
+                  vector.Targets[i].Y,
+                  vector.Targets[i].Status,
+                  vector.Targets[i].Piece
+                ));
+              }
+            }
+          }
+
+        });
+      }
+      
+    });
+
+    if(squaresToBlock.length > 0){
+
+      board.Squares.forEach(square => {
+        if (square.Piece.Player != 0) {
+          square.Piece.Mobility.Vectors.forEach(vector => {
+            vector.Targets.forEach(target => {
+              if( !squaresToBlock.some( s => s.Id == target.Id) ){
+                target = new TargetSquareModel(target.X, target.Y, TargetStatus.OutOfRange, target.Piece);
+              }            
+            });
+          });
+        }
+      });
+    }    
+
+    return board;
   };
 
   resetBoard = ( board: BoardModel ): BoardModel => {
@@ -32,7 +93,7 @@ export class MobilityEngine {
         const _ = square.Piece.ResetMobility();
       }      
     });
-    board.Attacks = [];
+    board.Pins = [];
     return board;
   };
   
@@ -58,8 +119,7 @@ export class MobilityEngine {
 
       if (square.Piece.Player != 0) {        
         square.Piece.Mobility.Vectors.forEach(vector => {
-          
-        
+                  
           if( vector.Targets.some(t => t.Status == TargetStatus.BlockedCheck )){
             // Walk the array starting from farthest square.
             for (let i = vector.Targets.length - 1; i > -1; i--) {              
@@ -67,7 +127,7 @@ export class MobilityEngine {
               // The process doesn't begin until the King is found.
               if( vector.Targets[i].Status == TargetStatus.BlockedCheck){
                 attackModel.AttackVector = vector.Name;
-                attackModel.BlockedChecked = new TargetSquareModel(
+                attackModel.Checked = new TargetSquareModel(
                   vector.Targets[i].X,
                   vector.Targets[i].Y,
                   vector.Targets[i].Status,
@@ -76,7 +136,7 @@ export class MobilityEngine {
               }
               
               // Only count defenders after a check or blocked-check has been detected.
-              if( attackModel.BlockedChecked?.Id != ""
+              if( attackModel.Checked?.Id != ""
                   && vector.Targets[i].Status == TargetStatus.Enemy ) {
                   defenders.push( new TargetSquareModel(
                     vector.Targets[i].X,
@@ -88,7 +148,7 @@ export class MobilityEngine {
               }
 
               // If an Ally obstructs the king, no one is pinned.
-              if( attackModel.BlockedChecked?.Id != ""
+              if( attackModel.Checked?.Id != ""
                   && (vector.Targets[i].Status == TargetStatus.Ally
                    || vector.Targets[i].Status == TargetStatus.EnemyBlocksEnemy
                   ) 
@@ -106,22 +166,20 @@ export class MobilityEngine {
             // If there are 2 or more enemies or any allies protecting the king, then no one is pinned.
             if(defenders.length == 1 && obstructions.length == 0){
               attackModel.Defender = defenders[0];
-              board.Attacks.push(attackModel);
+              board.Pins.push(attackModel);
             }
           }
-
 
         });
       }
     });
-
     return board;
   };
 
-  constrainPinnedPieces  = ( board: BoardModel ): BoardModel => {
+  pinDefenders  = ( board: BoardModel ): BoardModel => {
     if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
     // Use the short list of attacks to filter out invalid moves that would put a King into check if they moves their own piece.
-    board.Attacks.forEach(attack => {      
+    board.Pins.forEach(attack => {      
       if(attack.IsPin){
         board.Squares.forEach(defender => {
           if(defender.Id == attack.Defender?.Id){
@@ -134,48 +192,39 @@ export class MobilityEngine {
   };
   
   // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
-  redrawValidMoves = ( board: BoardModel ): BoardModel => {
+  redrawValidMoves = ( board: BoardModel ): BoardModel => { 
     if(this.logPhase) console.warn("\r\n redrawValidMoves...");
-
     let p1Controlled = [] as TargetSquareModel[];
     let p2Controlled = [] as TargetSquareModel[];
     
     board.Squares.forEach( square => {
-
-      if(square.Piece.Mobility.Map.length != 0) {
-        console.log(`Mobility.Map for ${square.Piece.Id}...BEFORE`);
-        console.dir(square.Piece.Mobility.Map);
-      }
+      // if(square.Piece.Mobility.Map.length != 0) {
+      //   console.log(`Mobility.Map for ${square.Piece.Id}...BEFORE`);
+      //   console.dir(square.Piece.Mobility.Map);
+      // }
 
       // Empty squares actually have blank pieces assigned to Player 0.
       if(square.Piece?.Player == 0){
         if(square.Piece.Type != PieceType.None) console.error(`${square.Piece.Id}'s Player == 0, but piece type = ${square.Piece.Type} (${square.Piece.Id}).`);
         square.Piece = new PieceModel(0);
       
-        // Everyone else needs updated moves.
-      } else {
-        
-        if( square.Piece.Id == "P1-Rook-Right" ){
-          console.log(`${square.Piece.Id}`);
-          console.dir(square.Piece.Mobility);
-        }
-
+      // Everyone else needs updated moves.
+      } else {        
+        // if( square.Piece.Id == "P1-Rook-Right" ){
+        //   console.log(`${square.Piece.Id}`);
+        //   console.dir(square.Piece.Mobility);
+        // }
         square.Piece.Mobility.Vectors.forEach(vector => {
-          vector.Targets.forEach( t => {
-            
+          vector.Targets.forEach( t => {            
             if(t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check || t.Status == TargetStatus.CheckBlocks){
               square.Piece.Mobility.Map.push(t);
               square.Piece.Player == 1 ? p1Controlled.push(t) : p2Controlled.push(t);
-
-              
             }
           });
-
         });
          
       } 
     });
-    
     
     // Lastly, re-evaluate each King, now that we know where everything else can move.
     board.Squares.forEach( square => {
@@ -184,8 +233,7 @@ export class MobilityEngine {
           square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p2Controlled);
         } else {
           square.Piece.Mobility.Map = this.restrictKing(square.Piece.Mobility.Map, p1Controlled);
-        }
-        
+        }        
       }
     });
 
@@ -254,14 +302,12 @@ export class MobilityEngine {
         const targetY = vector.YIncrement == 0 ? square.Y 
                                                : square.Y + i * vector.YIncrement * facing;
         
-        if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){
-
-          
+        if( targetX > 0 && targetX < 10 && targetY > 0 && targetY < 10 ){          
           const squareId = this.squareId(targetX, targetY);
 
-          if(square.Piece.Id == "P1-Rook-Right" && ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(squareId)){ 
-            console.log(`${square.Piece.Id} evaluateVectorTarget...`)
-          };
+          // if(square.Piece.Id == "P1-Rook-Right" && ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(squareId)){ 
+          //   console.log(`${square.Piece.Id} evaluateVectorTarget...`)
+          // };
 
           const target = this.evaluateVectorTarget( board, square.Piece.Player, squareId, obstruction );
           
@@ -526,11 +572,11 @@ export class MobilityEngine {
           // If pawn: add all but last back row and other columns with existing pawns
           else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             
-            console.log(`\topenFilesP1...1`);
+            // console.log(`\topenFilesP1...1`);
             if(capture.Player == 1 && openFilesP1.includes(s.X)){
-              console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
-              console.log(`\topenFilesP1...2`);
-              console.dir(openFilesP1);
+              // console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
+              // console.log(`\topenFilesP1...2`);
+              // console.dir(openFilesP1);
               capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
             }
 
