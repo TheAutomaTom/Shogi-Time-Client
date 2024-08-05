@@ -20,14 +20,16 @@ export class MobilityEngine {
     result = this.calculateStandardVectors(result);
     result = this.definePinningAttackVectors(result);
     result = this.pinDefenders(result);
-    result = this.handleCheck(result, 1);
-    result = this.handleCheck(result, 2);
-    result = this.redrawValidMoves(result);
-    result = this.rebuildDrops(result);
+    result = this.handleBoardCheck(result, 1);
+    result = this.handleBoardCheck(result, 2);
+    result = this.rebuildDrops(result, 1);
+    result = this.rebuildDrops(result, 2);
+    result = this.redrawValidMoves(result);    
+    result = this.restrictPawnDrops(result);
     return result;
   };
 
-  handleCheck = ( board: BoardModel, player: number ): BoardModel => {
+  handleBoardCheck = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
     const logHandleCheck = false;
     let squaresToBlock = [] as TargetSquareModel[];    
@@ -53,7 +55,7 @@ export class MobilityEngine {
                                             vector.Targets[i].Status,
                                             vector.Targets[i].Piece
                                           );
-                // Add the attacker
+                // Add the attacker (this helps with knights)
                 squaresToBlock.push( new TargetSquareModel(
                                             square.X,
                                             square.Y,
@@ -86,10 +88,11 @@ export class MobilityEngine {
       
     });
 
-    // Second phase is to remove moves that do not break the check condition.
+    // Phase 2 removes movement that cannot break the check condition.
     // This operates on the defender's pieces.
     if( squaresToBlock.length > 0 ){
       if(logHandleCheck) console.log(`\r\n Phase 2...`);
+      board.IsBoardCheck = 0;
       board.Squares.forEach( square => {
         if( square.Piece.Player == player && square.Piece.Type != PieceType.King){
           
@@ -103,8 +106,8 @@ export class MobilityEngine {
               if( squaresToBlock.some( s => s.Id == target.Id ) ){
                 newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
                 square.Piece.Mobility.Vectors.push(newVector);
+                board.IsBoardCheck = player;
                 if(logHandleCheck) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
-
               }
 
             });
@@ -112,7 +115,9 @@ export class MobilityEngine {
           
         }
       });
-    }    
+
+    }
+
 
     return board;
   };
@@ -229,22 +234,13 @@ export class MobilityEngine {
     let p2Controlled = [] as TargetSquareModel[];
     
     board.Squares.forEach( square => {
-      // if(square.Piece.Mobility.Map.length != 0) {
-      //   console.log(`Mobility.Map for ${square.Piece.Id}...BEFORE`);
-      //   console.dir(square.Piece.Mobility.Map);
-      // }
-
       // Empty squares actually have blank pieces assigned to Player 0.
       if(square.Piece?.Player == 0){
         if(square.Piece.Type != PieceType.None) console.error(`${square.Piece.Id}'s Player == 0, but piece type = ${square.Piece.Type} (${square.Piece.Id}).`);
         square.Piece = new PieceModel(0);
       
       // Everyone else needs updated moves.
-      } else {        
-        // if( square.Piece.Id == "P1-Rook-Right" ){
-        //   console.log(`${square.Piece.Id}`);
-        //   console.dir(square.Piece.Mobility);
-        // }
+      } else {
         square.Piece.Mobility.Vectors.forEach(vector => {
           vector.Targets.forEach( t => {            
             if(t.Status == TargetStatus.Open || t.Status == TargetStatus.Enemy || t.Status == TargetStatus.Check || t.Status == TargetStatus.CheckBlocks){
@@ -267,6 +263,16 @@ export class MobilityEngine {
         }        
       }
     });
+
+    return board;
+  };
+
+  restrictPawnDrops = ( board: BoardModel ): BoardModel =>{
+
+    if(board.IsBoardCheck){
+
+      // ...
+    }
 
     return board;
   };
@@ -535,14 +541,13 @@ export class MobilityEngine {
     return openFiles;
   };
 
-  rebuildDrops  = ( board: BoardModel ): BoardModel =>{
+  rebuildDrops  = ( board: BoardModel, player: number ): BoardModel =>{
     if(this.logPhase) console.warn("\r\n rebuildDrops...");
-    // Make a list of columns that pawns can be placed on for each player.
-    let openFilesP1 = this.findOpenFiles(1, board);
-    let openFilesP2 = this.findOpenFiles(2, board);
-        
-    // Loop through captured pieces (player 1)
-    board.CapturesP1.forEach(capture => {
+    let openFiles = this.findOpenFiles(player, board);
+
+    let captures = player == 1 ? board.CapturesP1 : board.CapturesP2;
+
+    captures.forEach(capture => {
       capture.Mobility.Map = [];
       board.Squares.forEach(s => {
 
@@ -561,14 +566,9 @@ export class MobilityEngine {
           // If pawn: add all but last back row and other columns with existing pawns
           else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
             
-            if(capture.Player == 1 && openFilesP1.includes(s.X)){
+            if(openFiles.includes(s.X)){
               capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
             }
-
-            if(capture.Player == 2 && openFilesP2.includes(s.X)){
-              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-            }
-
           }
 
           // If knight: add all but back 2 rows
@@ -579,58 +579,15 @@ export class MobilityEngine {
           }
         
         }
+
       });
 
     });
-    
-    // Loop through captured pieces (player 2)
-    board.CapturesP2.forEach(capture => {
-      capture.Mobility.Map = [];
-      board.Squares.forEach(s => {
-
-        if(s.Piece.Player == 0){
-          
-          // If not pawn, lance, or night: add whole board
-          if( capture.Type != PieceType.Pawn && capture.Type != PieceType.Lance && capture.Type != PieceType.Knight ){
-            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-          }
-        
-          // If lance: add all but last back row
-          else if( capture.Type == PieceType.Lance && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
-            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-          }
-        
-          // If pawn: add all but last back row and other columns with existing pawns
-          else if( capture.Type == PieceType.Pawn && ((capture.Player == 1 &&  s.Y != 1) || (capture.Player == 2 && s.Y != 9)) ){
-            
-            // console.log(`\topenFilesP1...1`);
-            if(capture.Player == 1 && openFilesP1.includes(s.X)){
-              // console.warn(`\r\n rebuildDrops: ${PieceType.Pawn}, Player ${capture.Player}, s.X ${s.X}, s.Y ${s.Y}`);
-              // console.log(`\topenFilesP1...2`);
-              // console.dir(openFilesP1);
-              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-            }
-
-            if(capture.Player == 2 && openFilesP2.includes(s.X)){
-              capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-            }
-
-          }
-
-          // If knight: add all but back 2 rows
-          else if( (capture.Type == PieceType.Knight)
-            && ((board.CurrentPlayer == 1 &&  (s.Y > 2)) || (board.CurrentPlayer == 2 && (s.Y < 8)))  )
-          {
-            capture.Mobility.Map.push(new TargetSquareModel(s.X, s.Y, TargetStatus.Open));
-          }
-        
-        }
-      });
-
-    });
-
-    return board;
-
   };
+
+
+
+
+
 
 }

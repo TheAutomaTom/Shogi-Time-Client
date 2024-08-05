@@ -9,7 +9,10 @@ export class BoardModel {
   CapturesP1: Array<PieceModel>;
   CapturesP2: Array<PieceModel>;
   Pins: AttackModel[];
-  CheckApproaches: AttackModel[];
+
+  // Drops could possibly break IsBoardCheck
+  IsBoardCheck: number = 0;
+  IsCheckmate:  number = 0;
 
   constructor(
     id: string,
