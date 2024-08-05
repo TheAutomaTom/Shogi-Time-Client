@@ -100,11 +100,7 @@ export class MobilityEngine {
             let newVector = new Vector(vector.Name);
             vector.Targets.forEach(target => {
 
-              if( !squaresToBlock.some( s => s.Id == target.Id ) ){
-                target = new TargetSquareModel(target.X, target.Y, TargetStatus.OutOfRange, target.Piece);
-                if(logHandleCheck) console.log(`\t target.Id ${target.Id} is NOT in squaresToBlock`);
-
-              } else {
+              if( squaresToBlock.some( s => s.Id == target.Id ) ){
                 newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
                 square.Piece.Mobility.Vectors.push(newVector);
                 if(logHandleCheck) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
