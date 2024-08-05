@@ -209,7 +209,7 @@ const handleClickSquare = () => {
   }
   .game-square-potential-kill{
     // background-color: #431706;
-    background-color: #7e0b0b51;
+    background-color: #ff000075;
   }
   .game-square-potential-check{
     // background-color: #431706;

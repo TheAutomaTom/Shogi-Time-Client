@@ -16,27 +16,61 @@ export class MobilityEngine {
   logPhase = false;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
+
     let result = this.resetBoard(input);
+
     result = this.calculateStandardVectors(result);
     result = this.definePinningAttackVectors(result);
     result = this.pinDefenders(result);
-    result = this.handleBoardCheck(result, 1);
-    result = this.handleBoardCheck(result, 2);
+
+    result = this.handleBoardChecks(result, 1);
+    if(result.ToBlockP1.length > 0) result = this.constrainDefenders(result, 1, result.ToBlockP1);
     result = this.rebuildDrops(result, 1);
+    if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
+        
+    result = this.handleBoardChecks(result, 2);
+    if(result.ToBlockP2.length > 0) result = this.constrainDefenders(result, 2, result.ToBlockP2);
     result = this.rebuildDrops(result, 2);
-    result = this.redrawValidMoves(result);    
+    if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
+    
+    result = this.redrawValidMoves(result);
     result = this.restrictPawnDrops(result);
     return result;
   };
+  
+  counterMateWithDrops = ( board: BoardModel, player: number ): BoardModel => {
+    
+    const captures = player == 1 ? board.CapturesP1 : board.CapturesP2;
+    
+    if(captures.length == 0){
+      board.IsInMate = player;
+      return board;
+    }
 
-  handleBoardCheck = ( board: BoardModel, player: number ): BoardModel => {
+
+
+
+
+
+
+
+    return board;
+  };
+  
+  restrictPawnDrops = ( board: BoardModel ): BoardModel =>{
+
+    return board;
+  };
+  
+  handleBoardChecks = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
-    const logHandleCheck = false;
-    let squaresToBlock = [] as TargetSquareModel[];    
+    const toLog = false;
+    let toBlock = [] as TargetSquareModel[];
+    let toKill   = [] as TargetSquareModel[];
 
     // First phase, find all the opponent's squares that put the king in check.
     // This operates on the attacker's pieces.
-    if(logHandleCheck) console.log(`\r\n Phase 1...`);
+    if(toLog) console.log(`\r\n Phase 1...`);
     board.Squares.forEach(square => {
       if( square.Piece.Player != 0 && square.Piece.Player != player ){
         square.Piece.Mobility.Vectors.forEach(vector => {
@@ -55,15 +89,15 @@ export class MobilityEngine {
                                             vector.Targets[i].Status,
                                             vector.Targets[i].Piece
                                           );
-                // Add the attacker (this helps with knights)
-                squaresToBlock.push( new TargetSquareModel(
+                // Add the attacker to the kill list (drops cannot counter this square).
+                toKill.push( new TargetSquareModel(
                                             square.X,
                                             square.Y,
                                             TargetStatus.Enemy,
                                             square.Piece
                                           ));
 
-                if(logHandleCheck) console.log(`\t Check detected: ${vector.Targets[i].Id} by ${square.Piece.Id} `);
+                if(toLog) console.log(`\t Check detected: ${vector.Targets[i].Id} by ${square.Piece.Id} `);
               }
               
               // Only count open spaces after check has been detected (there shouldn't be other kinds).
@@ -71,54 +105,62 @@ export class MobilityEngine {
                   && vector.Targets[i].Status != TargetStatus.Check 
                   && vector.Targets[i].Status != TargetStatus.CheckBlocks
                 ) {
-                squaresToBlock.push( new TargetSquareModel(
+                toBlock.push( new TargetSquareModel(
                                             vector.Targets[i].X,
                                             vector.Targets[i].Y,
                                             vector.Targets[i].Status,
                                             vector.Targets[i].Piece
                                           ));
-                if(logHandleCheck) console.log(`\t squaresToBlock: ${vector.Targets[i].Id} by ${square.Piece.Id} (${vector.Targets[i].Status}) `);
+                if(toLog) console.log(`\t squaresToBlock: ${vector.Targets[i].Id} by ${square.Piece.Id} (${vector.Targets[i].Status}) `);
               }
             }
-
           }
-
         });
-      }
-      
+      }      
     });
+
+    if(player == 1) {
+      board.ToBlockP1 = toBlock;
+      board.ToKillP1 = toKill;
+    } else {
+      board.ToBlockP2 = toBlock;
+      board.ToKillP2 = toKill;
+    }
+    return board;
+  };
+
+  constrainDefenders = ( board: BoardModel, player: number, squaresToBlock: TargetSquareModel[] ): BoardModel => {
+    const toLog = false;
+    let canBlockCheck = false;
 
     // Phase 2 removes movement that cannot break the check condition.
     // This operates on the defender's pieces.
-    if( squaresToBlock.length > 0 ){
-      if(logHandleCheck) console.log(`\r\n Phase 2...`);
-      board.IsBoardCheck = 0;
-      board.Squares.forEach( square => {
-        if( square.Piece.Player == player && square.Piece.Type != PieceType.King){
-          
-          const originalVectors = square.Piece.Mobility.Vectors;
-          square.Piece.Mobility.Vectors = [];
+    if(toLog) console.log(`\r\n Phase 2...`);
+    board.Squares.forEach( square => {
+      // If this is the player's piece, but not their King.
+      if( square.Piece.Player == player && square.Piece.Type != PieceType.King){
+        
+        // Clear the piece's default movement.
+        const defaultVectors = square.Piece.Mobility.Vectors;
+        square.Piece.Mobility.Vectors = [];
 
-          originalVectors.forEach(vector => {
-            let newVector = new Vector(vector.Name);
-            vector.Targets.forEach(target => {
+        defaultVectors.forEach(defaultVector => {
+          let newVector = new Vector(defaultVector.Name);
 
-              if( squaresToBlock.some( s => s.Id == target.Id ) ){
-                newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
-                square.Piece.Mobility.Vectors.push(newVector);
-                board.IsBoardCheck = player;
-                if(logHandleCheck) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
-              }
-
-            });
+          defaultVector.Targets.forEach(target => {
+            // Is this target is in the list of squares required for defense, keep it.
+            if( squaresToBlock.some( s => s.Id == target.Id ) ){
+              newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
+              square.Piece.Mobility.Vectors.push(newVector);
+              canBlockCheck = true;
+              if(toLog) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
+            }
           });
-          
-        }
-      });
-
-    }
-
-
+        });
+      }
+    });
+    if(!canBlockCheck && player == 1){ board.IsMateBeforeDropsP1 = true; }
+    if(!canBlockCheck && player == 2){ board.IsMateBeforeDropsP2 = true; }
     return board;
   };
 
@@ -229,7 +271,7 @@ export class MobilityEngine {
   };
   
   // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
-  redrawValidMoves = ( board: BoardModel ): BoardModel => { 
+  redrawValidMoves = ( board: BoardModel ): BoardModel => {
     if(this.logPhase) console.warn("\r\n redrawValidMoves...");
     let p1Controlled = [] as TargetSquareModel[];
     let p2Controlled = [] as TargetSquareModel[];
@@ -268,15 +310,6 @@ export class MobilityEngine {
     return board;
   };
 
-  restrictPawnDrops = ( board: BoardModel ): BoardModel =>{
-
-    if(board.IsBoardCheck){
-
-      // ...
-    }
-
-    return board;
-  };
 
   restrictKing = (moves: TargetSquareModel[], attacks: TargetSquareModel[]): TargetSquareModel[] => {
     attacks.filter(a => a.Status == TargetStatus.Open || TargetStatus.Enemy || TargetStatus.Check);
