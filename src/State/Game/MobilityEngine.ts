@@ -20,19 +20,23 @@ export class MobilityEngine {
     result = this.calculateStandardVectors(result);
     result = this.definePinningAttackVectors(result);
     result = this.pinDefenders(result);
-    result = this.handleCheck(result);
+    result = this.handleCheck(result, 1);
+    result = this.handleCheck(result, 2);
     result = this.redrawValidMoves(result);
     result = this.rebuildDrops(result);
     return result;
   };
 
-  handleCheck = ( board: BoardModel ): BoardModel => {
-    if(this.logPhase) console.warn("\r\n handleCheck...");
+  handleCheck = ( board: BoardModel, player: number ): BoardModel => {
+    if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
+    const logHandleCheck = false;
     let squaresToBlock = [] as TargetSquareModel[];    
 
-    // Find all the squares that put the king in check.
+    // First phase, find all the opponent's squares that put the king in check.
+    // This operates on the attacker's pieces.
+    if(logHandleCheck) console.log(`\r\n Phase 1...`);
     board.Squares.forEach(square => {
-      if (square.Piece.Player != 0) {
+      if( square.Piece.Player != 0 && square.Piece.Player != player ){
         square.Piece.Mobility.Vectors.forEach(vector => {
           
           if( vector.Targets.some(t => t.Status == TargetStatus.Check )){
@@ -43,24 +47,38 @@ export class MobilityEngine {
               // The process doesn't begin until the King is found.
               if( vector.Targets[i].Status == TargetStatus.Check ){
                 attackModel.AttackVector = vector.Name;
-                attackModel.Checked = new TargetSquareModel(
-                  vector.Targets[i].X,
-                  vector.Targets[i].Y,
-                  vector.Targets[i].Status,
-                  vector.Targets[i].Piece
-                );
+                attackModel.Checked = new TargetSquareModel( 
+                                            vector.Targets[i].X,
+                                            vector.Targets[i].Y,
+                                            vector.Targets[i].Status,
+                                            vector.Targets[i].Piece
+                                          );
+                // Add the attacker
+                squaresToBlock.push( new TargetSquareModel(
+                                            square.X,
+                                            square.Y,
+                                            TargetStatus.Enemy,
+                                            square.Piece
+                                          ));
+
+                if(logHandleCheck) console.log(`\t Check detected: ${vector.Targets[i].Id} by ${square.Piece.Id} `);
               }
               
-              // Only count open spaces after a check or blocked-check has been detected.
-              if( attackModel.Checked?.Id != "" ) {
+              // Only count open spaces after check has been detected (there shouldn't be other kinds).
+              if( attackModel.Checked?.Id != "" 
+                  && vector.Targets[i].Status != TargetStatus.Check 
+                  && vector.Targets[i].Status != TargetStatus.CheckBlocks
+                ) {
                 squaresToBlock.push( new TargetSquareModel(
-                  vector.Targets[i].X,
-                  vector.Targets[i].Y,
-                  vector.Targets[i].Status,
-                  vector.Targets[i].Piece
-                ));
+                                            vector.Targets[i].X,
+                                            vector.Targets[i].Y,
+                                            vector.Targets[i].Status,
+                                            vector.Targets[i].Piece
+                                          ));
+                if(logHandleCheck) console.log(`\t squaresToBlock: ${vector.Targets[i].Id} by ${square.Piece.Id} (${vector.Targets[i].Status}) `);
               }
             }
+
           }
 
         });
@@ -68,17 +86,34 @@ export class MobilityEngine {
       
     });
 
-    if(squaresToBlock.length > 0){
+    // Second phase is to remove moves that do not break the check condition.
+    // This operates on the defender's pieces.
+    if( squaresToBlock.length > 0 ){
+      if(logHandleCheck) console.log(`\r\n Phase 2...`);
+      board.Squares.forEach( square => {
+        if( square.Piece.Player == player && square.Piece.Type != PieceType.King){
+          
+          const originalVectors = square.Piece.Mobility.Vectors;
+          square.Piece.Mobility.Vectors = [];
 
-      board.Squares.forEach(square => {
-        if (square.Piece.Player != 0) {
-          square.Piece.Mobility.Vectors.forEach(vector => {
+          originalVectors.forEach(vector => {
+            let newVector = new Vector(vector.Name);
             vector.Targets.forEach(target => {
-              if( !squaresToBlock.some( s => s.Id == target.Id) ){
+
+              if( !squaresToBlock.some( s => s.Id == target.Id ) ){
                 target = new TargetSquareModel(target.X, target.Y, TargetStatus.OutOfRange, target.Piece);
-              }            
+                if(logHandleCheck) console.log(`\t target.Id ${target.Id} is NOT in squaresToBlock`);
+
+              } else {
+                newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
+                square.Piece.Mobility.Vectors.push(newVector);
+                if(logHandleCheck) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
+
+              }
+
             });
           });
+          
         }
       });
     }    
@@ -91,7 +126,7 @@ export class MobilityEngine {
     board.Squares.forEach(square => {
       if(square.Piece.Player != 0){
         const _ = square.Piece.ResetMobility();
-      }      
+      }
     });
     board.Pins = [];
     return board;
@@ -323,7 +358,7 @@ export class MobilityEngine {
 
   evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, obstruction: TargetStatus ): VectorTargetReport => {
     
-    const toLog = ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(targetId);
+    const toLog = false; // ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(targetId);
 
     // Find the target square.
     const s = board.Squares.find( s => s.Id == targetId );
