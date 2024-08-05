@@ -64,8 +64,7 @@
     width:100%;
     height:100%;
     object-fit:contain;
-    cursor:grab;
-    
+    cursor:grab;    
   }
   .game-piece-move-start{
     // background-color: green;

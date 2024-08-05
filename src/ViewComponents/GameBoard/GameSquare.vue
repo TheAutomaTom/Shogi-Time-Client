@@ -15,10 +15,10 @@
 <!--  -->
     <div>
       <!-- v-if="input.Piece.Player != 0" -->
-      <span
+      <!-- <span
         class="board-notation board-notation-debug"
       >{{ input.Piece.Player != 0 ? `${input.Piece.Id}` : "" }}<br/><br/>{{ input.X }}{{ input.Y }} 
-      </span>
+      </span> -->
     </div>
 <!--  -->
 
@@ -109,14 +109,14 @@ watch( // Update highlight class
 
     switch (isValidTarget.value.Status) {
       case TargetStatus.Open:
-        currentClass.value = "game-square-potential-kill";
-        // console.log(`${props.input.Id}: ${currentClass.value}`);
-        break;
-        case TargetStatus.Enemy:
         currentClass.value = "game-square-potential-move";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
-        case TargetStatus.Check:
+      case TargetStatus.Enemy:
+        currentClass.value = "game-square-potential-kill";
+        // console.log(`${props.input.Id}: ${currentClass.value}`);
+        break;
+      case TargetStatus.Check:
         currentClass.value = "game-square-potential-check";
         // console.log(`${props.input.Id}: ${currentClass.value}`);
         break;
@@ -205,11 +205,11 @@ const handleClickSquare = () => {
 
   .game-square-potential-move{
     // background-color: #431706;
-    background-color: #9b0000b4;
+    background-color: #7e0b0b92;
   }
   .game-square-potential-kill{
     // background-color: #431706;
-    background-color: #7e0b0b64;
+    background-color: #7e0b0b51;
   }
   .game-square-potential-check{
     // background-color: #431706;

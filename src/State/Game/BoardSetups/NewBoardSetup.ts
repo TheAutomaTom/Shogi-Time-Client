@@ -1,6 +1,6 @@
-import { GameSquareModel } from "@/State/Game/GameSquareModel";
 import { PieceType } from "../Pieces/PieceType";
 import { PieceModel } from "../Pieces/PieceModel";
+import { GameSquareModel } from "../Squares/GameSquareModel";
 
 export class NewBoardSetup {
 Squares = [

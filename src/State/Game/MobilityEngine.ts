@@ -13,7 +13,7 @@ import { VectorTargetReport } from "./Movement/VectorTargetReport";
 
 export class MobilityEngine {
   // logSubject = {enabled: true, id: "P2-Rook-Right"};
-  logPhase = true;
+  logPhase = false;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
     let result = this.resetBoard(input);
@@ -583,6 +583,7 @@ export class MobilityEngine {
       });
 
     });
+    return board;
   };
 
 
