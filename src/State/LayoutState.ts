@@ -6,8 +6,12 @@ export const useLayoutState = defineStore("LayoutState", () => {
 
   const IsLoading = ref(false);
   const DrawerIsOpen = ref(false);
+  const GameDrawerIsOpen = ref(false);
   const ToggleDrawer = () => {
     DrawerIsOpen.value = !DrawerIsOpen.value;
+  }
+  const ToggleGameDrawer = () => {
+    GameDrawerIsOpen.value = !GameDrawerIsOpen.value;
   }
   
   const ModalIsOpen = ref(false);
@@ -31,6 +35,8 @@ export const useLayoutState = defineStore("LayoutState", () => {
     IsLoading,
     DrawerIsOpen,
     ToggleDrawer,
+    GameDrawerIsOpen,
+    ToggleGameDrawer,
     ModalIsOpen,
     ToggleModal,
     ModalContent

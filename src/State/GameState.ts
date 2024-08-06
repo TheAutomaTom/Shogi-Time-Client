@@ -114,7 +114,7 @@ export const useGameState = defineStore("GameState", () => {
 
         if( square.Piece.Type == PieceType.King ){
           console.log(`MoveAttempt: ${TargetStatus.Enemy} = ${PieceType.King}... call gameOver()`);
-          gameOver(Board.value.CurrentPlayer);
+          GameOver(Board.value.CurrentPlayer);
           break;
         }
 
@@ -292,7 +292,7 @@ export const useGameState = defineStore("GameState", () => {
     if(logGamePhase) logPhase(`Player #${Board.value.CurrentPlayer}'s turn begins.`);
   };
 
-  const gameOver = (player: number) =>{
+  const GameOver = (player: number = Board.value.CurrentPlayer) =>{
     console.log(`${GamePhase.GameOver}: Player ${player} wins.`);
     if(logGamePhase) logPhase("gameOver ends");
     return Phase.value = GamePhase.GameOver;
@@ -337,6 +337,7 @@ export const useGameState = defineStore("GameState", () => {
     // PriorPieceInHand,
     // PriorOrigin,
     // PriorTarget
+    GameOver
 
   };
 });

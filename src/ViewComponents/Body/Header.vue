@@ -1,7 +1,13 @@
 <script setup lang="ts">
 import { useAppState } from "../../State/AppState.ts";
 import LogoButton from "@Components/LogoButton.vue";
+
 const app$ = useAppState();
+
+const clickAtGameMenu = () =>{
+
+};
+
 </script>
 <template>
   
@@ -13,10 +19,14 @@ const app$ = useAppState();
       ></logo-button>
     </div>
 
-    <div class="header-right">
-      <button class="icon-button ghost-button" disabled>...</button>
-      <button class="icon-button ghost-button" >...</button>
-      <button class="icon-button ghost-button" >...</button>
+    <div 
+      class="header-right"
+      v-if="$route.fullPath == '/game'"
+    >
+      <button 
+        class="icon-button ghost-button" 
+        @click="app$.Layout$.ToggleGameDrawer()"
+      >⚙️</button>
     </div>
 
   </div>

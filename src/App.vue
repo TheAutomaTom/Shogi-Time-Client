@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import Drawer from "@Components/Body/Drawer.vue";
+import GameDrawer from "@Components/Body/GameDrawer.vue";
 import Header from "@Components/Body/Header.vue";
 import Modal from '@Components/Body/Modal.vue'
 import { computed } from "vue";
@@ -28,6 +29,7 @@ const isUnfocussed = computed(() => {
     />
     
     <drawer></drawer>
+    <game-drawer></game-drawer>
     
     <div 
       id="root" 
