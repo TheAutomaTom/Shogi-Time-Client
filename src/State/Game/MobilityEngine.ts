@@ -25,28 +25,28 @@ export class MobilityEngine {
 
     result = this.handleBoardChecks(result, 1);
     if(result.ToBlockP1.length > 0) result = this.constrainDefenders(result, 1, result.ToBlockP1);
-    result = this.rebuildDrops(result, 1);
+    result = this.redrawDropViewModels(result, 1);
+    result = this.restrictPawnDrops(result, 1);
     if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
+    if(result.IsInMate) return result;
         
     result = this.handleBoardChecks(result, 2);
     if(result.ToBlockP2.length > 0) result = this.constrainDefenders(result, 2, result.ToBlockP2);
-    result = this.rebuildDrops(result, 2);
+    result = this.redrawDropViewModels(result, 2);
+    result = this.restrictPawnDrops(result, 2);
     if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
+    if(result.IsInMate) return result;    
     
-    result = this.redrawValidMoves(result);
-    result = this.restrictPawnDrops(result);
+    result = this.redrawMovementViewModels(result);
     return result;
   };
   
-  counterMateWithDrops = ( board: BoardModel, player: number ): BoardModel => {
-    
-    const captures = player == 1 ? board.CapturesP1 : board.CapturesP2;
-    
+  counterMateWithDrops = ( board: BoardModel, player: number ): BoardModel => {    
+    const captures = player == 1 ? board.CapturesP1 : board.CapturesP2;    
     if(captures.length == 0){
       board.IsInMate = player;
       return board;
-    }
-    
+    }    
     let foundBlock = false;
     const toBlock = player == 1 ? board.ToBlockP1 : board.ToBlockP2;
 
@@ -63,7 +63,9 @@ export class MobilityEngine {
     return board;
   };
   
-  restrictPawnDrops = ( board: BoardModel ): BoardModel =>{
+  restrictPawnDrops = ( board: BoardModel, player: number ): BoardModel =>{
+
+    
 
     return board;
   };
@@ -277,7 +279,7 @@ export class MobilityEngine {
   };
   
   // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
-  redrawValidMoves = ( board: BoardModel ): BoardModel => {
+  redrawMovementViewModels = ( board: BoardModel ): BoardModel => {
     if(this.logPhase) console.warn("\r\n redrawValidMoves...");
     let p1Controlled = [] as TargetSquareModel[];
     let p2Controlled = [] as TargetSquareModel[];
@@ -581,7 +583,7 @@ export class MobilityEngine {
     return openFiles;
   };
 
-  rebuildDrops  = ( board: BoardModel, player: number ): BoardModel =>{
+  redrawDropViewModels  = ( board: BoardModel, player: number ): BoardModel =>{
     if(this.logPhase) console.warn("\r\n rebuildDrops...");
     let openFiles = this.findOpenFiles(player, board);
 
