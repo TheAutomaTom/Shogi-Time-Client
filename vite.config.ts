@@ -1,8 +1,8 @@
 import vue from '@vitejs/plugin-vue'
 import { defineConfig } from 'vite'
-import { fileURLToPath, URL } from "node:url";
-import {VitePWA} from 'vite-plugin-pwa'
+import { VitePWA } from 'vite-plugin-pwa'
 import path from 'node:path';
+import plainText from 'vite-plugin-plain-text';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  base: "/ShogiTime/", // For deploying in a subfolder of cpanel
+  base: "/shogi-time/", // For deploying in a subfolder of cpanel
   publicDir: "public",  
     /* 
     For relative import paths,
@@ -31,13 +31,17 @@ export default defineConfig({
   },
   plugins: [
     vue(),
+    plainText(
+      ['test.txt'],
+      { namedExport: false }
+    ),
     VitePWA({
       injectRegister: 'auto', // https://vite-pwa-org.netlify.app/guide/register-service-worker.html
       registerType: 'autoUpdate',
       workbox: {
         clientsClaim: true,
         skipWaiting: true,
-        globPatterns: ['**/*.{js,css,html,ico,png,svg}']
+        globPatterns: ['**/*.{js,css,html,ico,png,svg,md}']
 
       },
       devOptions: {
