@@ -4,10 +4,6 @@ import LogoButton from "@Components/LogoButton.vue";
 
 const app$ = useAppState();
 
-const clickAtGameMenu = () =>{
-
-};
-
 </script>
 <template>
   

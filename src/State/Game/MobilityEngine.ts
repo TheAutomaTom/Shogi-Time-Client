@@ -26,14 +26,14 @@ export class MobilityEngine {
     result = this.handleBoardChecks(result, 1);
     if(result.ToBlockP1.length > 0) result = this.constrainDefenders(result, 1, result.ToBlockP1);
     result = this.redrawDropViewModels(result, 1);
-    result = this.restrictPawnDrops(result, 1);
+    result = this.restrictPawnDrops(result); //`, 1);
     if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
     if(result.IsInMate) return result;
         
     result = this.handleBoardChecks(result, 2);
     if(result.ToBlockP2.length > 0) result = this.constrainDefenders(result, 2, result.ToBlockP2);
     result = this.redrawDropViewModels(result, 2);
-    result = this.restrictPawnDrops(result, 2);
+    result = this.restrictPawnDrops(result); //, 2);
     if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
     if(result.IsInMate) return result;    
     
@@ -63,7 +63,7 @@ export class MobilityEngine {
     return board;
   };
   
-  restrictPawnDrops = ( board: BoardModel, player: number ): BoardModel =>{
+  restrictPawnDrops = ( board: BoardModel /*, player: number */ ): BoardModel =>{
 
     
 
