@@ -1,6 +1,3 @@
-/* //  "primevue/resources/themes/lara-light-blue/theme.css";
-//  This is for quick reference only! DO NOT LOAD OR MODIFY !!!
-//  Override these settings in primefaces.scss instead!!!
 :root {
   --surface-a: #ffffff;
   --surface-b: #f8f9fa;
@@ -6407,4 +6404,4 @@
 }
 .p-datatable .p-datatable-tbody > tr.p-datatable-dragpoint-bottom > td {
   box-shadow: inset 0 -2px 0 0 #3b82f6;
-} */
+} 
