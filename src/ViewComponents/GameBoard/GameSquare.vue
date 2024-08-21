@@ -15,10 +15,10 @@
 <!--  -->
     <div>
       <!-- v-if="input.Piece.Player != 0" -->
-      <!-- <span
+      <span
         class="board-notation board-notation-debug"
-      >{{ input.Piece.Player != 0 ? `${input.Piece.Id}` : "" }}<br/><br/>{{ input.X }}{{ input.Y }} 
-      </span> -->
+      >{{ input.Piece.Player != 0 ? `${input.Piece.Id}` : "" }}<br/>{{ input.X }}{{ input.Y }} 
+      </span>
     </div>
 <!--  -->
 

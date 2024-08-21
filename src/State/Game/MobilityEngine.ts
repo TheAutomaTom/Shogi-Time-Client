@@ -21,29 +21,28 @@ export class MobilityEngine {
     let result = this.resetBoard(input);
 
     result = this.calculateStandardVectors(result);
-    result = this.definePinningAttackVectors(result);
-    result = this.pinDefenders(result);
+    result = this.redrawDropViewModels(result, input.CurrentPlayer);
 
+    result.Pins = this.definePinningAttackVectors(result);
+    // result = this.pinDefenders(result);
 
+    result = this.defineDefenderConstraints(result, 1);
+    if(result.P1ToBlock.length + result.P1ToKill.length > 0) {
+      result = this.constrainDefenders(result, 1, result.P1ToBlock);
+    }
 
-    result = this.handleBoardChecks(result, 1);
-    if(result.P1ToBlock.length > 0) result = this.constrainDefenders(result, 1, result.P1ToBlock);
-
-    result = this.redrawDropViewModels(result, 1);
-
-    // result = this.restrictPawnDrops(result); //`, 1);
     // if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
     
     // if(result.IsInMate) return result;
 
 
         
-    result = this.handleBoardChecks(result, 2);
-    if(result.P2ToBlock.length > 0) result = this.constrainDefenders(result, 2, result.P2ToBlock);
+    result = this.defineDefenderConstraints(result, 2);
+    if(result.P2ToBlock.length + result.P2ToKill.length > 0) {
+      result = this.constrainDefenders(result, 2, result.P2ToBlock);
+    }
 
 
-    result = this.redrawDropViewModels(result, 2);
-    // result = this.restrictPawnDrops(result); //, 2);
     // if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
 
     // if(result.IsInMate) return result;    
@@ -76,16 +75,10 @@ export class MobilityEngine {
     return board;
   };
   
-  restrictPawnDrops = ( board: BoardModel /*, player: number */ ): BoardModel =>{
-
-    
-
-    return board;
-  };
   
-  handleBoardChecks = ( board: BoardModel, player: number ): BoardModel => {
+  defineDefenderConstraints = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
-    const toLog = false;
+    const toLog = true;
     let toBlock = [] as TargetSquareModel[];
     let toKill   = [] as TargetSquareModel[];
 
@@ -209,8 +202,10 @@ export class MobilityEngine {
   };
   
   // Second iteration finds attackers' checks and pins, and constrains movement on targets.
-  definePinningAttackVectors = (board: BoardModel): BoardModel => {
+  definePinningAttackVectors = (board: BoardModel): AttackModel[] => {
     if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
+    let pins = [] as AttackModel[];
+
     board.Squares.forEach(square => {
 
       let attackModel = new AttackModel(square);
@@ -224,7 +219,7 @@ export class MobilityEngine {
             // Walk the array starting from farthest square.
             for (let i = vector.Targets.length - 1; i > -1; i--) {              
               
-              // The process doesn't begin until the King is found.
+              // The process doesn't begin unless the King is found to be in potential danger.
               if( vector.Targets[i].Status == TargetStatus.BlockedCheck){
                 attackModel.AttackVector = vector.Name;
                 attackModel.Checked = new TargetSquareModel(
@@ -266,30 +261,30 @@ export class MobilityEngine {
             // If there are 2 or more enemies or any allies protecting the king, then no one is pinned.
             if(defenders.length == 1 && obstructions.length == 0){
               attackModel.Defender = defenders[0];
-              board.Pins.push(attackModel);
+              pins.push(attackModel);
             }
           }
 
         });
       }
     });
-    return board;
+    return pins;
   };
 
-  pinDefenders  = ( board: BoardModel ): BoardModel => {
-    if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
-    // Use the short list of attacks to filter out invalid moves that would put a King into check if they moves their own piece.
-    board.Pins.forEach(attack => {      
-      if(attack.IsPin){
-        board.Squares.forEach(defender => {
-          if(defender.Id == attack.Defender?.Id){
-            // const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
-          }
-        });
-      }      
-    });
-    return board;
-  };
+  // pinDefenders  = ( board: BoardModel ): BoardModel => {
+  //   if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
+  //   // Use the short list of attacks to filter out invalid moves that would put a King into check if they moves their own piece.
+  //   board.Pins.forEach(attack => {      
+  //     if(attack.IsPin){
+  //       board.Squares.forEach(defender => {
+  //         if(defender.Id == attack.Defender?.Id){
+  //           // const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+  //         }
+  //       });
+  //     }      
+  //   });
+  //   return board;
+  // };
   
   // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
   redrawMovementViewModels = ( board: BoardModel ): BoardModel => {
