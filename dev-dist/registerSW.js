@@ -1,1 +1,1 @@
-if('serviceWorker' in navigator) navigator.serviceWorker.register('/ShogiTime/dev-sw.js?dev-sw', { scope: '/ShogiTime/', type: 'classic' })
+if('serviceWorker' in navigator) navigator.serviceWorker.register('/shogi-time/dev-sw.js?dev-sw', { scope: '/shogi-time/', type: 'classic' })

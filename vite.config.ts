@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  base: "/ShogiTime/", // For deploying in a subfolder of cpanel
+  base: "/shogi-time/", // For deploying in a subfolder of cpanel
   publicDir: "public",  
     /* 
     For relative import paths,
@@ -45,7 +45,7 @@ export default defineConfig({
       },
       manifest: {
         name: 'Shogi-Time',
-        short_name: 'ShogiTime',
+        short_name: 'shogi-time',
         description: 'Our favorite Shogi app ✌️',
         theme_color: '#ffffff',
         icons: [
