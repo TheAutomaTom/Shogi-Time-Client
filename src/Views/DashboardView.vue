@@ -40,7 +40,7 @@
 
             <li><h4 class="highlighted">Pawns...</h4></li>
               <ul class="indent">
-                <li>👉 Cannot be dropped onto columns already containing one of your own un-promoted pawns.</li>
+                <li>👉 Cannot be dropped onto files (columns) already containing one of your own un-promoted pawns.  <em>If not open files exist, captured pawn icons will appear dimmed.</em></li>
                 <li>👉 Cannot be dropped into immediate checkmate.</li>
               </ul>
   
@@ -60,6 +60,11 @@
 }
 .highlighted{
   color:goldenrod;
+}
+
+em {
+  font-style: italic;
+  color: grey;
 }
 
 </style>
