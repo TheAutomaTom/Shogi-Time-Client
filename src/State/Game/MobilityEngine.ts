@@ -14,6 +14,7 @@ import { VectorTargetReport } from "./Movement/VectorTargetReport";
 export class MobilityEngine {
   // logSubject = {enabled: true, id: "P2-Rook-Right"};
   logPhase = false;
+  logDropCalcs = true;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
@@ -23,32 +24,44 @@ export class MobilityEngine {
     result = this.definePinningAttackVectors(result);
     result = this.pinDefenders(result);
 
+
+
     result = this.handleBoardChecks(result, 1);
-    if(result.ToBlockP1.length > 0) result = this.constrainDefenders(result, 1, result.ToBlockP1);
+    if(result.P1ToBlock.length > 0) result = this.constrainDefenders(result, 1, result.P1ToBlock);
+
     result = this.redrawDropViewModels(result, 1);
-    result = this.restrictPawnDrops(result); //`, 1);
-    if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
-    if(result.IsInMate) return result;
+
+    // result = this.restrictPawnDrops(result); //`, 1);
+    // if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
+    
+    // if(result.IsInMate) return result;
+
+
         
     result = this.handleBoardChecks(result, 2);
-    if(result.ToBlockP2.length > 0) result = this.constrainDefenders(result, 2, result.ToBlockP2);
+    if(result.P2ToBlock.length > 0) result = this.constrainDefenders(result, 2, result.P2ToBlock);
+
+
     result = this.redrawDropViewModels(result, 2);
-    result = this.restrictPawnDrops(result); //, 2);
-    if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
-    if(result.IsInMate) return result;    
+    // result = this.restrictPawnDrops(result); //, 2);
+    // if(result.IsMateBeforeDropsP2) result = this.counterMateWithDrops(result, 1);
+
+    // if(result.IsInMate) return result;    
+
+
     
     result = this.redrawMovementViewModels(result);
     return result;
   };
   
-  counterMateWithDrops = ( board: BoardModel, player: number ): BoardModel => {    
-    const captures = player == 1 ? board.CapturesP1 : board.CapturesP2;    
+  counterMateWithDrops = ( board: BoardModel, player: number ): BoardModel => { 
+    const captures = player == 1 ? board.P1Captures : board.P2Captures;    
     if(captures.length == 0){
       board.IsInMate = player;
       return board;
     }    
     let foundBlock = false;
-    const toBlock = player == 1 ? board.ToBlockP1 : board.ToBlockP2;
+    const toBlock = player == 1 ? board.P1ToBlock : board.P2ToBlock;
 
     captures.forEach(capture => {
       capture.Mobility.Map.forEach(drop => {        
@@ -128,11 +141,11 @@ export class MobilityEngine {
     });
 
     if(player == 1) {
-      board.ToBlockP1 = toBlock;
-      board.ToKillP1 = toKill;
+      board.P1ToBlock = toBlock;
+      board.P1ToKill = toKill;
     } else {
-      board.ToBlockP2 = toBlock;
-      board.ToKillP2 = toKill;
+      board.P2ToBlock = toBlock;
+      board.P2ToKill = toKill;
     }
     return board;
   };
@@ -167,8 +180,8 @@ export class MobilityEngine {
         });
       }
     });
-    if(!canBlockCheck && player == 1){ board.IsMateBeforeDropsP1 = true; }
-    if(!canBlockCheck && player == 2){ board.IsMateBeforeDropsP2 = true; }
+    if(!canBlockCheck && player == 1){ board.P1IsMateBeforeDrops = true; }
+    if(!canBlockCheck && player == 2){ board.P2IsMateBeforeDrops = true; }
     return board;
   };
 
@@ -564,8 +577,8 @@ export class MobilityEngine {
 
     // Check to see if pawns are captured (otherwise there is no point in this process)
     const hasPawns = player == 1 
-    ? board.CapturesP1.filter(capture => capture.Type === PieceType.Pawn)
-    : board.CapturesP2.filter(capture => capture.Type === PieceType.Pawn);
+    ? board.P1Captures.filter(capture => capture.Type === PieceType.Pawn)
+    : board.P2Captures.filter(capture => capture.Type === PieceType.Pawn);
 
     // All possible files (columns) to be filtered out.
     let openFiles = [ 1, 2, 3, 4 ,5, 6, 7, 8, 9 ];
@@ -584,10 +597,16 @@ export class MobilityEngine {
   };
 
   redrawDropViewModels  = ( board: BoardModel, player: number ): BoardModel =>{
-    if(this.logPhase) console.warn("\r\n rebuildDrops...");
+    if(this.logPhase || this.logDropCalcs) console.warn("\r\n redrawDropViewModels...");
+    player == 1 ? board.P1HasOpenFiles = false : board.P2HasOpenFiles = false;
+    
     let openFiles = this.findOpenFiles(player, board);
+    
+    if(openFiles.length > 0){      
+      player == 1 ? board.P1HasOpenFiles = true : board.P2HasOpenFiles = true;
+    } 
 
-    let captures = player == 1 ? board.CapturesP1 : board.CapturesP2;
+    let captures = player == 1 ? board.P1Captures : board.P2Captures;
 
     captures.forEach(capture => {
       capture.Mobility.Map = [];

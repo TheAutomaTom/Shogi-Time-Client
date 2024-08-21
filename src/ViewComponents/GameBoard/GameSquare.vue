@@ -165,7 +165,6 @@ const handleClickSquare = () => {
 
 <!--  -->
 <style scoped lang="scss">
-
   .game-square{
     position: relative;
     box-sizing: content-box;

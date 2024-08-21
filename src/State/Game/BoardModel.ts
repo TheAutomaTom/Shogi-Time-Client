@@ -7,40 +7,47 @@ export class BoardModel {
   Id: string;
   CurrentPlayer: number;
   Squares:    Array<GameSquareModel>;
-  CapturesP1: Array<PieceModel>;
-  CapturesP2: Array<PieceModel>;
-  Pins: AttackModel[];
+  P1Captures: Array<PieceModel>;
+  P2Captures: Array<PieceModel>;
+  Pins: AttackModel[];  
   
-  ToBlockP1: Array<TargetSquareModel>;
-  ToKillP1: Array<TargetSquareModel>;
-  ToBlockP2: Array<TargetSquareModel>;
-  ToKillP2: Array<TargetSquareModel>;
+  P1ToBlock: Array<TargetSquareModel>;
+  P1ToKill: Array<TargetSquareModel>;
+  P1HasOpenFiles: boolean;
   
-  IsMateBeforeDropsP1: boolean = false;  // Drops could possibly break IsBoardCheck
-  IsMateBeforeDropsP2: boolean = false;  // Drops could possibly break IsBoardCheck
+  P2ToBlock: Array<TargetSquareModel>;
+  P2ToKill: Array<TargetSquareModel>;
+  P2HasOpenFiles: boolean;
+  
+  P1IsMateBeforeDrops: boolean = false;  // Drops could possibly break IsBoardCheck
+  P2IsMateBeforeDrops: boolean = false;  // Drops could possibly break IsBoardCheck
   IsInMate:  number = 0;
 
   constructor(
     id: string,
     currentPlayer: number,
     squares:    Array<GameSquareModel>,
-    capturesP1: Array<PieceModel>,
-    capturesP2: Array<PieceModel>,
-    attacks:    AttackModel[] = []
+    p1Captures: Array<PieceModel>,
+    p2Captures: Array<PieceModel>,
+    attacks:    AttackModel[] = [],
+    p1HasOpenFiles: boolean = false,
+    p2HasOpenFiles: boolean = false
   ) {
     this.Id = id;
     this.CurrentPlayer = currentPlayer;
     this.Squares = squares;
 
-    this.CapturesP1 = capturesP1;
-    this.CapturesP2 = capturesP2;
+    this.P1Captures = p1Captures;
+    this.P2Captures = p2Captures;
+    this.P1HasOpenFiles = p1HasOpenFiles;
+    this.P2HasOpenFiles = p2HasOpenFiles;
     this.Pins = attacks;
 
-    this.ToBlockP1 = [];
-    this.ToKillP1 = [];
-
-    this.ToBlockP2 = [];
-    this.ToKillP2 = [];
+    this.P1ToBlock = [];
+    this.P1ToKill = [];
+    
+    this.P2ToBlock = [];
+    this.P2ToKill = [];
     
   }
 }

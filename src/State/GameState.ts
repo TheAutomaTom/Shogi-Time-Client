@@ -13,6 +13,8 @@ import { ref } from "vue";
 
 export const useGameState = defineStore("GameState", () => {
   
+  const _engine = new MobilityEngine();
+
   const logPieceSelect = false;
   // const logPieceCaptures = false;
   const logGamePhase = false;
@@ -35,7 +37,6 @@ export const useGameState = defineStore("GameState", () => {
   const Origin = ref({} as GameSquareModel);
   const Destination = ref({} as GameSquareModel);
 
-  const _engine = new MobilityEngine();
 
   const _promotable = [
     PieceType.Rook,
@@ -56,8 +57,8 @@ export const useGameState = defineStore("GameState", () => {
                           update.Id, 
                           update.CurrentPlayer,
                           update.Squares,
-                          update.CapturesP1,
-                          update.CapturesP2
+                          update.P1Captures,
+                          update.P2Captures
                         );    
     Phase.value = GamePhase.TurnStart;    
   };
@@ -122,8 +123,8 @@ export const useGameState = defineStore("GameState", () => {
       
         if(logPieceSelect) logPieceDetails("capturedPiece", capturedPiece);            
         capturedPiece.Demote();
-        if(Board.value.CurrentPlayer == 1){ Board.value.CapturesP1.push(capturedPiece); }
-        if(Board.value.CurrentPlayer == 2){ Board.value.CapturesP2.push(capturedPiece); }
+        if(Board.value.CurrentPlayer == 1){ Board.value.P1Captures.push(capturedPiece); }
+        if(Board.value.CurrentPlayer == 2){ Board.value.P2Captures.push(capturedPiece); }
 
         // Create the moved piece in that spot.
         square.Piece = new PieceModel( Board.value.CurrentPlayer, PieceInHand.value!.Type, PieceInHand.value!.StartingPosition, PieceInHand.value!.Icon );
@@ -232,10 +233,10 @@ export const useGameState = defineStore("GameState", () => {
         // Remove the piece from the origin.
         if(Board.value.CurrentPlayer == 1){
           console.log(`Removing drop from CapturesP1.`);
-          Board.value.CapturesP1 = Board.value.CapturesP1.filter( p => p.Id != PieceInHand.value.Id);
+          Board.value.P1Captures = Board.value.P1Captures.filter( p => p.Id != PieceInHand.value.Id);
         } else if (Board.value.CurrentPlayer == 2){
           console.log(`Removing drop from CapturesP2.`);
-          Board.value.CapturesP2 = Board.value.CapturesP2.filter( p => p.Id != PieceInHand.value.Id);
+          Board.value.P2Captures = Board.value.P2Captures.filter( p => p.Id != PieceInHand.value.Id);
           
         }
         CompleteMove();

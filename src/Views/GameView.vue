@@ -22,20 +22,22 @@
 
     </div>
 
-    <div class="captures-p2">
-      <in-hand-piece
-        v-for="piece in game$.Board.CapturesP2"
+    <div class="captures-box">
+      <captured-piece
+        v-for="piece in game$.Board.P2Captures"
         :input="piece"
-      ></in-hand-piece>
+        :style="piece.Type == PieceType.Pawn && game$.Board.P2HasOpenFiles == false ? 'opacity:0.3' : 'opacity:1'"
+      ></captured-piece>
     </div>
 
     <game-board></game-board>
 
-    <div class="captures-p1">
-      <in-hand-piece
-        v-for="piece in game$.Board.CapturesP1"
+    <div class="captures-box">
+      <captured-piece
+        v-for="piece in game$.Board.P1Captures"
         :input="piece"
-      ></in-hand-piece>
+        :style="piece.Type == PieceType.Pawn && game$.Board.P1HasOpenFiles == false ? 'opacity:0.3' : 'opacity:1'"
+      ></captured-piece>
     </div>
     
   </div>
@@ -44,11 +46,12 @@
 <!-- =============================================== -->
 <script setup lang="ts">
 import GameBoard from "@/ViewComponents/GameBoard/GameBoard.vue";
-import InHandPiece from "@/ViewComponents/GameBoard/InHandPiece.vue";
+import CapturedPiece from "@/ViewComponents/GameBoard/CapturedPiece.vue";
 import PromotionModal from "@/ViewComponents/GameBoard/PromotionModal.vue";
 import GameOverModal from "@/ViewComponents/GameBoard/GameOverModal.vue";
 import { useGameState } from "@/State/GameState";
 import { GamePhase } from "@/State/Game/GamePhase";
+import { PieceType } from "@/State/Game/Pieces/PieceType";
 
 const game$ = useGameState();
 
@@ -62,7 +65,7 @@ const game$ = useGameState();
   font-size:xx-small;
 }
 
-.captures-p2{
+.captures-box{
   height:2.5em;
   margin:0.5em 0;
   background-color: #0f0f0f;
@@ -71,13 +74,5 @@ const game$ = useGameState();
   align-items: center;
 }
   
-.captures-p1{
-  height:2.5em;
-  margin:0.5em 0;
-  background-color: #0f0f0f;
-
-  display: flex;
-  align-items: center;
-}
 
 </style>
