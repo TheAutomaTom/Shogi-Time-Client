@@ -14,7 +14,7 @@ import { VectorTargetReport } from "./Movement/VectorTargetReport";
 export class MobilityEngine {
   // logSubject = {enabled: true, id: "P2-Rook-Right"};
   logPhase = false;
-  logDropCalcs = true;
+  logDropCalcs = false;
 
   RebuildBoard = ( input: BoardModel ): BoardModel =>{
 
@@ -22,13 +22,14 @@ export class MobilityEngine {
 
     result = this.calculateStandardVectors(result);
     result = this.redrawDropViewModels(result, input.CurrentPlayer);
-
     result.Pins = this.definePinningAttackVectors(result);
-    // result = this.pinDefenders(result);
+    result = this.pinDefendersInLineOfFire(result);
 
-    result = this.defineDefenderConstraints(result, 1);
+    // Player 1...
+    result = this.defineMustBlockOrKillSquares(result, 1);
     if(result.P1ToBlock.length + result.P1ToKill.length > 0) {
-      result = this.constrainDefenders(result, 1, result.P1ToBlock);
+      if(this.logPhase) console.log("Call constrainDefenders P1? " + (result.P1ToBlock.length + result.P1ToKill.length > 0));
+      result = this.constrainDefendersMobility(result, 1, result.P1ToBlock, result.P1ToKill);
     }
 
     // if(result.IsMateBeforeDropsP1) result = this.counterMateWithDrops(result, 1);
@@ -36,10 +37,11 @@ export class MobilityEngine {
     // if(result.IsInMate) return result;
 
 
-        
-    result = this.defineDefenderConstraints(result, 2);
+    // Player 2...
+    result = this.defineMustBlockOrKillSquares(result, 2);
     if(result.P2ToBlock.length + result.P2ToKill.length > 0) {
-      result = this.constrainDefenders(result, 2, result.P2ToBlock);
+      if(this.logPhase) console.log("Call constrainDefenders P2? " + (result.P2ToBlock.length + result.P2ToKill.length > 0));
+      result = this.constrainDefendersMobility(result, 2, result.P2ToBlock, result.P2ToKill);
     }
 
 
@@ -76,14 +78,14 @@ export class MobilityEngine {
   };
   
   
-  defineDefenderConstraints = ( board: BoardModel, player: number ): BoardModel => {
+  // Find all squares with pieces putting king in check or pinning defenders.
+  // This operates on the attacker's pieces, starting from their furthest vector coordinate, walking back to their origin.
+  defineMustBlockOrKillSquares = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
     const toLog = true;
     let toBlock = [] as TargetSquareModel[];
     let toKill   = [] as TargetSquareModel[];
 
-    // First phase, find all the opponent's squares that put the king in check.
-    // This operates on the attacker's pieces.
     if(toLog) console.log(`\r\n Phase 1...`);
     board.Squares.forEach(square => {
       if( square.Piece.Player != 0 && square.Piece.Player != player ){
@@ -94,7 +96,7 @@ export class MobilityEngine {
             for (let i = vector.Targets.length - 1; i > -1; i--) {
               let attackModel = new AttackModel(square);
 
-              // The process doesn't begin until the King is found.
+              // The process does not begin until the King is found.
               if( vector.Targets[i].Status == TargetStatus.Check ){
                 attackModel.AttackVector = vector.Name;
                 attackModel.Checked = new TargetSquareModel( 
@@ -103,7 +105,7 @@ export class MobilityEngine {
                                             vector.Targets[i].Status,
                                             vector.Targets[i].Piece
                                           );
-                // Add the attacker to the kill list (drops cannot counter this square).
+                // Add vector's origin (attacker) to the kill list.  Note: drops cannot counter this square.
                 toKill.push( new TargetSquareModel(
                                             square.X,
                                             square.Y,
@@ -143,16 +145,17 @@ export class MobilityEngine {
     return board;
   };
 
-  constrainDefenders = ( board: BoardModel, player: number, squaresToBlock: TargetSquareModel[] ): BoardModel => {
-    const toLog = false;
+  // Remove movement that cannot break a check condition, if one exists
+  constrainDefendersMobility = ( board: BoardModel, player: number, squaresToBlock: TargetSquareModel[], squaresToKill: TargetSquareModel[] ): BoardModel => {
+    const toLog = true;
+    const toLogId = "P2-Rook-Right";
     let canBlockCheck = false;
 
-    // Phase 2 removes movement that cannot break the check condition.
-    // This operates on the defender's pieces.
     if(toLog) console.log(`\r\n Phase 2...`);
     board.Squares.forEach( square => {
       // If this is the player's piece, but not their King.
       if( square.Piece.Player == player && square.Piece.Type != PieceType.King){
+        if(toLog && toLogId == square.Piece.Id) console.log(`\t ${square.Piece.Id}...`);
         
         // Clear the piece's default movement.
         const defaultVectors = square.Piece.Mobility.Vectors;
@@ -160,14 +163,21 @@ export class MobilityEngine {
 
         defaultVectors.forEach(defaultVector => {
           let newVector = new Vector(defaultVector.Name);
-
+          if(toLog && toLogId == square.Piece.Id) console.log(`\t Testing ${newVector}...`);
+          
           defaultVector.Targets.forEach(target => {
-            // Is this target is in the list of squares required for defense, keep it.
-            if( squaresToBlock.some( s => s.Id == target.Id ) ){
+            // If this target is in the list of squares required for defense, keep it.
+            if( squaresToBlock.some( s => s.Id == target.Id ) || squaresToKill.some( s => s.Id == target.Id ) ){              
+              
               newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
               square.Piece.Mobility.Vectors.push(newVector);
+              if(toLog && toLogId == square.Piece.Id) {
+                console.log(`\t Adding vector: ${newVector.Name}...`);
+                console.dir(newVector);
+              }
+
               canBlockCheck = true;
-              if(toLog) console.log(`\t Target ${target.Id} is in squaresToBlock`);
+              if(toLog) console.log(`\t Target ${target.Id} is in squaresTo Block or Kill`);
             }
           });
         });
@@ -291,20 +301,20 @@ export class MobilityEngine {
     return pins;
   };
 
-  // pinDefenders  = ( board: BoardModel ): BoardModel => {
-  //   if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
-  //   // Use the short list of attacks to filter out invalid moves that would put a King into check if they moves their own piece.
-  //   board.Pins.forEach(attack => {      
-  //     if(attack.IsPin){
-  //       board.Squares.forEach(defender => {
-  //         if(defender.Id == attack.Defender?.Id){
-  //           // const constraints = defender.Piece.Mobility.setConstraint(attack.AttackVector);
-  //         }
-  //       });
-  //     }      
-  //   });
-  //   return board;
-  // };
+  // Use the short list of pins to restrict pieces to the king's line of sight.
+  pinDefendersInLineOfFire  = ( board: BoardModel ): BoardModel => {
+    if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
+    board.Pins.forEach(attack => {      
+      if(attack.IsPin){
+        board.Squares.forEach(defender => {
+          if(defender.Id == attack.Defender?.Id){
+            const _ = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+          }
+        });
+      }      
+    });
+    return board;
+  };
   
   // Create 2 flat maps including each piece's moves for Views to bind on after a piece is selected.
   redrawMovementViewModels = ( board: BoardModel ): BoardModel => {

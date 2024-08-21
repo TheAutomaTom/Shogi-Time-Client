@@ -34,7 +34,11 @@
     () => game$.PieceInHand,
     () => {
       if (game$.PieceInHand.Id == props.input.Id) {
-        currentClass.value = "game-piece-move-start";
+        if(game$.PieceInHand.Mobility.Map.length != 0){
+          currentClass.value = "game-piece-move-start";
+        } else {
+          currentClass.value = "game-piece-move-start-invalid";
+        }
       }
       else {
         currentClass.value = "";
@@ -65,11 +69,15 @@
     height:100%;
     object-fit:contain;
     cursor:grab;    
+    box-sizing: border-box;
+    border: 1px dashed transparent;
   }
   .game-piece-move-start{
-    // background-color: green;
-    box-sizing: border-box;
     border: 1px dashed yellow;
+    
+  }
+  .game-piece-move-start-invalid{
+    border: 1px dashed grey;
     
   }
 </style>
