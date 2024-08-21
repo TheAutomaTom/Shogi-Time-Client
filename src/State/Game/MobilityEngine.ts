@@ -167,12 +167,32 @@ export class MobilityEngine {
               newVector.Targets.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
               square.Piece.Mobility.Vectors.push(newVector);
               canBlockCheck = true;
-              if(toLog) console.log(`\t target.Id ${target.Id} is in squaresToBlock`);
+              if(toLog) console.log(`\t Target ${target.Id} is in squaresToBlock`);
             }
           });
         });
       }
     });
+
+    const captures = player == 1 ? board.P1Captures : board.P2Captures;    
+    captures.forEach(capture => {
+
+      // Clear the piece's default movement.
+      const defaultDrops = capture.Mobility.Map;
+      capture.Mobility.Map = [];
+
+      defaultDrops.forEach( target => {
+
+        if( squaresToBlock.some( s => s.Id == target.Id ) ){
+          capture.Mobility.Map.push( new TargetSquareModel(target.X, target.Y, target.Status, target.Piece) );
+          canBlockCheck = true;
+          if(toLog) console.log(`\t Drop ${target.Id} is in squaresToBlock`);
+        }
+
+      });
+    });
+   
+    
     if(!canBlockCheck && player == 1){ board.P1IsMateBeforeDrops = true; }
     if(!canBlockCheck && player == 2){ board.P2IsMateBeforeDrops = true; }
     return board;
