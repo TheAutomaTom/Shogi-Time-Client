@@ -26,7 +26,7 @@ export class MobilityEngine {
     result = this.pinDefendersInLineOfFire(result);
 
     // Player 1...
-    result = this.defineMustBlockOrKillSquares(result, 1);
+    result = this.defineMustBlockOrKill(result, 1);
     if(result.P1ToBlock.length + result.P1ToKill.length > 0) {
       if(this.logPhase) console.log("Call constrainDefenders P1? " + (result.P1ToBlock.length + result.P1ToKill.length > 0));
       result = this.constrainDefendersMobility(result, 1, result.P1ToBlock, result.P1ToKill);
@@ -38,7 +38,7 @@ export class MobilityEngine {
 
 
     // Player 2...
-    result = this.defineMustBlockOrKillSquares(result, 2);
+    result = this.defineMustBlockOrKill(result, 2);
     if(result.P2ToBlock.length + result.P2ToKill.length > 0) {
       if(this.logPhase) console.log("Call constrainDefenders P2? " + (result.P2ToBlock.length + result.P2ToKill.length > 0));
       result = this.constrainDefendersMobility(result, 2, result.P2ToBlock, result.P2ToKill);
@@ -80,7 +80,7 @@ export class MobilityEngine {
   
   // Find all squares with pieces putting king in check or pinning defenders.
   // This operates on the attacker's pieces, starting from their furthest vector coordinate, walking back to their origin.
-  defineMustBlockOrKillSquares = ( board: BoardModel, player: number ): BoardModel => {
+  defineMustBlockOrKill = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
     const toLog = true;
     let toBlock = [] as TargetSquareModel[];
@@ -144,6 +144,7 @@ export class MobilityEngine {
     }
     return board;
   };
+
 
   // Remove movement that cannot break a check condition, if one exists
   constrainDefendersMobility = ( board: BoardModel, player: number, squaresToBlock: TargetSquareModel[], squaresToKill: TargetSquareModel[] ): BoardModel => {
@@ -234,6 +235,7 @@ export class MobilityEngine {
   // Second iteration finds attackers' checks and pins, and constrains movement on targets.
   definePinningAttackVectors = (board: BoardModel): AttackModel[] => {
     if(this.logPhase) console.warn("\r\n constrainPinnedPieces...");
+
     let pins = [] as AttackModel[];
 
     board.Squares.forEach(square => {
@@ -409,7 +411,7 @@ export class MobilityEngine {
 
     // Anything except Knights...
     } else { 
-      let obstruction = TargetStatus.Na;
+      let squareBeforeStatus = TargetStatus.Na;
       
       // Iterate each coordinate along one vector (ex: north)...
       for (let i = 1; i <= vector.Range; i++) {
@@ -426,9 +428,9 @@ export class MobilityEngine {
           //   console.log(`${square.Piece.Id} evaluateVectorTarget...`)
           // };
 
-          const target = this.evaluateVectorTarget( board, square.Piece.Player, squareId, obstruction );
+          const target = this.evaluateVectorTarget( board, square.Piece.Player, squareId, squareBeforeStatus );
           
-          obstruction = target.Status;
+          squareBeforeStatus = target.Status;
           vector = vector.Update( target.Status, target.Square! );
 
         }
@@ -438,7 +440,7 @@ export class MobilityEngine {
 
   };
 
-  evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, obstruction: TargetStatus ): VectorTargetReport => {
+  evaluateVectorTarget = ( board: BoardModel, playersTurn: number, targetId: string, squareBeforeStatus: TargetStatus ): VectorTargetReport => {
     
     const toLog = false; // ["S61", "S62", "S63", "S64", "S65", "S66", "87"].includes(targetId);
 
@@ -455,7 +457,7 @@ export class MobilityEngine {
     switch (s?.Piece.Player) {
       
       case playersTurn:
-        switch (obstruction) {
+        switch (squareBeforeStatus) {
           case TargetStatus.Open:
           case TargetStatus.Na:   
             status = TargetStatus.Ally;
@@ -476,11 +478,11 @@ export class MobilityEngine {
             status = TargetStatus.Na;
             break;
         }
-        if(toLog){ console.log(`${targetId} case Ally: obstruction: ${obstruction}, status: ${status}`); }
+        if(toLog){ console.log(`${targetId} case Ally: obstruction: ${squareBeforeStatus}, status: ${status}`); }
         break;
 
       case 0: // Open squares
-        switch (obstruction) {
+        switch (squareBeforeStatus) {
           case TargetStatus.Open:
           case TargetStatus.Na:
             status = TargetStatus.Open;
@@ -498,18 +500,19 @@ export class MobilityEngine {
             break;
 
           case TargetStatus.Check:
+          case TargetStatus.CheckBlocks:
             status = TargetStatus.CheckBlocks;
             break;
           default:
             status = TargetStatus.Na;
             break;
         }
-        if(toLog){ console.log(`${targetId} case Open: obstruction: ${obstruction}, status: ${status}`); }
+        if(toLog){ console.log(`${targetId} case Open: obstruction: ${squareBeforeStatus}, status: ${status}`); }
         break;
     
       default: // Enemy
         if( s.Piece.Type == PieceType.King ){
-          switch (obstruction) {
+          switch (squareBeforeStatus) {
             case TargetStatus.Open:
             case TargetStatus.Na:
               status = TargetStatus.Check;
@@ -529,11 +532,11 @@ export class MobilityEngine {
               status = TargetStatus.Na;
               break;
           }
-          if(toLog){ console.log(`${targetId} case Enemy-King: obstruction: ${obstruction}, status: ${status}`); }
+          if(toLog){ console.log(`${targetId} case Enemy-King: obstruction: ${squareBeforeStatus}, status: ${status}`); }
           break;
 
         } else { //s.Piece.Type != PieceType.King
-          switch (obstruction) {
+          switch (squareBeforeStatus) {
             case TargetStatus.Open:
             case TargetStatus.Na:
               status = TargetStatus.Enemy;
@@ -553,7 +556,7 @@ export class MobilityEngine {
               status = TargetStatus.Na;
               break;
           }
-          if(toLog){ console.log(`${targetId} case Enemy: obstruction: ${obstruction}, status: ${status}`); }
+          if(toLog){ console.log(`${targetId} case Enemy: obstruction: ${squareBeforeStatus}, status: ${status}`); }
           break;
         }
     };

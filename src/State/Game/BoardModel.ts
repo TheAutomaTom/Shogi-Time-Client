@@ -13,10 +13,12 @@ export class BoardModel {
   
   P1ToBlock: Array<TargetSquareModel>;
   P1ToKill: Array<TargetSquareModel>;
+  // P1KingCannotKill: Array<TargetSquareModel>;  // nyi
   P1HasOpenFiles: boolean;
   
   P2ToBlock: Array<TargetSquareModel>;
   P2ToKill: Array<TargetSquareModel>;
+  // P2KingCannotKill: Array<TargetSquareModel>; // nyi
   P2HasOpenFiles: boolean;
   
   P1IsMateBeforeDrops: boolean = false;  // Drops could possibly break IsBoardCheck
@@ -45,9 +47,11 @@ export class BoardModel {
 
     this.P1ToBlock = [];
     this.P1ToKill = [];
+    this.P1KingCannotKill = [];
     
     this.P2ToBlock = [];
     this.P2ToKill = [];
+    this.P2KingCannotKill = [];
     
   }
 }
