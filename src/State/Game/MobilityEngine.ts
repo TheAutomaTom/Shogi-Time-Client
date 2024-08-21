@@ -511,7 +511,7 @@ export class MobilityEngine {
         if( s.Piece.Type == PieceType.King ){
           switch (obstruction) {
             case TargetStatus.Open:
-              case TargetStatus.Na:
+            case TargetStatus.Na:
               status = TargetStatus.Check;
               break;
             case TargetStatus.AllyBlocks:
@@ -535,7 +535,7 @@ export class MobilityEngine {
         } else { //s.Piece.Type != PieceType.King
           switch (obstruction) {
             case TargetStatus.Open:
-              case TargetStatus.Na:
+            case TargetStatus.Na:
               status = TargetStatus.Enemy;
               break;
             case TargetStatus.Enemy:
