@@ -13,8 +13,7 @@
     >{{ getNotationText('y') }}</div>
 
 <!--  -->
-    <div>
-      <!-- v-if="input.Piece.Player != 0" -->
+    <div v-if="game$.DebugLevel > 0">
       <span
         class="board-notation board-notation-debug"
       >{{ input.Piece.Player != 0 ? `${input.Piece.Id}` : "" }}<br/>{{ input.X }}{{ input.Y }} 

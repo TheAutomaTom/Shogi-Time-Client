@@ -1,6 +1,6 @@
-// import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
+import { NewBoardSetup } from "./Game/BoardSetups/NewBoardSetup";
 // import { TestBoardSetup } from "./Game/BoardSetups/TestBoardSetup";
-import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
+// import { TestCheckBoardSetup } from "./Game/BoardSetups/TestCheckBoardSetup";
 
 import { BoardModel } from "@/State/Game/BoardModel";
 import { GamePhase } from "./Game/GamePhase";
@@ -14,7 +14,9 @@ import { ref } from "vue";
 
 export const useGameState = defineStore("GameState", () => {
   
+  const DebugLevel = import.meta.env.VITE_GAME_DEBUG_LEVEL;
   const _engine = new MobilityEngine();
+  
 
   const logPieceSelect = false;
   // const logPieceCaptures = false;
@@ -25,9 +27,9 @@ export const useGameState = defineStore("GameState", () => {
   const Board = ref( 
     new BoardModel( "Test-123", 
                     1,
-                    // new NewBoardSetup().Squares,
+                    new NewBoardSetup().Squares,
                     // new TestBoardSetup().Squares,
-                    new TestCheckBoardSetup().Squares,
+                    // new TestCheckBoardSetup().Squares,
                     [],
                     [],
                     []
@@ -324,6 +326,7 @@ export const useGameState = defineStore("GameState", () => {
   };  
 
   return {
+    DebugLevel,
     Board,
     // Checks,
     Phase, 

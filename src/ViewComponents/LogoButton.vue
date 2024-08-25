@@ -1,25 +1,18 @@
 <script setup lang="ts">
-const props = defineProps({
-  color: {
-    type: String,
-    default: 'red',
-  },
-});
+import { useAppState } from '@/State/AppState';
 
-const logoColor = `color: ${props.color}`
+const app$ = useAppState();
 
 </script>
 
 <!-- === -->
 <template>
-  <h1 
-    class="logo-button"
-    :style="logoColor"
-  >
-    <span>Shogi&nbsp;Time</span>
-    <img 
-      src="/branding/logo-icon.png"
-    /> 
+  <h1 class="logo-button">
+    <span>
+      <span v-if="!app$.Layout$.DrawerIsOpen">☰&nbsp;Shogi&nbsp;Time</span>
+      <span v-if="app$.Layout$.DrawerIsOpen">Shogi&nbsp;Time</span>      
+    </span>
+    <img src="/branding/logo-icon.png"/> 
   </h1>
 </template>
 
@@ -30,15 +23,13 @@ const logoColor = `color: ${props.color}`
   padding-right: 1em;
 }
 
-.logo-button:hover{
-  color: goldenrod;
+.logo-button span:hover{
+  color: red;
 }
 
-.logo-button:active{
-  color: yellow;  
-}
 
 .logo-button span{
+  color:goldenrod;
   font-size: xx-large;
   vertical-align:baseline;
   font-variant: small-caps;
@@ -49,6 +40,13 @@ const logoColor = `color: ${props.color}`
   height:2em;
   margin-bottom: -6px;
   margin-left: 3px;
+}
+
+.hamburger{
+  color: white;
+}
+.hamburger:hover{
+color: gold;
 }
 
 </style>

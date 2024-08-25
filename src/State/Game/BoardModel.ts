@@ -47,11 +47,11 @@ export class BoardModel {
 
     this.P1ToBlock = [];
     this.P1ToKill = [];
-    this.P1KingCannotKill = [];
+    // this.P1KingCannotKill = [];
     
     this.P2ToBlock = [];
     this.P2ToKill = [];
-    this.P2KingCannotKill = [];
+    // this.P2KingCannotKill = [];
     
   }
 }

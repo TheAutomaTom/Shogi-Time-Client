@@ -82,7 +82,7 @@ export class MobilityEngine {
   // This operates on the attacker's pieces, starting from their furthest vector coordinate, walking back to their origin.
   defineMustBlockOrKill = ( board: BoardModel, player: number ): BoardModel => {
     if(this.logPhase) console.warn(`\r\n handleCheck...Player #${player}`);
-    const toLog = true;
+    const toLog = false;
     let toBlock = [] as TargetSquareModel[];
     let toKill   = [] as TargetSquareModel[];
 
@@ -310,7 +310,8 @@ export class MobilityEngine {
       if(attack.IsPin){
         board.Squares.forEach(defender => {
           if(defender.Id == attack.Defender?.Id){
-            const _ = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+            // const _ = defender.Piece.Mobility.setConstraint(attack.AttackVector);
+            defender.Piece.Mobility.setConstraint(attack.AttackVector);
           }
         });
       }      

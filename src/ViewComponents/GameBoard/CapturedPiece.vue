@@ -6,6 +6,7 @@
     @click="handleClickPieceInHand()"
   >
     <img 
+      v-if="input.IconPath != ''"
       class="game-piece-in-hand"
       :src="`pieces/Shogi_FCZ/${input.IconPath}.svg`"
       :id="input.Id"
@@ -27,7 +28,7 @@ import { ref, watch } from 'vue';
     }
   });
 
-  const currentClass = ref([""]);
+  const iconPath = ref()
 
   const handleClickPieceInHand = () => {
     // console.log("\r\nInHandPiece.handleClickPieceInHand();");
