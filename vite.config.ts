@@ -10,7 +10,7 @@ export default defineConfig({
   build: {
     outDir: "dist",
   },
-  base: "/shogi-time/", // For deploying in a subfolder of cpanel
+  // base: "/shogi-time/", // For deploying in a subfolder of cpanel
   publicDir: "public",  
     /* 
     For relative import paths,
